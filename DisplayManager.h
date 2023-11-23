@@ -16,7 +16,7 @@
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
-#define DISPLAY_ROTATION 2 // 180 degrees
+#define DISPLAY_ROTATION 2 // rotation 180 degrees
 
 #define SHOW_RENDER_TIME
 
@@ -29,6 +29,7 @@ public:
     static void init();
     static void loop();
     static void clear();
+    static void showDigit(int digit);
 
 private:
     static void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos);

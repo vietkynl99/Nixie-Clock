@@ -1,5 +1,6 @@
 #include "clockDigit.h"
 #include "DisplayManager.h"
+#include "Log.h"
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
@@ -8,38 +9,25 @@ TFT_eSPI *DisplayManager::tft = new TFT_eSPI(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 void DisplayManager::init()
 {
     tft->begin();
-
     tft->setRotation(DISPLAY_ROTATION);
-    clear();
-
-    drawArrayJpegInCenter(rgbTest, sizeof(rgbTest));
-    delay(3000);
-
     clear();
 }
 
 void DisplayManager::loop()
 {
-    drawArrayJpegInCenter(digit_0, sizeof(digit_0));
-    delay(1000);
-    drawArrayJpegInCenter(digit_1, sizeof(digit_1));
-    delay(1000);
-    drawArrayJpegInCenter(digit_2, sizeof(digit_2));
-    delay(1000);
-    drawArrayJpegInCenter(digit_3, sizeof(digit_3));
-    delay(1000);
-    drawArrayJpegInCenter(digit_4, sizeof(digit_4));
-    delay(1000);
-    drawArrayJpegInCenter(digit_5, sizeof(digit_5));
-    delay(1000);
-    drawArrayJpegInCenter(digit_6, sizeof(digit_6));
-    delay(1000);
-    drawArrayJpegInCenter(digit_7, sizeof(digit_7));
-    delay(1000);
-    drawArrayJpegInCenter(digit_8, sizeof(digit_8));
-    delay(1000);
-    drawArrayJpegInCenter(digit_9, sizeof(digit_9));
-    delay(1000);
+    static uint32_t timeTick = 0;
+    static int digit = 0;
+
+    if (xTaskGetTickCount() > timeTick)
+    {
+        timeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
+        digit++;
+        if (digit > 9)
+        {
+            digit = 0;
+        }
+        showDigit(digit);
+    }
 }
 
 void DisplayManager::clear()
@@ -47,22 +35,56 @@ void DisplayManager::clear()
     tft->fillScreen(TFT_BLACK);
 }
 
+void DisplayManager::showDigit(int digit)
+{
+    switch (digit)
+    {
+    case 0:
+        drawArrayJpegInCenter(image_digit_0, sizeof(image_digit_0));
+        break;
+    case 1:
+        drawArrayJpegInCenter(image_digit_1, sizeof(image_digit_1));
+        break;
+    case 2:
+        drawArrayJpegInCenter(image_digit_2, sizeof(image_digit_2));
+        break;
+    case 3:
+        drawArrayJpegInCenter(image_digit_3, sizeof(image_digit_3));
+        break;
+    case 4:
+        drawArrayJpegInCenter(image_digit_4, sizeof(image_digit_4));
+        break;
+    case 5:
+        drawArrayJpegInCenter(image_digit_5, sizeof(image_digit_5));
+        break;
+    case 6:
+        drawArrayJpegInCenter(image_digit_6, sizeof(image_digit_6));
+        break;
+    case 7:
+        drawArrayJpegInCenter(image_digit_7, sizeof(image_digit_7));
+        break;
+    case 8:
+        drawArrayJpegInCenter(image_digit_8, sizeof(image_digit_8));
+        break;
+    case 9:
+        drawArrayJpegInCenter(image_digit_9, sizeof(image_digit_9));
+        break;
+    default:
+        break;
+    }
+}
+
 void DisplayManager::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)
 {
-
     int x = xpos;
     int y = ypos;
 
     JpegDec.decodeArray(arrayname, array_size);
-
-    // jpegInfo(); // Print information from the JPEG file (could comment this line out)
-
     renderJPEG(x, y);
 }
 
 void DisplayManager::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t array_size)
 {
-
     int x = 0;
     int y = 0;
 
@@ -76,15 +98,11 @@ void DisplayManager::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t a
     {
         y = (DISPLAY_HEIGHT - JpegDec.height) / 2;
     }
-
-    // jpegInfo(); // Print information from the JPEG file (could comment this line out)
-
     renderJPEG(x, y);
 }
 
 void DisplayManager::renderJPEG(int xpos, int ypos)
 {
-
     // retrieve infomration about the image
     uint16_t *pImg;
     uint16_t mcu_w = JpegDec.MCUWidth;
@@ -103,7 +121,7 @@ void DisplayManager::renderJPEG(int xpos, int ypos)
     uint32_t win_h = mcu_h;
 
     // record the current time so we can measure how long it takes to draw an image
-    uint32_t drawTime = millis();
+    uint32_t drawTimeTick = xTaskGetTickCount();
 
     // save the coordinate of the right and bottom edges to assist image cropping
     // to the screen size
@@ -156,32 +174,8 @@ void DisplayManager::renderJPEG(int xpos, int ypos)
 
     // calculate how long it took to draw the image
 #ifdef SHOW_RENDER_TIME
-    showTime(millis() - drawTime);
+    showTime((xTaskGetTickCount() - drawTimeTick) / portTICK_PERIOD_MS);
 #endif
-}
-
-void DisplayManager::jpegInfo()
-{
-    Serial.println(F("==============="));
-    Serial.println(F("JPEG image info"));
-    Serial.println(F("==============="));
-    Serial.print(F("Width      :"));
-    Serial.println(JpegDec.width);
-    Serial.print(F("Height     :"));
-    Serial.println(JpegDec.height);
-    Serial.print(F("Components :"));
-    Serial.println(JpegDec.comps);
-    Serial.print(F("MCU / row  :"));
-    Serial.println(JpegDec.MCUSPerRow);
-    Serial.print(F("MCU / col  :"));
-    Serial.println(JpegDec.MCUSPerCol);
-    Serial.print(F("Scan type  :"));
-    Serial.println(JpegDec.scanType);
-    Serial.print(F("MCU width  :"));
-    Serial.println(JpegDec.MCUWidth);
-    Serial.print(F("MCU height :"));
-    Serial.println(JpegDec.MCUHeight);
-    Serial.println(F("==============="));
 }
 
 void DisplayManager::showTime(uint32_t msTime)
@@ -193,7 +187,5 @@ void DisplayManager::showTime(uint32_t msTime)
     tft->print(msTime);
     tft->println(F(" ms "));
 
-    Serial.print(F("Render time:"));
-    Serial.print(msTime);
-    Serial.println(F(" ms "));
+    LOG_DISPLAY("Render time: %ld ms", msTime);
 }
