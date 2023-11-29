@@ -103,7 +103,7 @@ void MenuManager::showMenuList(bool firstDraw)
     uint16_t headerHeight = DisplayManager::getFontHeight();
     uint16_t itemHeight = DisplayManager::getFontHeight() * 1.3;
     uint16_t ypos = headerHeight;
-    int maxDrawableItems = round((DISPLAY_HEIGHT - headerHeight) * 1.0 / itemHeight);
+    int maxDrawableItems = round((TFT_HEIGHT - headerHeight) * 1.0 / itemHeight);
 
     DisplayManager::setTextDatum(CL_DATUM);
 
@@ -129,11 +129,11 @@ void MenuManager::showMenuList(bool firstDraw)
         {
             if (prevUserSelection >= 0 && i == prevUserSelection)
             {
-                DisplayManager::fillRect(0, ypos, DISPLAY_WIDTH, itemHeight, MENU_BACKGROUND_COLOR);
+                DisplayManager::fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_BACKGROUND_COLOR);
             }
             else if (mUserSelection >= 0 && i == mUserSelection)
             {
-                DisplayManager::fillRect(0, ypos, DISPLAY_WIDTH, itemHeight, MENU_HIGHTLIGHT_COLOR);
+                DisplayManager::fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_HIGHTLIGHT_COLOR);
             }
         }
         if (i == mUserSelection)
@@ -151,7 +151,7 @@ void MenuManager::showMenuList(bool firstDraw)
     }
     if (startIndex + maxDrawableItems > mMenuItemCount)
     {
-        DisplayManager::fillRect(0, ypos, DISPLAY_WIDTH, DISPLAY_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
+        DisplayManager::fillRect(0, ypos, TFT_WIDTH, TFT_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
     }
     prevUserSelection = mUserSelection;
 }

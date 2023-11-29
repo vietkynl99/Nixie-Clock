@@ -5,7 +5,7 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 bool DisplayManager::mIsInitialized = false;
-TFT_eSPI *DisplayManager::tft = new TFT_eSPI(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+TFT_eSPI *DisplayManager::tft = new TFT_eSPI();
 
 static constexpr const char *const TAG = "DISPLAY";
 
@@ -80,10 +80,10 @@ void DisplayManager::drawString(const String &string, int32_t x, int32_t y)
 void DisplayManager::setHeader(const char *text, uint16_t color)
 {
     uint32_t height = tft->fontHeight(GFXFF);
-    uint32_t x = DISPLAY_WIDTH / 2;
+    uint32_t x = TFT_WIDTH / 2;
     uint32_t y = height / 2;
 
-    tft->fillRect(0, 0, DISPLAY_WIDTH, height, color);
+    tft->fillRect(0, 0, TFT_WIDTH, height, color);
     tft->setTextDatum(MC_DATUM);
     tft->drawString(text, x, y, GFXFF);
     // drawDatumMarker(x, y);
@@ -171,13 +171,13 @@ void DisplayManager::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t a
 
     JpegDec.decodeArray(arrayname, array_size);
 
-    if (JpegDec.width < DISPLAY_WIDTH)
+    if (JpegDec.width < TFT_WIDTH)
     {
-        x = (DISPLAY_WIDTH - JpegDec.width) / 2;
+        x = (TFT_WIDTH - JpegDec.width) / 2;
     }
-    if (JpegDec.height < DISPLAY_HEIGHT)
+    if (JpegDec.height < TFT_HEIGHT)
     {
-        y = (DISPLAY_HEIGHT - JpegDec.height) / 2;
+        y = (TFT_HEIGHT - JpegDec.height) / 2;
     }
     renderJPEG(x, y);
 }

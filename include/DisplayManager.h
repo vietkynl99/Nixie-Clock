@@ -20,9 +20,13 @@
 #if TFT_RGB_ORDER != TFT_BGR
 #error TFT_RGB_ORDER must be TFT_BGR
 #endif
+#if TFT_WIDTH != 240
+#error TFT_WIDTH must be 240
+#endif
+#if TFT_HEIGHT != 240
+#error TFT_HEIGHT must be 240
+#endif
 
-#define DISPLAY_WIDTH 240
-#define DISPLAY_HEIGHT 240
 #define DISPLAY_ROTATION 2 // rotation 180 degrees
 
 #define SHOW_RENDER_TIME
