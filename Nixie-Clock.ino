@@ -75,7 +75,6 @@ void setup()
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
 	MenuManager::init();
-	LOG("portTICK_PERIOD_MS: %d", portTICK_PERIOD_MS);
 	delay(500);
 
 	xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0);

@@ -92,7 +92,7 @@ void MenuManager::showHeader()
 {
     DisplayManager::setFont(MENU_FONT);
     DisplayManager::setTextColor(TFT_WHITE);
-    DisplayManager::setHeader("Menu", TFT_NAVY);
+    DisplayManager::setHeader("Menu", MENU_HEADER_COLOR);
 }
 
 void MenuManager::showMenuList(bool firstDraw)
