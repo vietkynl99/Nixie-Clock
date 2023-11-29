@@ -83,8 +83,6 @@ void DisplayManager::setHeader(const char *text, uint16_t color)
     uint32_t x = DISPLAY_WIDTH / 2;
     uint32_t y = height / 2;
 
-    tft->setTextWrap(true);
-
     tft->fillRect(0, 0, DISPLAY_WIDTH, height, color);
     tft->setTextDatum(MC_DATUM);
     tft->drawString(text, x, y, GFXFF);

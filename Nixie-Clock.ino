@@ -40,6 +40,11 @@ void debugHandler()
 		{
 			MenuManager::down();
 		}
+		else
+		{
+			LOG("Unknown command: '%s'", cmd);
+		}
+		
 	}
 }
 
@@ -50,7 +55,7 @@ void task1Handler(void *data)
 	while (true)
 	{
 		MenuManager::loop();
-		vTaskDelay(100 / portTICK_PERIOD_MS);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -68,6 +73,7 @@ void setup()
 {
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
+	SerialParser::setAllowEmptyCode(true);
 	MenuManager::init();
 	LOG("portTICK_PERIOD_MS: %d", portTICK_PERIOD_MS);
 	delay(500);
