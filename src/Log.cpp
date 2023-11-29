@@ -1,16 +1,20 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/semphr.h>
-#include "Log.h"
+#include "../include/Log.h"
 
+#ifdef USE_MUTEX
 SemaphoreHandle_t Log::mMutex = xSemaphoreCreateMutex();
+#endif
 
 void Log::print(const char *tag, const char *pFormat, ...)
 {
     static char mStringBuffer[256];
 
+#ifdef USE_MUTEX
     if (xSemaphoreTake(mMutex, portMAX_DELAY))
     {
+#endif
         va_list pVlist;
         va_start(pVlist, pFormat);
         vsnprintf(mStringBuffer, sizeof(mStringBuffer) - 1, pFormat, pVlist);
@@ -19,6 +23,8 @@ void Log::print(const char *tag, const char *pFormat, ...)
         Serial.print(tag);
         Serial.print("] ");
         Serial.println(mStringBuffer);
+#ifdef USE_MUTEX
         xSemaphoreGive(mMutex);
     }
+#endif
 }

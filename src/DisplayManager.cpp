@@ -1,16 +1,23 @@
-#include "clockDigit.h"
-#include "DisplayManager.h"
-#include "Log.h"
+#include "../include/clockDigit.h"
+#include "../include/DisplayManager.h"
+#include "../include/Log.h"
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+bool DisplayManager::mIsInitialized = false;
 TFT_eSPI *DisplayManager::tft = new TFT_eSPI(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+static constexpr const char *const TAG = "DISPLAY";
 
 void DisplayManager::init()
 {
-    tft->begin();
-    tft->setRotation(DISPLAY_ROTATION);
-    clear();
+    if (!mIsInitialized)
+    {
+        mIsInitialized = true;
+        tft->begin();
+        tft->setRotation(DISPLAY_ROTATION);
+        clear();
+    }
 }
 
 void DisplayManager::loop()
@@ -33,6 +40,76 @@ void DisplayManager::loop()
 void DisplayManager::clear()
 {
     tft->fillScreen(TFT_BLACK);
+}
+
+void DisplayManager::setFont(const GFXfont *font)
+{
+    tft->setFreeFont(font);
+}
+
+void DisplayManager::setTextColor(uint16_t color)
+{
+    tft->setTextColor(color);
+}
+
+void DisplayManager::setTextColor(uint16_t fgcolor, uint16_t bgcolor, bool bgfill)
+{
+    tft->setTextColor(fgcolor, bgcolor, bgfill);
+}
+
+void DisplayManager::setCursor(int16_t x, int16_t y)
+{
+    tft->setCursor(x, y);
+}
+
+void DisplayManager::setTextDatum(uint8_t datum)
+{
+    tft->setTextDatum(datum);
+}
+
+void DisplayManager::drawString(const char *string, int32_t x, int32_t y)
+{
+    tft->drawString(string, x, y);
+}
+
+void DisplayManager::drawString(const String &string, int32_t x, int32_t y)
+{
+    tft->drawString(string, x, y);
+}
+
+void DisplayManager::setHeader(const char *text, uint16_t color)
+{
+    uint32_t height = tft->fontHeight(GFXFF);
+    uint32_t x = DISPLAY_WIDTH / 2;
+    uint32_t y = height / 2;
+
+    tft->setTextWrap(true);
+
+    tft->fillRect(0, 0, DISPLAY_WIDTH, height, color);
+    tft->setTextDatum(MC_DATUM);
+    tft->drawString(text, x, y, GFXFF);
+    // drawDatumMarker(x, y);
+}
+
+int16_t DisplayManager::getFontHeight()
+{
+    // return tft->fontHeight(GFXFF);
+    return tft->fontHeight();
+}
+
+void DisplayManager::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
+{
+    tft->fillRect(x, y, w, h, color);
+}
+
+void DisplayManager::print(const char *text)
+{
+    tft->print(text);
+}
+
+void DisplayManager::println(const char *text)
+{
+    tft->println(text);
 }
 
 void DisplayManager::showDigit(int digit)
@@ -72,6 +149,12 @@ void DisplayManager::showDigit(int digit)
     default:
         break;
     }
+}
+
+void DisplayManager::drawDatumMarker(int x, int y, uint16_t color)
+{
+    tft->drawLine(x - 5, y, x + 5, y, color);
+    tft->drawLine(x, y - 5, x, y + 5, color);
 }
 
 void DisplayManager::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)
@@ -187,5 +270,5 @@ void DisplayManager::showTime(uint32_t msTime)
     tft->print(msTime);
     tft->println(F(" ms "));
 
-    LOG_DISPLAY("Render time: %ld ms", msTime);
+    LOG("Render time: %ld ms", msTime);
 }

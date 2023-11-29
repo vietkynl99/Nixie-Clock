@@ -1,11 +1,14 @@
 #include <SerialParser.h>
-#include "DisplayManager.h"
-#include "Log.h"
+#include "include/Log.h"
+#include "include/MenuManager.h"
+#include "include/WifiMaster.h"
 
 #define TASK1_STACK_SIZE 10000
 #define TASK2_STACK_SIZE 10000
 
 TaskHandle_t task1, task2;
+
+static constexpr const char *const TAG = "SYSTEM";
 
 void debugHandler()
 {
@@ -14,26 +17,46 @@ void debugHandler()
 
 	if (SerialParser::run(cmd, code))
 	{
-		if (!strcmp(cmd, "FUNCTION_NAME"))
+		if (!strcmp(cmd, "RSWIFI"))
 		{
-			// do something
+			WifiMaster::resetWifiSettings();
+		}
+		else if (!strcmp(cmd, "MENU"))
+		{
+			if (code)
+			{
+				MenuManager::show();
+			}
+			else
+			{
+				MenuManager::hide();
+			}
+		}
+		else if (!strcmp(cmd, "UP"))
+		{
+			MenuManager::up();
+		}
+		else if (!strcmp(cmd, "DOWN"))
+		{
+			MenuManager::down();
 		}
 	}
 }
 
 void task1Handler(void *data)
 {
-	LOG_SYSTEM("Start task 1");
+	LOG("Start task 1");
+	MenuManager::show();
 	while (true)
 	{
-		DisplayManager::loop();
+		MenuManager::loop();
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 }
 
 void task2Handler(void *data)
 {
-	LOG_SYSTEM("Start task 2");
+	LOG("Start task 2");
 	while (true)
 	{
 		debugHandler();
@@ -45,7 +68,8 @@ void setup()
 {
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
-	DisplayManager::init();
+	MenuManager::init();
+	LOG("portTICK_PERIOD_MS: %d", portTICK_PERIOD_MS);
 	delay(500);
 
 	xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0);
