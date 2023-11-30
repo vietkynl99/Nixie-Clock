@@ -48,7 +48,6 @@ private:
 
 public:
     static void init();
-    static void loop();
     static void clear();
 
     static void showDigit(int digit);

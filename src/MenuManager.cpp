@@ -2,8 +2,8 @@
 
 bool MenuManager::mIsInitialized = false;
 bool MenuManager::mIsVisible = false;
-bool MenuManager::mNeedsRedraw = true;
-bool MenuManager::mIsFirstTime = true;
+bool MenuManager::mNeedsRedraw = false;
+bool MenuManager::mIsFirstTime = false;
 MenuItemList *MenuManager::mMenuItemList = new MenuItemList();
 int MenuManager::mCurrentIndex = 0;
 bool MenuManager::mEditPanelVisible = false;
@@ -27,7 +27,7 @@ void MenuManager::loop()
 
     if (mNeedsRedraw && xTaskGetTickCount() > timeTick)
     {
-        timeTick = xTaskGetTickCount() + 30 / portTICK_PERIOD_MS;
+        timeTick = xTaskGetTickCount() + 10 / portTICK_PERIOD_MS;
         if (mIsVisible)
         {
             measureTimeTick = xTaskGetTickCount();
@@ -41,10 +41,6 @@ void MenuManager::loop()
             }
             measureTimeTick = xTaskGetTickCount() - measureTimeTick;
             LOG("Draw time: %dms", measureTimeTick / portTICK_PERIOD_MS);
-        }
-        else
-        {
-            DisplayController::clear();
         }
         mNeedsRedraw = false;
         mIsFirstTime = false;

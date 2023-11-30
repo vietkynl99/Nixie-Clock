@@ -22,29 +22,12 @@ void DisplayController::init()
     }
 }
 
-void DisplayController::loop()
-{
-    static uint32_t timeTick = 0;
-    static int digit = 0;
-
-    if (xTaskGetTickCount() > timeTick)
-    {
-        timeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
-        digit++;
-        if (digit > 9)
-        {
-            digit = 0;
-        }
-        showDigit(digit);
-    }
-}
-
 void DisplayController::clear()
 {
     if (mDrew)
     {
-        mDrew = false;
         LOG("clear");
+        mDrew = false;
         tft->fillScreen(TFT_BLACK);
     }
 }

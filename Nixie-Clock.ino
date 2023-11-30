@@ -1,7 +1,8 @@
 #include <SerialParser.h>
 #include "include/Log.h"
-#include "include/MenuManager.h"
 #include "include/WifiMaster.h"
+#include "include/MenuManager.h"
+#include "include/ClockManager.h"
 
 #define TASK1_STACK_SIZE 10000
 #define TASK2_STACK_SIZE 10000
@@ -32,6 +33,21 @@ void debugHandler()
 				MenuManager::hide();
 			}
 		}
+		else if (!strcmp(cmd, "CLOCK"))
+		{
+			if (code)
+			{
+				ClockManager::show();
+			}
+			else
+			{
+				ClockManager::hide();
+			}
+		}
+		else if (!strcmp(cmd, "CLEAR"))
+		{
+			DisplayController::clear();
+		}
 		else if (!strcmp(cmd, "UP"))
 		{
 			MenuManager::up();
@@ -52,8 +68,7 @@ void debugHandler()
 		{
 			LOG("Unknown command: '%s'", cmd);
 		}
-		
-	}
+		}
 }
 
 void task1Handler(void *data)
@@ -63,6 +78,7 @@ void task1Handler(void *data)
 	while (true)
 	{
 		MenuManager::loop();
+		ClockManager::loop();
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
