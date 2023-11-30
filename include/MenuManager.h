@@ -4,9 +4,8 @@
 #include <Arduino.h>
 #include "../include/Log.h"
 #include "../include/DisplayController.h"
-#include "../include/MenuItem.h"
+#include "../include/MenuItemList.h"
 
-#define MENU_ITEM_LIST_SIZE             10
 #define MENU_FONT                       FSB18 // Serif Bold 18pt
 #define MENU_HEADER_COLOR               0x3C91
 #define MENU_HIGHTLIGHT_COLOR           0x2124
@@ -17,12 +16,11 @@
 class MenuManager
 {
 private:
+    static MenuItemList *mMenuItemList;
     static bool mIsInitialized;
     static bool mIsVisible;
     static bool mNeedsRedraw;
     static bool mIsFirstTime;
-    static MenuItem *mMenuItemList[MENU_ITEM_LIST_SIZE];
-    static int mMenuItemCount;
     static int mMenuItemNameMaxLength;
     static int mCurrentIndex;
     static bool mEditPanelVisible;
@@ -43,7 +41,6 @@ private:
     static void showHeader(const char* text);
     static void showMenuList(bool firstDraw);
     static void showEditPanel(bool isFirstTime);
-    static void addMenuItem(MenuItem *menuItem);
     static void createMenuList();
     static void addSpaceToEnd(String& string, int length);
 };
