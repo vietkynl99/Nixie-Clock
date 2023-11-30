@@ -34,8 +34,9 @@
 class DisplayManager
 {
 private:
-    static bool mIsInitialized;
     static TFT_eSPI *tft;
+    static bool mIsInitialized;
+    static bool mDrew;
 
 public:
     static void init();

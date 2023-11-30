@@ -4,8 +4,9 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-bool DisplayManager::mIsInitialized = false;
 TFT_eSPI *DisplayManager::tft = new TFT_eSPI();
+bool DisplayManager::mIsInitialized = false;
+bool DisplayManager::mDrew = true;
 
 static constexpr const char *const TAG = "DISPLAY";
 
@@ -40,8 +41,12 @@ void DisplayManager::loop()
 
 void DisplayManager::clear()
 {
-    LOG("clear");
-    tft->fillScreen(TFT_BLACK);
+    if (mDrew)
+    {
+        mDrew = false;
+        LOG("clear");
+        tft->fillScreen(TFT_BLACK);
+    }
 }
 
 void DisplayManager::setFont(const GFXfont *font)
@@ -71,11 +76,13 @@ void DisplayManager::setTextDatum(uint8_t datum)
 
 void DisplayManager::drawString(const char *string, int32_t x, int32_t y)
 {
+    mDrew = true;
     tft->drawString(string, x, y);
 }
 
 void DisplayManager::drawString(const String &string, int32_t x, int32_t y)
 {
+    mDrew = true;
     tft->drawString(string, x, y);
 }
 
@@ -85,6 +92,7 @@ void DisplayManager::setHeader(const char *text, uint16_t color)
     uint32_t x = TFT_WIDTH / 2;
     uint32_t y = height / 2;
 
+    mDrew = true;
     tft->fillRect(0, 0, TFT_WIDTH, height, color);
     tft->setTextDatum(MC_DATUM);
     tft->drawString(text, x, y, GFXFF);
@@ -99,60 +107,25 @@ int16_t DisplayManager::getFontHeight()
 
 void DisplayManager::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
 {
+    mDrew = true;
     tft->fillRect(x, y, w, h, color);
 }
 
 void DisplayManager::print(const char *text)
 {
+    mDrew = true;
     tft->print(text);
 }
 
 void DisplayManager::println(const char *text)
 {
+    mDrew = true;
     tft->println(text);
-}
-
-void DisplayManager::showDigit(int digit)
-{
-    switch (digit)
-    {
-    case 0:
-        drawArrayJpegInCenter(image_digit_0, sizeof(image_digit_0));
-        break;
-    case 1:
-        drawArrayJpegInCenter(image_digit_1, sizeof(image_digit_1));
-        break;
-    case 2:
-        drawArrayJpegInCenter(image_digit_2, sizeof(image_digit_2));
-        break;
-    case 3:
-        drawArrayJpegInCenter(image_digit_3, sizeof(image_digit_3));
-        break;
-    case 4:
-        drawArrayJpegInCenter(image_digit_4, sizeof(image_digit_4));
-        break;
-    case 5:
-        drawArrayJpegInCenter(image_digit_5, sizeof(image_digit_5));
-        break;
-    case 6:
-        drawArrayJpegInCenter(image_digit_6, sizeof(image_digit_6));
-        break;
-    case 7:
-        drawArrayJpegInCenter(image_digit_7, sizeof(image_digit_7));
-        break;
-    case 8:
-        drawArrayJpegInCenter(image_digit_8, sizeof(image_digit_8));
-        break;
-    case 9:
-        drawArrayJpegInCenter(image_digit_9, sizeof(image_digit_9));
-        break;
-    default:
-        break;
-    }
 }
 
 void DisplayManager::drawDatumMarker(int x, int y, uint16_t color)
 {
+    mDrew = true;
     tft->drawLine(x - 5, y, x + 5, y, color);
     tft->drawLine(x, y - 5, x, y + 5, color);
 }
@@ -162,6 +135,7 @@ void DisplayManager::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_siz
     int x = xpos;
     int y = ypos;
 
+    mDrew = true;
     JpegDec.decodeArray(arrayname, array_size);
     renderJPEG(x, y);
 }
@@ -171,6 +145,7 @@ void DisplayManager::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t a
     int x = 0;
     int y = 0;
 
+    mDrew = true;
     JpegDec.decodeArray(arrayname, array_size);
 
     if (JpegDec.width < TFT_WIDTH)
@@ -263,6 +238,7 @@ void DisplayManager::renderJPEG(int xpos, int ypos)
 
 void DisplayManager::showTime(uint32_t msTime)
 {
+    mDrew = true;
     tft->setCursor(0, 0);
     tft->setTextFont(1);
     tft->setTextSize(2);
@@ -271,4 +247,43 @@ void DisplayManager::showTime(uint32_t msTime)
     tft->println(F(" ms "));
 
     LOG("Render time: %ld ms", msTime);
+}
+
+void DisplayManager::showDigit(int digit)
+{
+    switch (digit)
+    {
+    case 0:
+        drawArrayJpegInCenter(image_digit_0, sizeof(image_digit_0));
+        break;
+    case 1:
+        drawArrayJpegInCenter(image_digit_1, sizeof(image_digit_1));
+        break;
+    case 2:
+        drawArrayJpegInCenter(image_digit_2, sizeof(image_digit_2));
+        break;
+    case 3:
+        drawArrayJpegInCenter(image_digit_3, sizeof(image_digit_3));
+        break;
+    case 4:
+        drawArrayJpegInCenter(image_digit_4, sizeof(image_digit_4));
+        break;
+    case 5:
+        drawArrayJpegInCenter(image_digit_5, sizeof(image_digit_5));
+        break;
+    case 6:
+        drawArrayJpegInCenter(image_digit_6, sizeof(image_digit_6));
+        break;
+    case 7:
+        drawArrayJpegInCenter(image_digit_7, sizeof(image_digit_7));
+        break;
+    case 8:
+        drawArrayJpegInCenter(image_digit_8, sizeof(image_digit_8));
+        break;
+    case 9:
+        drawArrayJpegInCenter(image_digit_9, sizeof(image_digit_9));
+        break;
+    default:
+        break;
+    }
 }
