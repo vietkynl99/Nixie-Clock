@@ -79,6 +79,10 @@ void MenuManager::hide()
 
 void MenuManager::up()
 {
+    if (!mIsVisible)
+    {
+        return;
+    }
     LOG("Up");
     if (getEditPanelVisible())
     {
@@ -96,6 +100,10 @@ void MenuManager::up()
 
 void MenuManager::down()
 {
+    if (!mIsVisible)
+    {
+        return;
+    }
     LOG("Down");
     if (getEditPanelVisible())
     {
@@ -113,11 +121,19 @@ void MenuManager::down()
 
 void MenuManager::enter()
 {
+    if (!mIsVisible)
+    {
+        return;
+    }
     setEditPanelVisible(!getEditPanelVisible());
 }
 
 void MenuManager::back()
 {
+    if (!mIsVisible)
+    {
+        return;
+    }
     setEditPanelVisible(false);
 }
 
@@ -262,15 +278,15 @@ void MenuManager::createMenuList()
     }
     mMenuItemCount = 0;
     mMenuItemNameMaxLength = 0;
-     addMenuItem(new MenuItem("Setting 1", MENU_ITEM_TYPE_BOOL, false));
-     addMenuItem(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
-     addMenuItem(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
-     addMenuItem(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));
-     addMenuItem(new MenuItem("Setting 5", MENU_ITEM_TYPE_INT, 0, 0, 10));
-     addMenuItem(new MenuItem("Setting 6", MENU_ITEM_TYPE_INT, 0, 0, 10));
-     addMenuItem(new MenuItem("Setting 7", MENU_ITEM_TYPE_INT, 0, 0, 10));
-     addMenuItem(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
-     addMenuItem(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 1", MENU_ITEM_TYPE_BOOL, false));
+    addMenuItem(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
+    addMenuItem(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 5", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 6", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 7", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
     addMenuItem(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
     addMenuItem(new MenuItem("Setting 11", MENU_ITEM_TYPE_INT, 0, 0, 10));
     addMenuItem(new MenuItem("Setting 12", MENU_ITEM_TYPE_INT, 0, 0, 10));
