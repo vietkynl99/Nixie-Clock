@@ -1,16 +1,16 @@
 #include "../include/clockDigit.h"
-#include "../include/DisplayManager.h"
+#include "../include/DisplayController.h"
 #include "../include/Log.h"
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-TFT_eSPI *DisplayManager::tft = new TFT_eSPI();
-bool DisplayManager::mIsInitialized = false;
-bool DisplayManager::mDrew = true;
+TFT_eSPI *DisplayController::tft = new TFT_eSPI();
+bool DisplayController::mIsInitialized = false;
+bool DisplayController::mDrew = true;
 
 static constexpr const char *const TAG = "DISPLAY";
 
-void DisplayManager::init()
+void DisplayController::init()
 {
     if (!mIsInitialized)
     {
@@ -22,7 +22,7 @@ void DisplayManager::init()
     }
 }
 
-void DisplayManager::loop()
+void DisplayController::loop()
 {
     static uint32_t timeTick = 0;
     static int digit = 0;
@@ -39,7 +39,7 @@ void DisplayManager::loop()
     }
 }
 
-void DisplayManager::clear()
+void DisplayController::clear()
 {
     if (mDrew)
     {
@@ -49,44 +49,44 @@ void DisplayManager::clear()
     }
 }
 
-void DisplayManager::setFont(const GFXfont *font)
+void DisplayController::setFont(const GFXfont *font)
 {
     tft->setFreeFont(font);
 }
 
-void DisplayManager::setTextColor(uint16_t color)
+void DisplayController::setTextColor(uint16_t color)
 {
     tft->setTextColor(color);
 }
 
-void DisplayManager::setTextColor(uint16_t fgcolor, uint16_t bgcolor, bool bgfill)
+void DisplayController::setTextColor(uint16_t fgcolor, uint16_t bgcolor, bool bgfill)
 {
     tft->setTextColor(fgcolor, bgcolor, bgfill);
 }
 
-void DisplayManager::setCursor(int16_t x, int16_t y)
+void DisplayController::setCursor(int16_t x, int16_t y)
 {
     tft->setCursor(x, y);
 }
 
-void DisplayManager::setTextDatum(uint8_t datum)
+void DisplayController::setTextDatum(uint8_t datum)
 {
     tft->setTextDatum(datum);
 }
 
-void DisplayManager::drawString(const char *string, int32_t x, int32_t y)
+void DisplayController::drawString(const char *string, int32_t x, int32_t y)
 {
     mDrew = true;
     tft->drawString(string, x, y);
 }
 
-void DisplayManager::drawString(const String &string, int32_t x, int32_t y)
+void DisplayController::drawString(const String &string, int32_t x, int32_t y)
 {
     mDrew = true;
     tft->drawString(string, x, y);
 }
 
-void DisplayManager::setHeader(const char *text, uint16_t color)
+void DisplayController::setHeader(const char *text, uint16_t color)
 {
     uint32_t height = tft->fontHeight(GFXFF);
     uint32_t x = TFT_WIDTH / 2;
@@ -99,38 +99,38 @@ void DisplayManager::setHeader(const char *text, uint16_t color)
     // drawDatumMarker(x, y);
 }
 
-int16_t DisplayManager::getFontHeight()
+int16_t DisplayController::getFontHeight()
 {
     // return tft->fontHeight(GFXFF);
     return tft->fontHeight();
 }
 
-void DisplayManager::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
+void DisplayController::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
 {
     mDrew = true;
     tft->fillRect(x, y, w, h, color);
 }
 
-void DisplayManager::print(const char *text)
+void DisplayController::print(const char *text)
 {
     mDrew = true;
     tft->print(text);
 }
 
-void DisplayManager::println(const char *text)
+void DisplayController::println(const char *text)
 {
     mDrew = true;
     tft->println(text);
 }
 
-void DisplayManager::drawDatumMarker(int x, int y, uint16_t color)
+void DisplayController::drawDatumMarker(int x, int y, uint16_t color)
 {
     mDrew = true;
     tft->drawLine(x - 5, y, x + 5, y, color);
     tft->drawLine(x, y - 5, x, y + 5, color);
 }
 
-void DisplayManager::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)
+void DisplayController::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)
 {
     int x = xpos;
     int y = ypos;
@@ -140,7 +140,7 @@ void DisplayManager::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_siz
     renderJPEG(x, y);
 }
 
-void DisplayManager::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t array_size)
+void DisplayController::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t array_size)
 {
     int x = 0;
     int y = 0;
@@ -159,7 +159,7 @@ void DisplayManager::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t a
     renderJPEG(x, y);
 }
 
-void DisplayManager::renderJPEG(int xpos, int ypos)
+void DisplayController::renderJPEG(int xpos, int ypos)
 {
     // retrieve infomration about the image
     uint16_t *pImg;
@@ -236,7 +236,7 @@ void DisplayManager::renderJPEG(int xpos, int ypos)
 #endif
 }
 
-void DisplayManager::showTime(uint32_t msTime)
+void DisplayController::showTime(uint32_t msTime)
 {
     mDrew = true;
     tft->setCursor(0, 0);
@@ -249,7 +249,7 @@ void DisplayManager::showTime(uint32_t msTime)
     LOG("Render time: %ld ms", msTime);
 }
 
-void DisplayManager::showDigit(int digit)
+void DisplayController::showDigit(int digit)
 {
     switch (digit)
     {

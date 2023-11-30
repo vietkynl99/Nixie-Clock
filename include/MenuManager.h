@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "../include/Log.h"
-#include "../include/DisplayManager.h"
+#include "../include/DisplayController.h"
 #include "../include/MenuItem.h"
 
 #define MENU_ITEM_LIST_SIZE             10
@@ -24,7 +24,7 @@ private:
     static MenuItem *mMenuItemList[MENU_ITEM_LIST_SIZE];
     static int mMenuItemCount;
     static int mMenuItemNameMaxLength;
-    static int mUserSelection;
+    static int mCurrentIndex;
     static bool mEditPanelVisible;
 
 public:

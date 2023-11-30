@@ -1,5 +1,5 @@
-#ifndef _DISPLAY_MANAGER_H_
-#define _DISPLAY_MANAGER_H_
+#ifndef _DISPLAY_CONTROLLER_H_
+#define _DISPLAY_CONTROLLER_H_
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -31,7 +31,7 @@
 
 #define SHOW_RENDER_TIME
 
-class DisplayManager
+class DisplayController
 {
 private:
     static TFT_eSPI *tft;

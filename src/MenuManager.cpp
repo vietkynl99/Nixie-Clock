@@ -7,7 +7,7 @@ bool MenuManager::mIsFirstTime = true;
 MenuItem *MenuManager::mMenuItemList[MENU_ITEM_LIST_SIZE];
 int MenuManager::mMenuItemCount = 0;
 int MenuManager::mMenuItemNameMaxLength = 0;
-int MenuManager::mUserSelection = 0;
+int MenuManager::mCurrentIndex = 0;
 bool MenuManager::mEditPanelVisible = false;
 
 static constexpr const char *const TAG = "MENU";
@@ -17,7 +17,7 @@ void MenuManager::init()
     if (!mIsInitialized)
     {
         mIsInitialized = true;
-        DisplayManager::init();
+        DisplayController::init();
         createMenuList();
     }
 }
@@ -46,7 +46,7 @@ void MenuManager::loop()
         }
         else
         {
-            DisplayManager::clear();
+            DisplayController::clear();
         }
         mNeedsRedraw = false;
         mIsFirstTime = false;
@@ -86,14 +86,14 @@ void MenuManager::up()
     LOG("Up");
     if (getEditPanelVisible())
     {
-        if (mMenuItemList[mUserSelection]->inc())
+        if (mMenuItemList[mCurrentIndex]->inc())
         {
             mNeedsRedraw = true;
         }
     }
-    else if (mUserSelection > 0)
+    else if (mCurrentIndex > 0)
     {
-        mUserSelection--;
+        mCurrentIndex--;
         mNeedsRedraw = true;
     }
 }
@@ -107,14 +107,14 @@ void MenuManager::down()
     LOG("Down");
     if (getEditPanelVisible())
     {
-        if (mMenuItemList[mUserSelection]->dec())
+        if (mMenuItemList[mCurrentIndex]->dec())
         {
             mNeedsRedraw = true;
         }
     }
-    else if (mUserSelection < mMenuItemCount - 1)
+    else if (mCurrentIndex < mMenuItemCount - 1)
     {
-        mUserSelection++;
+        mCurrentIndex++;
         mNeedsRedraw = true;
     }
 }
@@ -155,44 +155,44 @@ bool MenuManager::getEditPanelVisible()
 void MenuManager::showHeader(const char *text)
 {
     LOG("showHeader %s", text);
-    DisplayManager::setFont(MENU_FONT);
-    DisplayManager::setTextColor(TFT_WHITE);
-    DisplayManager::setHeader(text, MENU_HEADER_COLOR);
+    DisplayController::setFont(MENU_FONT);
+    DisplayController::setTextColor(TFT_WHITE);
+    DisplayController::setHeader(text, MENU_HEADER_COLOR);
 }
 
 void MenuManager::showMenuList(bool isFirstTime)
 {
-    static int prevUserSelection = -1;
+    static int mPrevIndex = -1;
     static int startIndex = 0;
 
     LOG("showMenuList %d", isFirstTime);
 
     if (isFirstTime)
     {
-        DisplayManager::clear();
+        DisplayController::clear();
         showHeader("MENU");
     }
 
-    uint16_t headerHeight = DisplayManager::getFontHeight();
-    uint16_t itemHeight = DisplayManager::getFontHeight() * 1.3;
+    uint16_t headerHeight = DisplayController::getFontHeight();
+    uint16_t itemHeight = DisplayController::getFontHeight() * 1.3;
     uint16_t ypos = headerHeight;
     int maxDrawableItems = round((TFT_HEIGHT - headerHeight) * 1.0 / itemHeight);
 
-    DisplayManager::setTextDatum(CL_DATUM);
+    DisplayController::setTextDatum(CL_DATUM);
 
     if (isFirstTime)
     {
         startIndex = 0;
-        prevUserSelection = -1;
-        mUserSelection = 0;
+        mPrevIndex = -1;
+        mCurrentIndex = 0;
     }
     else
     {
-        if (mUserSelection > prevUserSelection && startIndex + maxDrawableItems <= mMenuItemCount && mUserSelection > startIndex + maxDrawableItems - 2)
+        if (mCurrentIndex > mPrevIndex && startIndex + maxDrawableItems <= mMenuItemCount && mCurrentIndex > startIndex + maxDrawableItems - 2)
         {
             startIndex++;
         }
-        else if (mUserSelection < prevUserSelection && startIndex > 0 && mUserSelection < startIndex + 1)
+        else if (mCurrentIndex < mPrevIndex && startIndex > 0 && mCurrentIndex < startIndex + 1)
         {
             startIndex--;
         }
@@ -200,35 +200,35 @@ void MenuManager::showMenuList(bool isFirstTime)
 
     for (int i = startIndex; i < mMenuItemCount && i < startIndex + maxDrawableItems; i++)
     {
-        if (mUserSelection != prevUserSelection)
+        if (mCurrentIndex != mPrevIndex)
         {
-            if (prevUserSelection >= 0 && i == prevUserSelection)
+            if (mPrevIndex >= 0 && i == mPrevIndex)
             {
-                DisplayManager::fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_BACKGROUND_COLOR);
+                DisplayController::fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_BACKGROUND_COLOR);
             }
-            else if (mUserSelection >= 0 && i == mUserSelection)
+            else if (mCurrentIndex >= 0 && i == mCurrentIndex)
             {
-                DisplayManager::fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_HIGHTLIGHT_COLOR);
+                DisplayController::fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_HIGHTLIGHT_COLOR);
             }
         }
-        if (i == mUserSelection)
+        if (i == mCurrentIndex)
         {
-            DisplayManager::setTextColor(TFT_WHITE);
+            DisplayController::setTextColor(TFT_WHITE);
         }
         else
         {
-            DisplayManager::setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+            DisplayController::setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
         }
         String itemName = mMenuItemList[i]->getName();
         addSpaceToEnd(itemName, mMenuItemNameMaxLength + 4);
-        DisplayManager::drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
+        DisplayController::drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
         ypos += itemHeight;
     }
     if (startIndex + maxDrawableItems > mMenuItemCount)
     {
-        DisplayManager::fillRect(0, ypos, TFT_WIDTH, TFT_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
+        DisplayController::fillRect(0, ypos, TFT_WIDTH, TFT_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
     }
-    prevUserSelection = mUserSelection;
+    mPrevIndex = mCurrentIndex;
 }
 
 void MenuManager::showEditPanel(bool isFirstTime)
@@ -236,17 +236,17 @@ void MenuManager::showEditPanel(bool isFirstTime)
     LOG("showEditPanel %d", isFirstTime);
     if (isFirstTime)
     {
-        DisplayManager::clear();
-        showHeader(mMenuItemList[mUserSelection]->getName().c_str());
+        DisplayController::clear();
+        showHeader(mMenuItemList[mCurrentIndex]->getName().c_str());
     }
 
-    uint16_t headerHeight = DisplayManager::getFontHeight();
-    DisplayManager::setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
-    DisplayManager::setTextDatum(CC_DATUM);
-    String before = mMenuItemList[mUserSelection]->isMinimum() ? "     " : "  <  ";
-    String after = mMenuItemList[mUserSelection]->isMaximum() ? "     " : "  >  ";
-    String str = before + mMenuItemList[mUserSelection]->getValueAsString() + after;
-    DisplayManager::drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
+    uint16_t headerHeight = DisplayController::getFontHeight();
+    DisplayController::setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+    DisplayController::setTextDatum(CC_DATUM);
+    String before = mMenuItemList[mCurrentIndex]->isMinimum() ? "     " : "  <  ";
+    String after = mMenuItemList[mCurrentIndex]->isMaximum() ? "     " : "  >  ";
+    String str = before + mMenuItemList[mCurrentIndex]->getValueAsString() + after;
+    DisplayController::drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
 }
 
 void MenuManager::addMenuItem(MenuItem *menuItem)
