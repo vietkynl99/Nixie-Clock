@@ -49,80 +49,6 @@ void DisplayController::clear()
     }
 }
 
-void DisplayController::setFont(const GFXfont *font)
-{
-    tft->setFreeFont(font);
-}
-
-void DisplayController::setTextColor(uint16_t color)
-{
-    tft->setTextColor(color);
-}
-
-void DisplayController::setTextColor(uint16_t fgcolor, uint16_t bgcolor, bool bgfill)
-{
-    tft->setTextColor(fgcolor, bgcolor, bgfill);
-}
-
-void DisplayController::setCursor(int16_t x, int16_t y)
-{
-    tft->setCursor(x, y);
-}
-
-void DisplayController::setTextDatum(uint8_t datum)
-{
-    tft->setTextDatum(datum);
-}
-
-void DisplayController::drawString(const char *string, int32_t x, int32_t y)
-{
-    mDrew = true;
-    tft->drawString(string, x, y);
-}
-
-void DisplayController::drawString(const String &string, int32_t x, int32_t y)
-{
-    mDrew = true;
-    tft->drawString(string, x, y);
-}
-
-void DisplayController::setHeader(const char *text, uint16_t color)
-{
-    uint32_t height = tft->fontHeight(GFXFF);
-    uint32_t x = TFT_WIDTH / 2;
-    uint32_t y = height / 2;
-
-    mDrew = true;
-    tft->fillRect(0, 0, TFT_WIDTH, height, color);
-    tft->setTextDatum(MC_DATUM);
-    tft->drawString(text, x, y, GFXFF);
-    // drawDatumMarker(x, y);
-}
-
-int16_t DisplayController::getFontHeight()
-{
-    // return tft->fontHeight(GFXFF);
-    return tft->fontHeight();
-}
-
-void DisplayController::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
-{
-    mDrew = true;
-    tft->fillRect(x, y, w, h, color);
-}
-
-void DisplayController::print(const char *text)
-{
-    mDrew = true;
-    tft->print(text);
-}
-
-void DisplayController::println(const char *text)
-{
-    mDrew = true;
-    tft->println(text);
-}
-
 void DisplayController::drawDatumMarker(int x, int y, uint16_t color)
 {
     mDrew = true;
@@ -286,4 +212,122 @@ void DisplayController::showDigit(int digit)
     default:
         break;
     }
+}
+
+void DisplayController::showHeader(const char *text)
+{
+    mDrew = true;
+    tft->setFreeFont(MENU_FONT);
+    tft->setTextColor(TFT_WHITE);
+
+    uint32_t height = tft->fontHeight();
+    uint32_t x = TFT_WIDTH / 2;
+    uint32_t y = height / 2;
+
+    tft->fillRect(0, 0, TFT_WIDTH, height, MENU_HEADER_COLOR);
+    tft->setTextDatum(MC_DATUM);
+    tft->drawString(text, x, y);
+}
+
+void DisplayController::showMenuList(MenuItemList *itemList, int currentIndex, bool isFirstTime)
+{
+    static int mPrevIndex = -1;
+    static int startIndex = 0;
+
+    LOG("showMenuList %d", isFirstTime);
+    if (!itemList)
+    {
+        LOG("itemList is null");
+        return;
+    }
+
+    mDrew = true;
+    if (isFirstTime)
+    {
+        clear();
+        // tft->setFreeFont(MENU_FONT);
+        showHeader("MENU");
+    }
+
+    uint16_t headerHeight = tft->fontHeight();
+    uint16_t itemHeight = tft->fontHeight() * 1.3;
+    uint16_t ypos = headerHeight;
+    int maxDrawableItems = round((TFT_HEIGHT - headerHeight) * 1.0 / itemHeight);
+
+    tft->setTextDatum(CL_DATUM);
+
+    if (isFirstTime)
+    {
+        startIndex = 0;
+        mPrevIndex = -1;
+        currentIndex = 0;
+    }
+    else
+    {
+        if (currentIndex > mPrevIndex && startIndex + maxDrawableItems <= itemList->length() && currentIndex > startIndex + maxDrawableItems - 2)
+        {
+            startIndex++;
+        }
+        else if (currentIndex < mPrevIndex && startIndex > 0 && currentIndex < startIndex + 1)
+        {
+            startIndex--;
+        }
+    }
+
+    for (int i = startIndex; i < itemList->length() && i < startIndex + maxDrawableItems; i++)
+    {
+        if (currentIndex != mPrevIndex)
+        {
+            if (mPrevIndex >= 0 && i == mPrevIndex)
+            {
+                tft->fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_BACKGROUND_COLOR);
+            }
+            else if (currentIndex >= 0 && i == currentIndex)
+            {
+                tft->fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_HIGHTLIGHT_COLOR);
+            }
+        }
+        if (i == currentIndex)
+        {
+            tft->setTextColor(TFT_WHITE);
+        }
+        else
+        {
+            tft->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+        }
+        String itemName = itemList->get(i)->getName() + "    ";
+        tft->drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
+        ypos += itemHeight;
+    }
+    if (startIndex + maxDrawableItems > itemList->length())
+    {
+        tft->fillRect(0, ypos, TFT_WIDTH, TFT_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
+    }
+    mPrevIndex = currentIndex;
+}
+
+void DisplayController::showEditPanel(MenuItem *item, bool isFirstTime)
+{
+    LOG("showEditPanel %d", isFirstTime);
+    if (!item)
+    {
+        LOG("Item is null");
+        return;
+    }
+
+    mDrew = true;
+    if (isFirstTime)
+    {
+        clear();
+        // tft->setFreeFont(MENU_FONT);
+        showHeader(item->getName().c_str());
+    }
+
+    uint16_t headerHeight = tft->fontHeight();
+    tft->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+    tft->setTextDatum(CC_DATUM);
+    String before = item->isMinimum() ? "     " : "  <  ";
+    String after = item->isMaximum() ? "     " : "  >  ";
+    String str = before + item->getValueAsString() + after;
+    tft->drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
 }

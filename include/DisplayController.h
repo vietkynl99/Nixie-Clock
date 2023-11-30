@@ -6,6 +6,7 @@
 #include <TFT_eSPI.h>
 #include <JPEGDecoder.h>
 #include "FreeFonts.h"
+#include "MenuItemList.h"
 
 /*
   #########################################################################
@@ -31,6 +32,13 @@
 
 #define SHOW_RENDER_TIME
 
+#define MENU_FONT                       FSB18 // Serif Bold 18pt
+#define MENU_HEADER_COLOR               0x3C91
+#define MENU_HIGHTLIGHT_COLOR           0x2124
+#define MENU_BACKGROUND_COLOR           TFT_BLACK
+#define MENU_HIGHTLIGHT_TOP_MARGIN      10
+#define MENU_ITEM_LEFT_MARGIN           12
+
 class DisplayController
 {
 private:
@@ -42,19 +50,11 @@ public:
     static void init();
     static void loop();
     static void clear();
-    static void setFont(const GFXfont *font);
-    static void setTextColor(uint16_t color);
-    static void setTextColor(uint16_t fgcolor, uint16_t bgcolor, bool bgfill = false);
-    static void setCursor(int16_t x, int16_t y);
-    static void setTextDatum(uint8_t datum);
-    static void drawString(const char *string, int32_t x, int32_t y);
-    static void drawString(const String& string, int32_t x, int32_t y);
-    static void setHeader(const char *text, uint16_t color);
-    static int16_t getFontHeight();
-    static void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
-    static void print(const char *text);
-    static void println(const char *text);
+
     static void showDigit(int digit);
+    static void showHeader(const char *text);
+    static void showMenuList(MenuItemList *itemList, int currentIndex, bool isFirstTime);
+    static void showEditPanel(MenuItem *item, bool isFirstTime);
 
 private:
     static void drawDatumMarker(int x, int y, uint16_t color = TFT_GREEN); // Draw a + mark centred on x,y
