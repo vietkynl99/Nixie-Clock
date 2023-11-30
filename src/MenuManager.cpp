@@ -2,11 +2,13 @@
 
 bool MenuManager::mIsInitialized = false;
 bool MenuManager::mIsVisible = false;
-bool MenuManager::mNeedsRedraw = false;
+bool MenuManager::mNeedsRedraw = true;
+bool MenuManager::mIsFirstTime = true;
 MenuItem *MenuManager::mMenuItemList[MENU_ITEM_LIST_SIZE];
 int MenuManager::mMenuItemCount = 0;
 int MenuManager::mMenuItemNameMaxLength = 0;
 int MenuManager::mUserSelection = 0;
+bool MenuManager::mEditPanelVisible = false;
 
 static constexpr const char *const TAG = "MENU";
 
@@ -23,56 +25,69 @@ void MenuManager::init()
 void MenuManager::loop()
 {
     static uint32_t timeTick = 0;
-    static bool mPrevIsVisible = false;
     static uint32_t measureTimeTick = 0;
 
     if (mNeedsRedraw && xTaskGetTickCount() > timeTick)
     {
         timeTick = xTaskGetTickCount() + 30 / portTICK_PERIOD_MS;
-        mNeedsRedraw = false;
-        if (mPrevIsVisible != mIsVisible)
+        if (mIsVisible)
         {
-            mPrevIsVisible = mIsVisible;
-            if (mIsVisible)
+            measureTimeTick = xTaskGetTickCount();
+            if (!getEditPanelVisible())
             {
-                measureTimeTick = xTaskGetTickCount();
-                showHeader();
-                showMenuList(true);
-                measureTimeTick = xTaskGetTickCount() - measureTimeTick;
-                LOG("Menu first draw time: %d ms", measureTimeTick / portTICK_PERIOD_MS);
+                showMenuList(mIsFirstTime);
             }
             else
             {
-                DisplayManager::clear();
+                showEditPanel(mIsFirstTime);
             }
-        }
-        else if (mIsVisible)
-        {
-            measureTimeTick = xTaskGetTickCount();
-            showMenuList(false);
             measureTimeTick = xTaskGetTickCount() - measureTimeTick;
-            LOG("Menu draw time: %d ms", measureTimeTick / portTICK_PERIOD_MS);
+            LOG("Draw time: %dms", measureTimeTick / portTICK_PERIOD_MS);
         }
+        else
+        {
+            DisplayManager::clear();
+        }
+        mNeedsRedraw = false;
+        mIsFirstTime = false;
     }
 }
 
 void MenuManager::show()
 {
     LOG("Show");
-    mIsVisible = true;
-    mNeedsRedraw = true;
+    if (!mIsVisible)
+    {
+        mIsVisible = true;
+        mNeedsRedraw = true;
+        mIsFirstTime = true;
+        setEditPanelVisible(false);
+    }
 }
 
 void MenuManager::hide()
 {
     LOG("Hide");
-    mIsVisible = false;
-    mNeedsRedraw = true;
+    if (mIsVisible)
+    {
+        mIsVisible = false;
+        mNeedsRedraw = true;
+        mIsFirstTime = true;
+        setEditPanelVisible(false);
+    }
 }
 
 void MenuManager::up()
 {
-    if (mUserSelection > 0)
+    LOG("Up");
+    if (getEditPanelVisible())
+    {
+        if (mMenuItemList[mUserSelection]->inc())
+        {
+            mNeedsRedraw = true;
+        }
+    }
+    else if (mUserSelection > 0)
     {
         mUserSelection--;
         mNeedsRedraw = true;
@@ -81,24 +96,66 @@ void MenuManager::up()
 
 void MenuManager::down()
 {
-    if (mUserSelection < mMenuItemCount - 1)
+    LOG("Down");
+    if (getEditPanelVisible())
+    {
+        if (mMenuItemList[mUserSelection]->dec())
+        {
+            mNeedsRedraw = true;
+        }
+    }
+    else if (mUserSelection < mMenuItemCount - 1)
     {
         mUserSelection++;
         mNeedsRedraw = true;
     }
 }
 
-void MenuManager::showHeader()
+void MenuManager::enter()
 {
-    DisplayManager::setFont(MENU_FONT);
-    DisplayManager::setTextColor(TFT_WHITE);
-    DisplayManager::setHeader("Menu", MENU_HEADER_COLOR);
+    setEditPanelVisible(!getEditPanelVisible());
 }
 
-void MenuManager::showMenuList(bool firstDraw)
+void MenuManager::back()
+{
+    setEditPanelVisible(false);
+}
+
+void MenuManager::setEditPanelVisible(bool visible)
+{
+    if (mEditPanelVisible != visible)
+    {
+        mEditPanelVisible = visible;
+        mNeedsRedraw = true;
+        mIsFirstTime = true;
+    }
+}
+
+bool MenuManager::getEditPanelVisible()
+{
+    return mEditPanelVisible;
+}
+
+void MenuManager::showHeader(const char *text)
+{
+    LOG("showHeader %s", text);
+    DisplayManager::setFont(MENU_FONT);
+    DisplayManager::setTextColor(TFT_WHITE);
+    DisplayManager::setHeader(text, MENU_HEADER_COLOR);
+}
+
+void MenuManager::showMenuList(bool isFirstTime)
 {
     static int prevUserSelection = -1;
     static int startIndex = 0;
+
+    LOG("showMenuList %d", isFirstTime);
+
+    if (isFirstTime)
+    {
+        DisplayManager::clear();
+        showHeader("MENU");
+    }
 
     uint16_t headerHeight = DisplayManager::getFontHeight();
     uint16_t itemHeight = DisplayManager::getFontHeight() * 1.3;
@@ -107,9 +164,11 @@ void MenuManager::showMenuList(bool firstDraw)
 
     DisplayManager::setTextDatum(CL_DATUM);
 
-    if (firstDraw)
+    if (isFirstTime)
     {
         startIndex = 0;
+        prevUserSelection = -1;
+        mUserSelection = 0;
     }
     else
     {
@@ -156,6 +215,22 @@ void MenuManager::showMenuList(bool firstDraw)
     prevUserSelection = mUserSelection;
 }
 
+void MenuManager::showEditPanel(bool isFirstTime)
+{
+    LOG("showEditPanel %d", isFirstTime);
+    if (isFirstTime)
+    {
+        DisplayManager::clear();
+        showHeader(mMenuItemList[mUserSelection]->getName().c_str());
+    }
+
+    uint16_t headerHeight = DisplayManager::getFontHeight();
+    DisplayManager::setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+    DisplayManager::setTextDatum(CC_DATUM);
+    String str = "  <  " + String(mMenuItemList[mUserSelection]->getValue()) + "  >  ";
+    DisplayManager::drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
+}
+
 void MenuManager::addMenuItem(MenuItem *menuItem)
 {
     if (mMenuItemCount < MENU_ITEM_LIST_SIZE)
@@ -185,18 +260,18 @@ void MenuManager::createMenuList()
     }
     mMenuItemCount = 0;
     mMenuItemNameMaxLength = 0;
-    addMenuItem(new MenuItem("Setting 1", 0));
-    addMenuItem(new MenuItem("Setting 2", 0));
-    addMenuItem(new MenuItem("Setting 3", 0));
-    addMenuItem(new MenuItem("Setting 4", 0));
-    addMenuItem(new MenuItem("Setting 5", 0));
-    addMenuItem(new MenuItem("Setting 6", 0));
-    addMenuItem(new MenuItem("Setting 7", 0));
-    addMenuItem(new MenuItem("Setting 8", 0));
-    addMenuItem(new MenuItem("Setting 9", 0));
-    addMenuItem(new MenuItem("Setting 10", 0));
-    addMenuItem(new MenuItem("Setting 11", 0));
-    addMenuItem(new MenuItem("Setting 12", 0));
+    addMenuItem(new MenuItem("Setting 1", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 2", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 3", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 4", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 5", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 6", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 7", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 8", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 9", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 10", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 11", 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 12", 0, 0, 10));
 }
 
 void MenuManager::addSpaceToEnd(String &string, int length)

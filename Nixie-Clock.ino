@@ -40,6 +40,14 @@ void debugHandler()
 		{
 			MenuManager::down();
 		}
+		else if (!strcmp(cmd, "ENTER"))
+		{
+			MenuManager::enter();
+		}
+		else if (!strcmp(cmd, "BACK"))
+		{
+			MenuManager::back();
+		}
 		else
 		{
 			LOG("Unknown command: '%s'", cmd);

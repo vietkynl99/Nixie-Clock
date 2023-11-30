@@ -8,11 +8,15 @@ class MenuItem
 private:
     String mName;
     int mValue;
+    int mMinValue;
+    int mMaxValue;
 
 public:
-    MenuItem(const String& name, int value);
+    MenuItem(const String& name, int value, int minValue, int maxValue);
     String getName();
     int getValue();
+    bool inc();
+    bool dec();
 };
 
 #endif

@@ -13,6 +13,7 @@ void DisplayManager::init()
 {
     if (!mIsInitialized)
     {
+        LOG("init");
         mIsInitialized = true;
         tft->begin();
         tft->setRotation(DISPLAY_ROTATION);
@@ -39,6 +40,7 @@ void DisplayManager::loop()
 
 void DisplayManager::clear()
 {
+    LOG("clear");
     tft->fillScreen(TFT_BLACK);
 }
 

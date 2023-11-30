@@ -20,10 +20,12 @@ private:
     static bool mIsInitialized;
     static bool mIsVisible;
     static bool mNeedsRedraw;
+    static bool mIsFirstTime;
     static MenuItem *mMenuItemList[MENU_ITEM_LIST_SIZE];
     static int mMenuItemCount;
     static int mMenuItemNameMaxLength;
     static int mUserSelection;
+    static bool mEditPanelVisible;
 
 public:
     static void init();
@@ -32,10 +34,15 @@ public:
     static void hide();
     static void up();
     static void down();
+    static void enter();
+    static void back();
 
 private:
-    static void showHeader();
+    static void setEditPanelVisible(bool visible);
+    static bool getEditPanelVisible();
+    static void showHeader(const char* text);
     static void showMenuList(bool firstDraw);
+    static void showEditPanel(bool isFirstTime);
     static void addMenuItem(MenuItem *menuItem);
     static void createMenuList();
     static void addSpaceToEnd(String& string, int length);
