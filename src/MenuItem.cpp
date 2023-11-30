@@ -1,12 +1,21 @@
 #include "../include/MenuItem.h"
 
-MenuItem::MenuItem(const String &name, int value, int minValue, int maxValue)
+MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue)
 {
     mName = name;
     mValue = value;
-    mMinValue = minValue;
-    mMaxValue = maxValue;
-    if(mMaxValue < mMinValue)
+    mType = type;
+    if (mType == MENU_ITEM_TYPE_BOOL)
+    {
+        mMinValue = 0;
+        mMaxValue = 1;
+    }
+    else
+    {
+        mMinValue = minValue;
+        mMaxValue = maxValue;
+    }
+    if (mMaxValue < mMinValue)
     {
         mMaxValue = mMinValue;
     }
@@ -28,6 +37,28 @@ String MenuItem::getName()
 int MenuItem::getValue()
 {
     return mValue;
+}
+
+String MenuItem::getValueAsString()
+{
+    if (mType == MENU_ITEM_TYPE_BOOL)
+    {
+        return mValue == 0 ? "false" : "true";
+    }
+    else
+    {
+        return String(mValue);
+    }
+}
+
+bool MenuItem::isMinimum()
+{
+    return mValue == mMinValue;
+}
+
+bool MenuItem::isMaximum()
+{
+    return mValue == mMaxValue;
 }
 
 bool MenuItem::inc()

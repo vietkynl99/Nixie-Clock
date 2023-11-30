@@ -227,7 +227,9 @@ void MenuManager::showEditPanel(bool isFirstTime)
     uint16_t headerHeight = DisplayManager::getFontHeight();
     DisplayManager::setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
     DisplayManager::setTextDatum(CC_DATUM);
-    String str = "  <  " + String(mMenuItemList[mUserSelection]->getValue()) + "  >  ";
+    String before = mMenuItemList[mUserSelection]->isMinimum() ? "     " : "  <  ";
+    String after = mMenuItemList[mUserSelection]->isMaximum() ? "     " : "  >  ";
+    String str = before + mMenuItemList[mUserSelection]->getValueAsString() + after;
     DisplayManager::drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
 }
 
@@ -260,18 +262,18 @@ void MenuManager::createMenuList()
     }
     mMenuItemCount = 0;
     mMenuItemNameMaxLength = 0;
-    addMenuItem(new MenuItem("Setting 1", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 2", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 3", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 4", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 5", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 6", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 7", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 8", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 9", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 10", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 11", 0, 0, 10));
-    addMenuItem(new MenuItem("Setting 12", 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 1", MENU_ITEM_TYPE_BOOL, false));
+     addMenuItem(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
+     addMenuItem(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 5", MENU_ITEM_TYPE_INT, 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 6", MENU_ITEM_TYPE_INT, 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 7", MENU_ITEM_TYPE_INT, 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
+     addMenuItem(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 11", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    addMenuItem(new MenuItem("Setting 12", MENU_ITEM_TYPE_INT, 0, 0, 10));
 }
 
 void MenuManager::addSpaceToEnd(String &string, int length)
