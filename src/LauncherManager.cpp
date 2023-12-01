@@ -11,6 +11,7 @@ void LauncherManager::init()
     DisplayController::init();
     ClockFragment::init();
     MenuFragment::init();
+    show(FRAGMENT_TYPE_DEFAULT);
 }
 
 void LauncherManager::loop()

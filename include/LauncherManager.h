@@ -10,6 +10,8 @@ enum FragmentType {
     FRAGMENT_TYPE_MAX
 };
 
+#define FRAGMENT_TYPE_DEFAULT (FRAGMENT_TYPE_CLOCK)
+
 class LauncherManager
 {
 private:
