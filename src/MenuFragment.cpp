@@ -61,6 +61,7 @@ void MenuFragment::show()
         mIsVisible = true;
         mNeedsRedraw = true;
         mIsFirstTime = true;
+        mCurrentIndex = 0;
         setEditPanelVisible(false);
     }
 }
@@ -73,6 +74,7 @@ void MenuFragment::hide()
         mIsVisible = false;
         mNeedsRedraw = true;
         mIsFirstTime = true;
+        mCurrentIndex = 0;
         setEditPanelVisible(false);
     }
 }
@@ -156,6 +158,7 @@ void MenuFragment::setEditPanelVisible(bool visible)
         mEditPanelVisible = visible;
         mNeedsRedraw = true;
         mIsFirstTime = true;
+        mCurrentIndex = 0;
     }
 }
 
