@@ -158,7 +158,10 @@ void MenuFragment::setEditPanelVisible(bool visible)
         mEditPanelVisible = visible;
         mNeedsRedraw = true;
         mIsFirstTime = true;
-        mCurrentIndex = 0;
+        if (!mEditPanelVisible)
+        {
+            mCurrentIndex = 0;
+        }
     }
 }
 
