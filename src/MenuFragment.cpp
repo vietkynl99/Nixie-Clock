@@ -93,7 +93,6 @@ void MenuFragment::up()
     {
         if (mMenuItemList->get(mCurrentIndex)->inc())
         {
-            mMenuItemList->saveData(mCurrentIndex);
             mNeedsRedraw = true;
         }
     }
@@ -115,7 +114,6 @@ void MenuFragment::down()
     {
         if (mMenuItemList->get(mCurrentIndex)->dec())
         {
-            mMenuItemList->saveData(mCurrentIndex);
             mNeedsRedraw = true;
         }
     }
@@ -131,6 +129,10 @@ void MenuFragment::enter()
     if (!mIsVisible)
     {
         return;
+    }
+    if (getEditPanelVisible())
+    {
+        mMenuItemList->saveData(mCurrentIndex);
     }
     setEditPanelVisible(!getEditPanelVisible());
 }
