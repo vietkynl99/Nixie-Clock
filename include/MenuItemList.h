@@ -17,6 +17,10 @@ public:
     void add(MenuItem *item);
     int length();
     MenuItem *get(int index);
+
+    void loadData();
+    void saveData();
+    void saveData(int index);
 };
 
 #endif

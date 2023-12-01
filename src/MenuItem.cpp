@@ -39,6 +39,16 @@ int MenuItem::getValue()
     return mValue;
 }
 
+bool MenuItem::setValue(int value)
+{
+    if (value >= mMinValue && value <= mMaxValue)
+    {
+        mValue = value;
+        return true;
+    }
+    return false;
+}
+
 String MenuItem::getValueAsString()
 {
     if (mType == MENU_ITEM_TYPE_BOOL)

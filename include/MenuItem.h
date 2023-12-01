@@ -22,6 +22,7 @@ public:
     MenuItem(const String& name, MenuItemType type, int value, int minValue = 0, int maxValue = 0);
     String getName();
     int getValue();
+    bool setValue(int value);
     String getValueAsString();
     bool isMinimum();
     bool isMaximum();

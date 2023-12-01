@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include "Log.h"
-#include "DisplayController.h"
 #include "MenuItemList.h"
 
 class MenuFragment

@@ -1,4 +1,6 @@
 #include "../include/MenuFragment.h"
+#include "../include/DisplayController.h"
+#include "../include/PreferencesManager.h"
 
 bool MenuFragment::mIsInitialized = false;
 bool MenuFragment::mIsVisible = false;
@@ -31,7 +33,7 @@ void MenuFragment::loop()
         if (mIsVisible)
         {
             measureTimeTick = xTaskGetTickCount();
-            if(mIsFirstTime)
+            if (mIsFirstTime)
             {
                 DisplayController::setFont(MENU_FONT, MENU_FONT_SIZE);
             }
@@ -91,6 +93,7 @@ void MenuFragment::up()
     {
         if (mMenuItemList->get(mCurrentIndex)->inc())
         {
+            mMenuItemList->saveData(mCurrentIndex);
             mNeedsRedraw = true;
         }
     }
@@ -112,6 +115,7 @@ void MenuFragment::down()
     {
         if (mMenuItemList->get(mCurrentIndex)->dec())
         {
+            mMenuItemList->saveData(mCurrentIndex);
             mNeedsRedraw = true;
         }
     }
@@ -157,6 +161,7 @@ bool MenuFragment::getEditPanelVisible()
 
 void MenuFragment::createMenuList()
 {
+    LOG("Create menu list")
     mMenuItemList->add(new MenuItem("Setting 1", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
@@ -167,4 +172,5 @@ void MenuFragment::createMenuList()
     mMenuItemList->add(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->loadData();
 }
