@@ -1,17 +1,17 @@
-#include "../include/ClockManager.h"
+#include "../include/ClockFragment.h"
 
-bool ClockManager::mIsVisible = false;
-bool ClockManager::mNeedsRedraw = false;
-bool ClockManager::mIsFirstTime = false;
+bool ClockFragment::mIsVisible = false;
+bool ClockFragment::mNeedsRedraw = false;
+bool ClockFragment::mIsFirstTime = false;
 
 static constexpr const char *const TAG = "CLOCK";
 
-void ClockManager::init()
+void ClockFragment::init()
 {
     DisplayController::init();
 }
 
-void ClockManager::loop()
+void ClockFragment::loop()
 {
     static uint32_t timeTick = 0, digitTimeTick = 0;
     static int digit = 0;
@@ -43,7 +43,7 @@ void ClockManager::loop()
     }
 }
 
-void ClockManager::show()
+void ClockFragment::show()
 {
     if (!mIsVisible)
     {
@@ -54,7 +54,7 @@ void ClockManager::show()
     }
 }
 
-void ClockManager::hide()
+void ClockFragment::hide()
 {
     if (mIsVisible)
     {
@@ -63,4 +63,9 @@ void ClockManager::hide()
         mIsFirstTime = true;
         mNeedsRedraw = true;
     }
+}
+
+bool ClockFragment::isVisible()
+{
+    return mIsVisible;
 }

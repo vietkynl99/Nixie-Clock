@@ -32,11 +32,10 @@ void DisplayController::clear()
     }
 }
 
-void DisplayController::drawDatumMarker(int x, int y, uint16_t color)
+void DisplayController::setFont(const GFXfont *font, uint8_t size)
 {
-    mDrew = true;
-    tft->drawLine(x - 5, y, x + 5, y, color);
-    tft->drawLine(x, y - 5, x, y + 5, color);
+    tft->setFreeFont(font);
+    tft->setTextSize(size);
 }
 
 void DisplayController::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)
@@ -200,7 +199,6 @@ void DisplayController::showDigit(int digit)
 void DisplayController::showHeader(const char *text)
 {
     mDrew = true;
-    tft->setFreeFont(MENU_FONT);
     tft->setTextColor(TFT_WHITE);
 
     uint32_t height = tft->fontHeight();
@@ -228,7 +226,6 @@ void DisplayController::showMenuList(MenuItemList *itemList, int currentIndex, b
     if (isFirstTime)
     {
         clear();
-        // tft->setFreeFont(MENU_FONT);
         showHeader("MENU");
     }
 
@@ -302,7 +299,6 @@ void DisplayController::showEditPanel(MenuItem *item, bool isFirstTime)
     if (isFirstTime)
     {
         clear();
-        // tft->setFreeFont(MENU_FONT);
         showHeader(item->getName().c_str());
     }
 

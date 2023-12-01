@@ -33,6 +33,7 @@
 #define SHOW_RENDER_TIME
 
 #define MENU_FONT                       FSB18 // Serif Bold 18pt
+#define MENU_FONT_SIZE                  1
 #define MENU_HEADER_COLOR               0x3C91
 #define MENU_HIGHTLIGHT_COLOR           0x2124
 #define MENU_BACKGROUND_COLOR           TFT_BLACK
@@ -50,13 +51,14 @@ public:
     static void init();
     static void clear();
 
+    static void setFont(const GFXfont *font, uint8_t size);
+
     static void showDigit(int digit);
     static void showHeader(const char *text);
     static void showMenuList(MenuItemList *itemList, int currentIndex, bool isFirstTime);
     static void showEditPanel(MenuItem *item, bool isFirstTime);
 
 private:
-    static void drawDatumMarker(int x, int y, uint16_t color = TFT_GREEN); // Draw a + mark centred on x,y
     static void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos);
     static void drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t array_size);
     static void renderJPEG(int xpos, int ypos);

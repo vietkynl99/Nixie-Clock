@@ -1,16 +1,16 @@
-#include "../include/MenuManager.h"
+#include "../include/MenuFragment.h"
 
-bool MenuManager::mIsInitialized = false;
-bool MenuManager::mIsVisible = false;
-bool MenuManager::mNeedsRedraw = false;
-bool MenuManager::mIsFirstTime = false;
-MenuItemList *MenuManager::mMenuItemList = new MenuItemList();
-int MenuManager::mCurrentIndex = 0;
-bool MenuManager::mEditPanelVisible = false;
+bool MenuFragment::mIsInitialized = false;
+bool MenuFragment::mIsVisible = false;
+bool MenuFragment::mNeedsRedraw = false;
+bool MenuFragment::mIsFirstTime = false;
+MenuItemList *MenuFragment::mMenuItemList = new MenuItemList();
+int MenuFragment::mCurrentIndex = 0;
+bool MenuFragment::mEditPanelVisible = false;
 
 static constexpr const char *const TAG = "MENU";
 
-void MenuManager::init()
+void MenuFragment::init()
 {
     if (!mIsInitialized)
     {
@@ -20,7 +20,7 @@ void MenuManager::init()
     }
 }
 
-void MenuManager::loop()
+void MenuFragment::loop()
 {
     static uint32_t timeTick = 0;
     static uint32_t measureTimeTick = 0;
@@ -31,6 +31,10 @@ void MenuManager::loop()
         if (mIsVisible)
         {
             measureTimeTick = xTaskGetTickCount();
+            if(mIsFirstTime)
+            {
+                DisplayController::setFont(MENU_FONT, MENU_FONT_SIZE);
+            }
             if (!getEditPanelVisible())
             {
                 DisplayController::showMenuList(mMenuItemList, mCurrentIndex, mIsFirstTime);
@@ -47,7 +51,7 @@ void MenuManager::loop()
     }
 }
 
-void MenuManager::show()
+void MenuFragment::show()
 {
     LOG("Show");
     if (!mIsVisible)
@@ -59,7 +63,7 @@ void MenuManager::show()
     }
 }
 
-void MenuManager::hide()
+void MenuFragment::hide()
 {
     LOG("Hide");
     if (mIsVisible)
@@ -71,7 +75,12 @@ void MenuManager::hide()
     }
 }
 
-void MenuManager::up()
+bool MenuFragment::isVisible()
+{
+    return mIsVisible;
+}
+
+void MenuFragment::up()
 {
     if (!mIsVisible)
     {
@@ -92,7 +101,7 @@ void MenuManager::up()
     }
 }
 
-void MenuManager::down()
+void MenuFragment::down()
 {
     if (!mIsVisible)
     {
@@ -113,7 +122,7 @@ void MenuManager::down()
     }
 }
 
-void MenuManager::enter()
+void MenuFragment::enter()
 {
     if (!mIsVisible)
     {
@@ -122,7 +131,7 @@ void MenuManager::enter()
     setEditPanelVisible(!getEditPanelVisible());
 }
 
-void MenuManager::back()
+void MenuFragment::back()
 {
     if (!mIsVisible)
     {
@@ -131,7 +140,7 @@ void MenuManager::back()
     setEditPanelVisible(false);
 }
 
-void MenuManager::setEditPanelVisible(bool visible)
+void MenuFragment::setEditPanelVisible(bool visible)
 {
     if (mEditPanelVisible != visible)
     {
@@ -141,12 +150,12 @@ void MenuManager::setEditPanelVisible(bool visible)
     }
 }
 
-bool MenuManager::getEditPanelVisible()
+bool MenuFragment::getEditPanelVisible()
 {
     return mEditPanelVisible;
 }
 
-void MenuManager::createMenuList()
+void MenuFragment::createMenuList()
 {
     mMenuItemList->add(new MenuItem("Setting 1", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
@@ -158,6 +167,4 @@ void MenuManager::createMenuList()
     mMenuItemList->add(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 11", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 12", MENU_ITEM_TYPE_INT, 0, 0, 10));
 }

@@ -1,8 +1,8 @@
 #ifndef _MENU_ITEM_LIST_H_
 #define _MENU_ITEM_LIST_H_
 
-#include "../include/MenuItem.h"
-#include "../include/Log.h"
+#include "MenuItem.h"
+#include "Log.h"
 
 #define MENU_ITEM_LIST_SIZE 10
 

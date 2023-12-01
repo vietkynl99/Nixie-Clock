@@ -1,14 +1,12 @@
-#ifndef _MENU_MANAGER_H_
-#define _MENU_MANAGER_H_
+#ifndef _MENU_FRAGMENT_H_
+#define _MENU_FRAGMENT_H_
 
 #include <Arduino.h>
-#include "../include/Log.h"
-#include "../include/DisplayController.h"
-#include "../include/MenuItemList.h"
+#include "Log.h"
+#include "DisplayController.h"
+#include "MenuItemList.h"
 
-
-
-class MenuManager
+class MenuFragment
 {
 private:
     static MenuItemList *mMenuItemList;
@@ -24,6 +22,7 @@ public:
     static void loop();
     static void show();
     static void hide();
+    static bool isVisible();
     static void up();
     static void down();
     static void enter();

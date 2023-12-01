@@ -1,8 +1,9 @@
 #include <SerialParser.h>
 #include "include/Log.h"
 #include "include/WifiMaster.h"
-#include "include/MenuManager.h"
-#include "include/ClockManager.h"
+#include "include/ClockFragment.h"
+#include "include/MenuFragment.h"
+#include "include/LauncherManager.h"
 
 #define TASK1_STACK_SIZE 10000
 #define TASK2_STACK_SIZE 10000
@@ -22,26 +23,30 @@ void debugHandler()
 		{
 			WifiMaster::resetWifiSettings();
 		}
+		else if (!strcmp(cmd, "LAUNCHER"))
+		{
+			LauncherManager::show((FragmentType)code);
+		}
 		else if (!strcmp(cmd, "MENU"))
 		{
 			if (code)
 			{
-				MenuManager::show();
+				MenuFragment::show();
 			}
 			else
 			{
-				MenuManager::hide();
+				MenuFragment::hide();
 			}
 		}
 		else if (!strcmp(cmd, "CLOCK"))
 		{
 			if (code)
 			{
-				ClockManager::show();
+				ClockFragment::show();
 			}
 			else
 			{
-				ClockManager::hide();
+				ClockFragment::hide();
 			}
 		}
 		else if (!strcmp(cmd, "CLEAR"))
@@ -50,35 +55,33 @@ void debugHandler()
 		}
 		else if (!strcmp(cmd, "UP"))
 		{
-			MenuManager::up();
+			MenuFragment::up();
 		}
 		else if (!strcmp(cmd, "DOWN"))
 		{
-			MenuManager::down();
+			MenuFragment::down();
 		}
 		else if (!strcmp(cmd, "ENTER"))
 		{
-			MenuManager::enter();
+			MenuFragment::enter();
 		}
 		else if (!strcmp(cmd, "BACK"))
 		{
-			MenuManager::back();
+			MenuFragment::back();
 		}
 		else
 		{
 			LOG("Unknown command: '%s'", cmd);
 		}
-		}
+	}
 }
 
 void task1Handler(void *data)
 {
 	LOG("Start task 1");
-	MenuManager::show();
 	while (true)
 	{
-		MenuManager::loop();
-		ClockManager::loop();
+		LauncherManager::loop();
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
@@ -98,7 +101,7 @@ void setup()
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
-	MenuManager::init();
+	LauncherManager::init();
 	delay(500);
 
 	xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0);

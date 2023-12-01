@@ -1,10 +1,10 @@
-#ifndef _CLOCK_MANAGER_H_
-#define _CLOCK_MANAGER_H_
+#ifndef _CLOCK_FRAGMENT_H_
+#define _CLOCK_FRAGMENT_H_
 
-#include "../include/Log.h"
-#include "../include/DisplayController.h"
+#include "Log.h"
+#include "DisplayController.h"
 
-class ClockManager
+class ClockFragment
 {
 private:
     static bool mIsVisible;
@@ -16,6 +16,7 @@ public:
     static void loop();
     static void show();
     static void hide();
+    static bool isVisible();
 };
 
 #endif
