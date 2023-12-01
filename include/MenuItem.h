@@ -28,6 +28,9 @@ public:
     bool isMaximum();
     bool inc();
     bool dec();
+
+    void load();
+    void save();
 };
 
 #endif

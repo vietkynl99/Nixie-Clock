@@ -7,6 +7,7 @@ static constexpr const char *const TAG = "PREFERENCES";
 
 void PreferencesManager::clear(const char *name)
 {
+    LOG("Clear");
     mPreferences->begin(name, false);
     mPreferences->clear();
     mPreferences->end();
@@ -14,6 +15,7 @@ void PreferencesManager::clear(const char *name)
 
 void PreferencesManager::putInt(const char *name, const char *key, int value)
 {
+    LOG("Saved %s", name);
     mPreferences->begin(name, false);
     mPreferences->putInt(key, value);
     mPreferences->end();

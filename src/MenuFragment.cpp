@@ -1,6 +1,5 @@
 #include "../include/MenuFragment.h"
 #include "../include/DisplayController.h"
-#include "../include/PreferencesManager.h"
 
 bool MenuFragment::mIsInitialized = false;
 bool MenuFragment::mIsVisible = false;
@@ -9,6 +8,7 @@ bool MenuFragment::mIsFirstTime = false;
 MenuItemList *MenuFragment::mMenuItemList = new MenuItemList();
 int MenuFragment::mCurrentIndex = 0;
 bool MenuFragment::mEditPanelVisible = false;
+bool MenuFragment::mDataChanged = false;
 
 static constexpr const char *const TAG = "MENU";
 
@@ -93,6 +93,7 @@ void MenuFragment::up()
     {
         if (mMenuItemList->get(mCurrentIndex)->inc())
         {
+            mDataChanged = true;
             mNeedsRedraw = true;
         }
     }
@@ -114,6 +115,7 @@ void MenuFragment::down()
     {
         if (mMenuItemList->get(mCurrentIndex)->dec())
         {
+            mDataChanged = true;
             mNeedsRedraw = true;
         }
     }
@@ -130,11 +132,12 @@ void MenuFragment::enter()
     {
         return;
     }
-    if (getEditPanelVisible())
+    if (mDataChanged && getEditPanelVisible())
     {
-        mMenuItemList->saveData(mCurrentIndex);
+        mMenuItemList->get(mCurrentIndex)->save();
     }
     setEditPanelVisible(!getEditPanelVisible());
+    mDataChanged = false;
 }
 
 void MenuFragment::back()

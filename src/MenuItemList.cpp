@@ -1,7 +1,4 @@
 #include "../include/MenuItemList.h"
-#include "../include/PreferencesManager.h"
-
-#define PREFERENCES_NAME "MenuItemList"
 
 static constexpr const char *const TAG = "MenuItemList";
 
@@ -46,19 +43,14 @@ void MenuItemList::loadData()
 {
     for (int i = 0; i < mLength; i++)
     {
-        mList[i]->setValue(PreferencesManager::getInt(PREFERENCES_NAME, mList[i]->getName().c_str(), mList[i]->getValue()));
+        mList[i]->load();
     }
-}
-
-void MenuItemList::saveData(int index)
-{
-    PreferencesManager::putInt(PREFERENCES_NAME, mList[index]->getName().c_str(), mList[index]->getValue());
 }
 
 void MenuItemList::saveData()
 {
     for (int i = 0; i < mLength; i++)
     {
-        saveData(i);
+        mList[i]->save();
     }
 }

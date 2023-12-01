@@ -1,4 +1,7 @@
 #include "../include/MenuItem.h"
+#include "../include/PreferencesManager.h"
+
+#define PREFERENCES_NAME "MenuItem"
 
 MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue)
 {
@@ -89,4 +92,14 @@ bool MenuItem::dec()
         return true;
     }
     return false;
+}
+
+void MenuItem::load()
+{
+    mValue = PreferencesManager::getInt(PREFERENCES_NAME, mName.c_str(), mValue);
+}
+
+void MenuItem::save()
+{
+    PreferencesManager::putInt(PREFERENCES_NAME, mName.c_str(), mValue);
 }

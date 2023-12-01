@@ -20,7 +20,6 @@ public:
 
     void loadData();
     void saveData();
-    void saveData(int index);
 };
 
 #endif
