@@ -12,7 +12,7 @@ void Log::print(const char *tag, const char *pFormat, ...)
     static char mStringBuffer[256];
 
 #ifdef USE_MUTEX
-    if (xSemaphoreTake(mMutex, portMAX_DELAY))
+    if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
     {
 #endif
         va_list pVlist;

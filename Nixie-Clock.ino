@@ -9,6 +9,7 @@
 #define TASK2_STACK_SIZE 10000
 
 TaskHandle_t task1, task2;
+SemaphoreHandle_t mMutex;
 
 static constexpr const char *const TAG = "SYSTEM";
 
@@ -19,59 +20,63 @@ void debugHandler()
 
 	if (SerialParser::run(cmd, code))
 	{
-		if (!strcmp(cmd, "RSWIFI"))
+		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
-			WifiMaster::resetWifiSettings();
-		}
-		else if (!strcmp(cmd, "LAUNCHER"))
-		{
-			LauncherManager::show((FragmentType)code);
-		}
-		else if (!strcmp(cmd, "MENU"))
-		{
-			if (code)
+			if (!strcmp(cmd, "RSWIFI"))
 			{
-				MenuFragment::show();
+				WifiMaster::resetWifiSettings();
+			}
+			else if (!strcmp(cmd, "LAUNCHER"))
+			{
+				LauncherManager::show((FragmentType)code);
+			}
+			else if (!strcmp(cmd, "MENU"))
+			{
+				if (code)
+				{
+					MenuFragment::show();
+				}
+				else
+				{
+					MenuFragment::hide();
+				}
+			}
+			else if (!strcmp(cmd, "CLOCK"))
+			{
+				if (code)
+				{
+					ClockFragment::show();
+				}
+				else
+				{
+					ClockFragment::hide();
+				}
+			}
+			else if (!strcmp(cmd, "CLEAR"))
+			{
+				DisplayController::clear();
+			}
+			else if (!strcmp(cmd, "UP"))
+			{
+				MenuFragment::up();
+			}
+			else if (!strcmp(cmd, "DOWN"))
+			{
+				MenuFragment::down();
+			}
+			else if (!strcmp(cmd, "ENTER"))
+			{
+				MenuFragment::enter();
+			}
+			else if (!strcmp(cmd, "BACK"))
+			{
+				MenuFragment::back();
 			}
 			else
 			{
-				MenuFragment::hide();
+				LOG("Unknown command: '%s'", cmd);
 			}
-		}
-		else if (!strcmp(cmd, "CLOCK"))
-		{
-			if (code)
-			{
-				ClockFragment::show();
-			}
-			else
-			{
-				ClockFragment::hide();
-			}
-		}
-		else if (!strcmp(cmd, "CLEAR"))
-		{
-			DisplayController::clear();
-		}
-		else if (!strcmp(cmd, "UP"))
-		{
-			MenuFragment::up();
-		}
-		else if (!strcmp(cmd, "DOWN"))
-		{
-			MenuFragment::down();
-		}
-		else if (!strcmp(cmd, "ENTER"))
-		{
-			MenuFragment::enter();
-		}
-		else if (!strcmp(cmd, "BACK"))
-		{
-			MenuFragment::back();
-		}
-		else
-		{
-			LOG("Unknown command: '%s'", cmd);
+			xSemaphoreGive(mMutex);
 		}
 	}
 }
@@ -81,7 +86,11 @@ void task1Handler(void *data)
 	LOG("Start task 1");
 	while (true)
 	{
-		LauncherManager::loop();
+		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
+		{
+			LauncherManager::loop();
+			xSemaphoreGive(mMutex);
+		}
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
@@ -98,6 +107,8 @@ void task2Handler(void *data)
 
 void setup()
 {
+	mMutex = xSemaphoreCreateMutex();
+
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
