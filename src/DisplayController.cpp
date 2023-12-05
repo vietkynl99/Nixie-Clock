@@ -7,6 +7,7 @@
 TFT_eSPI *DisplayController::tft = new TFT_eSPI();
 bool DisplayController::mIsInitialized = false;
 bool DisplayController::mDrew = true;
+int DisplayController::mCsPinList[TFT_MAX] = {TFT1_CS, TFT2_CS, TFT3_CS, TFT4_CS, TFT5_CS, TFT6_CS};
 
 static constexpr const char *const TAG = "DISPLAY";
 
@@ -16,6 +17,14 @@ void DisplayController::init()
     {
         LOG("init");
         mIsInitialized = true;
+
+        for (int i = 0; i < TFT_MAX; i++)
+        {
+            pinMode(mCsPinList[i], OUTPUT);
+            digitalWrite(mCsPinList[i], LOW);
+        }
+
+        selectDisplay(TFT_MAX);
         tft->begin();
         tft->setRotation(DISPLAY_ROTATION);
         clear();
@@ -36,6 +45,26 @@ void DisplayController::setFont(const GFXfont *font, uint8_t size)
 {
     tft->setFreeFont(font);
     tft->setTextSize(size);
+}
+
+void DisplayController::selectDisplay(int index)
+{
+    static int mPrevIndex = -1;
+
+    if (index < 0 || index > TFT_MAX)
+    {
+        LOG("Invalid index %d", index);
+        return;
+    }
+
+    if (mPrevIndex != index)
+    {
+        mPrevIndex = index;
+        for (int i = 0; i < TFT_MAX; i++)
+        {
+            digitalWrite(mCsPinList[i], !(index == TFT_MAX || i == index));
+        }
+    }
 }
 
 void DisplayController::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)

@@ -28,6 +28,14 @@
 #error TFT_HEIGHT must be 240
 #endif
 
+#define TFT_MAX     6 // Number of TFT displays
+#define TFT1_CS     22
+#define TFT2_CS     12
+#define TFT3_CS     13
+#define TFT4_CS     14
+#define TFT5_CS     25
+#define TFT6_CS     26
+
 #define DISPLAY_ROTATION 2 // rotation 180 degrees
 
 #define SHOW_RENDER_TIME
@@ -46,12 +54,14 @@ private:
     static TFT_eSPI *tft;
     static bool mIsInitialized;
     static bool mDrew;
+    static int mCsPinList[TFT_MAX];
 
 public:
     static void init();
     static void clear();
 
     static void setFont(const GFXfont *font, uint8_t size);
+    static void selectDisplay(int index);
 
     static void showDigit(int digit);
     static void showHeader(const char *text);

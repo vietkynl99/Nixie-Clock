@@ -56,6 +56,10 @@ void debugHandler()
 			{
 				DisplayController::clear();
 			}
+			else if (!strcmp(cmd, "SELECT"))
+			{
+				DisplayController::selectDisplay(code);
+			}
 			else if (!strcmp(cmd, "UP"))
 			{
 				MenuFragment::up();
