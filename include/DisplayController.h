@@ -38,7 +38,7 @@
 
 #define DISPLAY_ROTATION 2 // rotation 180 degrees
 
-#define SHOW_RENDER_TIME
+// #define SHOW_RENDER_TIME
 
 #define MENU_FONT                       FSB18 // Serif Bold 18pt
 #define MENU_FONT_SIZE                  1
