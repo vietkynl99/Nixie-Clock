@@ -1,5 +1,5 @@
-#include "../include/MenuItem.h"
-#include "../include/PreferencesManager.h"
+#include "../../include/model/MenuItem.h"
+#include "../../include/manager/PreferencesManager.h"
 
 #define PREFERENCES_NAME "MenuItem"
 

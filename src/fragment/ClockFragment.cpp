@@ -1,5 +1,5 @@
-#include "../include/ClockFragment.h"
-#include "../include/clockDigit.h"
+#include "../../include/fragment/ClockFragment.h"
+#include "../../include/common/clockDigit.h"
 
 bool ClockFragment::mIsVisible = false;
 bool ClockFragment::mNeedsRedraw = false;

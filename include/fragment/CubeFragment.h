@@ -1,8 +1,8 @@
 #ifndef _CUBE_FRAGMENT_H_
 #define _CUBE_FRAGMENT_H_
 
-#include "Log.h"
-#include "DisplayController.h"
+#include "../common/Log.h"
+#include "../controller/DisplayController.h"
 
 #define USE_DMA_TO_TFT
 

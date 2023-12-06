@@ -1,7 +1,7 @@
 #include <SerialParser.h>
-#include "include/Log.h"
-#include "include/WifiMaster.h"
-#include "include/LauncherManager.h"
+#include "include/common/Log.h"
+#include "include/controller/WifiMaster.h"
+#include "include/manager/LauncherManager.h"
 
 #define TASK1_STACK_SIZE 10000
 #define TASK2_STACK_SIZE 10000

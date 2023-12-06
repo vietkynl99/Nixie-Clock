@@ -2,7 +2,7 @@
 #define _MENU_ITEM_LIST_H_
 
 #include "MenuItem.h"
-#include "Log.h"
+#include "../common/Log.h"
 
 #define MENU_ITEM_LIST_SIZE 10
 

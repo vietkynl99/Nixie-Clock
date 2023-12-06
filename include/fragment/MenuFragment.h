@@ -2,8 +2,8 @@
 #define _MENU_FRAGMENT_H_
 
 #include <Arduino.h>
-#include "Log.h"
-#include "MenuItemList.h"
+#include "../common/Log.h"
+#include "../model/MenuItemList.h"
 
 class MenuFragment
 {

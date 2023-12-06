@@ -1,5 +1,5 @@
-#include "../include/MenuFragment.h"
-#include "../include/DisplayController.h"
+#include "../../include/fragment/MenuFragment.h"
+#include "../../include/controller/DisplayController.h"
 
 bool MenuFragment::mIsInitialized = false;
 bool MenuFragment::mIsVisible = false;

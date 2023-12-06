@@ -1,4 +1,4 @@
-#include "../include/LauncherManager.h"
+#include "../../include/manager/LauncherManager.h"
 
 FragmentType LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_NONE;
 

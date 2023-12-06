@@ -1,5 +1,4 @@
-#include "../include/DisplayController.h"
-#include "../include/Log.h"
+#include "../../include/controller/DisplayController.h"
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "../include/WifiMaster.h"
+#include "../../include/controller/WifiMaster.h"
 
 WiFiManager WifiMaster::wm;
 

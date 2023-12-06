@@ -1,4 +1,4 @@
-#include "../include/CubeFragment.h"
+#include "../../include//fragment/CubeFragment.h"
 
 bool CubeFragment::mIsVisible = false;
 bool CubeFragment::mNeedsRedraw = false;

@@ -1,7 +1,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/semphr.h>
-#include "../include/Log.h"
+#include "../../include/common/Log.h"
 
 #ifdef USE_MUTEX
 SemaphoreHandle_t Log::mMutex = xSemaphoreCreateMutex();

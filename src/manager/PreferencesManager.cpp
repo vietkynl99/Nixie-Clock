@@ -1,4 +1,4 @@
-#include "../include/PreferencesManager.h"
+#include "../../include/manager/PreferencesManager.h"
 
 
 Preferences *PreferencesManager::mPreferences = new Preferences();

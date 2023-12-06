@@ -1,10 +1,10 @@
 #ifndef _LAUNCHER_MANAGER_H_
 #define _LAUNCHER_MANAGER_H_
 
-#include "Log.h"
-#include "ClockFragment.h"
-#include "MenuFragment.h"
-#include "CubeFragment.h"
+#include "../common/Log.h"
+#include "../fragment/ClockFragment.h"
+#include "../fragment/MenuFragment.h"
+#include "../fragment/CubeFragment.h"
 
 enum FragmentType {
     FRAGMENT_TYPE_NONE,

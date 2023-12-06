@@ -5,8 +5,9 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 #include <JPEGDecoder.h>
-#include "FreeFonts.h"
-#include "MenuItemList.h"
+#include "../common/FreeFonts.h"
+#include "../model/MenuItemList.h"
+#include "../common/Log.h"
 
 /*
   #########################################################################
