@@ -27,16 +27,34 @@
 #if TFT_HEIGHT != 240
 #error TFT_HEIGHT must be 240
 #endif
+#if TFT_MISO != -1
+#error TFT_MISO must be -1
+#endif
+#if TFT_MOSI != 23
+#error TFT_MOSI must be 23
+#endif
+#if TFT_SCLK != 18
+#error TFT_SCLK must be 18
+#endif
+#if TFT_CS != -1
+#error TFT_CS must be -1
+#endif
+#if TFT_DC != 2
+#error TFT_DC must be 2
+#endif
+#if TFT_RST != 4
+#error TFT_RST must be 4
+#endif
 
 #define TFT_MAX     6 // Number of TFT displays
 #define TFT1_CS     22
-#define TFT2_CS     12
+#define TFT2_CS     21
 #define TFT3_CS     13
 #define TFT4_CS     14
 #define TFT5_CS     25
 #define TFT6_CS     26
 
-#define DISPLAY_ROTATION 2 // rotation 180 degrees
+#define DISPLAY_ROTATION    2 // rotation 180 degrees
 
 // #define SHOW_RENDER_TIME
 
@@ -53,7 +71,6 @@ class DisplayController
 private:
     static TFT_eSPI *tft;
     static bool mIsInitialized;
-    static bool mDrew;
     static int mCsPinList[TFT_MAX];
 
 public:
@@ -62,6 +79,8 @@ public:
 
     static void setFont(const GFXfont *font, uint8_t size);
     static void selectDisplay(int index);
+
+    static TFT_eSPI *getTft();
 
     static void showDigit(int digit);
     static void showHeader(const char *text);

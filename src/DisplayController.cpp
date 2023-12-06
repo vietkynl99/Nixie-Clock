@@ -6,7 +6,6 @@
 
 TFT_eSPI *DisplayController::tft = new TFT_eSPI();
 bool DisplayController::mIsInitialized = false;
-bool DisplayController::mDrew = true;
 int DisplayController::mCsPinList[TFT_MAX] = {TFT1_CS, TFT2_CS, TFT3_CS, TFT4_CS, TFT5_CS, TFT6_CS};
 
 static constexpr const char *const TAG = "DISPLAY";
@@ -33,12 +32,8 @@ void DisplayController::init()
 
 void DisplayController::clear()
 {
-    if (mDrew)
-    {
-        LOG("clear");
-        mDrew = false;
-        tft->fillScreen(TFT_BLACK);
-    }
+    LOG("clear");
+    tft->fillScreen(TFT_BLACK);
 }
 
 void DisplayController::setFont(const GFXfont *font, uint8_t size)
@@ -67,12 +62,16 @@ void DisplayController::selectDisplay(int index)
     }
 }
 
+TFT_eSPI *DisplayController::getTft()
+{
+    return tft;
+}
+
 void DisplayController::drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos)
 {
     int x = xpos;
     int y = ypos;
 
-    mDrew = true;
     JpegDec.decodeArray(arrayname, array_size);
     renderJPEG(x, y);
 }
@@ -82,7 +81,6 @@ void DisplayController::drawArrayJpegInCenter(const uint8_t arrayname[], uint32_
     int x = 0;
     int y = 0;
 
-    mDrew = true;
     JpegDec.decodeArray(arrayname, array_size);
 
     if (JpegDec.width < TFT_WIDTH)
@@ -175,7 +173,6 @@ void DisplayController::renderJPEG(int xpos, int ypos)
 
 void DisplayController::showTime(uint32_t msTime)
 {
-    mDrew = true;
     tft->setCursor(0, 0);
     tft->setTextFont(1);
     tft->setTextSize(2);
@@ -227,7 +224,6 @@ void DisplayController::showDigit(int digit)
 
 void DisplayController::showHeader(const char *text)
 {
-    mDrew = true;
     tft->setTextColor(TFT_WHITE);
 
     uint32_t height = tft->fontHeight();
@@ -251,7 +247,6 @@ void DisplayController::showMenuList(MenuItemList *itemList, int currentIndex, b
         return;
     }
 
-    mDrew = true;
     if (isFirstTime)
     {
         clear();
@@ -324,7 +319,6 @@ void DisplayController::showEditPanel(MenuItem *item, bool isFirstTime)
         return;
     }
 
-    mDrew = true;
     if (isFirstTime)
     {
         clear();

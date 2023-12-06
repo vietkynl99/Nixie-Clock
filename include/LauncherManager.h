@@ -2,11 +2,15 @@
 #define _LAUNCHER_MANAGER_H_
 
 #include "Log.h"
+#include "ClockFragment.h"
+#include "MenuFragment.h"
+#include "CubeFragment.h"
 
 enum FragmentType {
     FRAGMENT_TYPE_NONE,
     FRAGMENT_TYPE_CLOCK,
     FRAGMENT_TYPE_MENU,
+    FRAGMENT_TYPE_CUBE,
     FRAGMENT_TYPE_MAX
 };
 

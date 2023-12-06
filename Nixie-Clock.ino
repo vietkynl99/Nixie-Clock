@@ -1,8 +1,6 @@
 #include <SerialParser.h>
 #include "include/Log.h"
 #include "include/WifiMaster.h"
-#include "include/ClockFragment.h"
-#include "include/MenuFragment.h"
 #include "include/LauncherManager.h"
 
 #define TASK1_STACK_SIZE 10000
@@ -22,7 +20,11 @@ void debugHandler()
 	{
 		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
-			if (!strcmp(cmd, "RSWIFI"))
+			if (!strcmp(cmd, "RESTART"))
+			{
+				ESP.restart();
+			}
+			else if (!strcmp(cmd, "RSWIFI"))
 			{
 				WifiMaster::resetWifiSettings();
 			}

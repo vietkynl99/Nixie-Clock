@@ -1,6 +1,4 @@
 #include "../include/LauncherManager.h"
-#include "../include/ClockFragment.h"
-#include "../include/MenuFragment.h"
 
 FragmentType LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_NONE;
 
@@ -11,6 +9,7 @@ void LauncherManager::init()
     DisplayController::init();
     ClockFragment::init();
     MenuFragment::init();
+    CubeFragment::init();
     show(FRAGMENT_TYPE_DEFAULT);
 }
 
@@ -18,6 +17,7 @@ void LauncherManager::loop()
 {
     ClockFragment::loop();
     MenuFragment::loop();
+    CubeFragment::loop();
 }
 
 void LauncherManager::show(FragmentType type)
@@ -40,6 +40,10 @@ void LauncherManager::show(FragmentType type)
     {
         MenuFragment::hide();
     }
+    if (CubeFragment::isVisible())
+    {
+        CubeFragment::hide();
+    }
 
     DisplayController::clear();
 
@@ -50,6 +54,9 @@ void LauncherManager::show(FragmentType type)
         break;
     case FRAGMENT_TYPE_MENU:
         MenuFragment::show();
+        break;
+    case FRAGMENT_TYPE_CUBE:
+        CubeFragment::show();
         break;
     default:
         break;
