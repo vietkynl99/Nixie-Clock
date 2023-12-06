@@ -17,6 +17,9 @@ public:
     static void show();
     static void hide();
     static bool isVisible();
+
+private:
+    static void showDigit(int digit);
 };
 
 #endif

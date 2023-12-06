@@ -1,4 +1,3 @@
-#include "../include/clockDigit.h"
 #include "../include/DisplayController.h"
 #include "../include/Log.h"
 
@@ -181,45 +180,6 @@ void DisplayController::showTime(uint32_t msTime)
     tft->println(F(" ms "));
 
     LOG("Render time: %ld ms", msTime);
-}
-
-void DisplayController::showDigit(int digit)
-{
-    switch (digit)
-    {
-    case 0:
-        drawArrayJpegInCenter(image_digit_0, sizeof(image_digit_0));
-        break;
-    case 1:
-        drawArrayJpegInCenter(image_digit_1, sizeof(image_digit_1));
-        break;
-    case 2:
-        drawArrayJpegInCenter(image_digit_2, sizeof(image_digit_2));
-        break;
-    case 3:
-        drawArrayJpegInCenter(image_digit_3, sizeof(image_digit_3));
-        break;
-    case 4:
-        drawArrayJpegInCenter(image_digit_4, sizeof(image_digit_4));
-        break;
-    case 5:
-        drawArrayJpegInCenter(image_digit_5, sizeof(image_digit_5));
-        break;
-    case 6:
-        drawArrayJpegInCenter(image_digit_6, sizeof(image_digit_6));
-        break;
-    case 7:
-        drawArrayJpegInCenter(image_digit_7, sizeof(image_digit_7));
-        break;
-    case 8:
-        drawArrayJpegInCenter(image_digit_8, sizeof(image_digit_8));
-        break;
-    case 9:
-        drawArrayJpegInCenter(image_digit_9, sizeof(image_digit_9));
-        break;
-    default:
-        break;
-    }
 }
 
 void DisplayController::showHeader(const char *text)

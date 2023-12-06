@@ -1,4 +1,5 @@
 #include "../include/ClockFragment.h"
+#include "../include/clockDigit.h"
 
 bool ClockFragment::mIsVisible = false;
 bool ClockFragment::mNeedsRedraw = false;
@@ -35,7 +36,7 @@ void ClockFragment::loop()
             {
                 DisplayController::clear();
             }
-            DisplayController::showDigit(digit);
+            showDigit(digit);
         }
 
         mIsFirstTime = false;
@@ -68,4 +69,44 @@ void ClockFragment::hide()
 bool ClockFragment::isVisible()
 {
     return mIsVisible;
+}
+
+
+void ClockFragment::showDigit(int digit)
+{
+    switch (digit)
+    {
+    case 0:
+        DisplayController::drawArrayJpegInCenter(image_digit_0, sizeof(image_digit_0));
+        break;
+    case 1:
+        DisplayController::drawArrayJpegInCenter(image_digit_1, sizeof(image_digit_1));
+        break;
+    case 2:
+        DisplayController::drawArrayJpegInCenter(image_digit_2, sizeof(image_digit_2));
+        break;
+    case 3:
+        DisplayController::drawArrayJpegInCenter(image_digit_3, sizeof(image_digit_3));
+        break;
+    case 4:
+        DisplayController::drawArrayJpegInCenter(image_digit_4, sizeof(image_digit_4));
+        break;
+    case 5:
+        DisplayController::drawArrayJpegInCenter(image_digit_5, sizeof(image_digit_5));
+        break;
+    case 6:
+        DisplayController::drawArrayJpegInCenter(image_digit_6, sizeof(image_digit_6));
+        break;
+    case 7:
+        DisplayController::drawArrayJpegInCenter(image_digit_7, sizeof(image_digit_7));
+        break;
+    case 8:
+        DisplayController::drawArrayJpegInCenter(image_digit_8, sizeof(image_digit_8));
+        break;
+    case 9:
+        DisplayController::drawArrayJpegInCenter(image_digit_9, sizeof(image_digit_9));
+        break;
+    default:
+        break;
+    }
 }
