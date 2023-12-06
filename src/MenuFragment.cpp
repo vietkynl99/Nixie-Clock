@@ -39,11 +39,11 @@ void MenuFragment::loop()
             }
             if (!getEditPanelVisible())
             {
-                DisplayController::showMenuList(mMenuItemList, mCurrentIndex, mIsFirstTime);
+                showMenuList();
             }
             else
             {
-                DisplayController::showEditPanel(mMenuItemList->get(mCurrentIndex), mIsFirstTime);
+                showEditPanel(mMenuItemList->get(mCurrentIndex));
             }
             measureTimeTick = xTaskGetTickCount() - measureTimeTick;
             LOG("Draw time: %dms", measureTimeTick / portTICK_PERIOD_MS);
@@ -184,4 +184,116 @@ void MenuFragment::createMenuList()
     mMenuItemList->add(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->loadData();
+}
+
+void MenuFragment::showHeader(const char *text)
+{
+    DisplayController::getTft()->setTextColor(TFT_WHITE);
+
+    uint32_t height = DisplayController::getTft()->fontHeight();
+    uint32_t x = TFT_WIDTH / 2;
+    uint32_t y = height / 2;
+
+    DisplayController::getTft()->fillRect(0, 0, TFT_WIDTH, height, MENU_HEADER_COLOR);
+    DisplayController::getTft()->setTextDatum(MC_DATUM);
+    DisplayController::getTft()->drawString(text, x, y);
+}
+
+void MenuFragment::showMenuList()
+{
+    static int mPrevIndex = -1;
+    static int startIndex = 0;
+
+    LOG("showMenuList %d", mIsFirstTime);
+    if (!mMenuItemList)
+    {
+        LOG("mMenuItemList is null");
+        return;
+    }
+
+    if (mIsFirstTime)
+    {
+        DisplayController::clear();
+        showHeader("MENU");
+    }
+
+    uint16_t headerHeight = DisplayController::getTft()->fontHeight();
+    uint16_t itemHeight = DisplayController::getTft()->fontHeight() * 1.3;
+    uint16_t ypos = headerHeight;
+    int maxDrawableItems = round((TFT_HEIGHT - headerHeight) * 1.0 / itemHeight);
+
+    DisplayController::getTft()->setTextDatum(CL_DATUM);
+
+    if (mIsFirstTime)
+    {
+        startIndex = 0;
+        mPrevIndex = -1;
+        mCurrentIndex = 0;
+    }
+    else
+    {
+        if (mCurrentIndex > mPrevIndex && startIndex + maxDrawableItems <= mMenuItemList->length() && mCurrentIndex > startIndex + maxDrawableItems - 2)
+        {
+            startIndex++;
+        }
+        else if (mCurrentIndex < mPrevIndex && startIndex > 0 && mCurrentIndex < startIndex + 1)
+        {
+            startIndex--;
+        }
+    }
+
+    for (int i = startIndex; i < mMenuItemList->length() && i < startIndex + maxDrawableItems; i++)
+    {
+        if (mCurrentIndex != mPrevIndex)
+        {
+            if (mPrevIndex >= 0 && i == mPrevIndex)
+            {
+                DisplayController::getTft()->fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_BACKGROUND_COLOR);
+            }
+            else if (mCurrentIndex >= 0 && i == mCurrentIndex)
+            {
+                DisplayController::getTft()->fillRect(0, ypos, TFT_WIDTH, itemHeight, MENU_HIGHTLIGHT_COLOR);
+            }
+        }
+        if (i == mCurrentIndex)
+        {
+            DisplayController::getTft()->setTextColor(TFT_WHITE);
+        }
+        else
+        {
+            DisplayController::getTft()->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+        }
+        String itemName = mMenuItemList->get(i)->getName() + "    ";
+        DisplayController::getTft()->drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
+        ypos += itemHeight;
+    }
+    if (startIndex + maxDrawableItems > mMenuItemList->length())
+    {
+        DisplayController::getTft()->fillRect(0, ypos, TFT_WIDTH, TFT_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
+    }
+    mPrevIndex = mCurrentIndex;
+}
+
+void MenuFragment::showEditPanel(MenuItem *item)
+{
+    LOG("showEditPanel %d", mIsFirstTime);
+    if (!item)
+    {
+        LOG("Item is null");
+        return;
+    }
+
+    if (mIsFirstTime)
+    {
+        DisplayController::clear();
+        showHeader(item->getName().c_str());
+    }
+
+    uint16_t headerHeight = DisplayController::getTft()->fontHeight();
+    DisplayController::getTft()->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
+    DisplayController::getTft()->setTextDatum(CC_DATUM);
+    String before = item->isMinimum() ? "     " : "  <  ";
+    String after = item->isMaximum() ? "     " : "  >  ";
+    String str = before + item->getValueAsString() + after;
+    DisplayController::getTft()->drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
 }

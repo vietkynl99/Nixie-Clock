@@ -32,6 +32,10 @@ private:
     static void setEditPanelVisible(bool visible);
     static bool getEditPanelVisible();
     static void createMenuList();
+
+    static void showHeader(const char *text);
+    static void showMenuList();
+    static void showEditPanel(MenuItem *item);
 };
 
 #endif

@@ -82,9 +82,6 @@ public:
 
     static TFT_eSPI *getTft();
 
-    static void showHeader(const char *text);
-    static void showMenuList(MenuItemList *itemList, int currentIndex, bool isFirstTime);
-    static void showEditPanel(MenuItem *item, bool isFirstTime);
     static void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos);
     static void drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t array_size);
 
