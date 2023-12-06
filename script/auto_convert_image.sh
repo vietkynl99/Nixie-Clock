@@ -1,8 +1,8 @@
 #!/bin/bash
 
 HEXTOOL=./bin2hex
-RAW_IMAGE_FOLDER=../raw_images
-OUTPUT_FILE=../include/common/clockDigit.h
+RAW_IMAGE_FOLDER=../images
+OUTPUT_FILE=../include/common/ClockDigit.h
 FILE_TYPE=jpg
 TMP_FILE=./tmp
 # Make sure the original jpeg is less than 32Kbyes as there is an array size limit imposed by the Arduino IDE
