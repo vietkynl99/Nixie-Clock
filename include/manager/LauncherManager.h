@@ -2,6 +2,7 @@
 #define _LAUNCHER_MANAGER_H_
 
 #include "../common/Log.h"
+#include "../fragment/BootFragment.h"
 #include "../fragment/ClockFragment.h"
 #include "../fragment/MenuFragment.h"
 #include "../fragment/CubeFragment.h"

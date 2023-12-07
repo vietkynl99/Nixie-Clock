@@ -7,17 +7,34 @@ static constexpr const char *const TAG = "LAUNCHER";
 void LauncherManager::init()
 {
     DisplayController::init();
+
+    BootFragment::init();
     ClockFragment::init();
     MenuFragment::init();
     CubeFragment::init();
-    show(FRAGMENT_TYPE_DEFAULT);
+
+    BootFragment::show();
 }
 
 void LauncherManager::loop()
 {
-    ClockFragment::loop();
-    MenuFragment::loop();
-    CubeFragment::loop();
+    if (BootFragment::isVisible())
+    {
+        if (BootFragment::isDone())
+        {
+            show(FRAGMENT_TYPE_DEFAULT);
+        }
+        else
+        {
+            BootFragment::loop();
+        }
+    }
+    else
+    {
+        ClockFragment::loop();
+        MenuFragment::loop();
+        CubeFragment::loop();
+    }
 }
 
 void LauncherManager::show(FragmentType type)
@@ -32,6 +49,10 @@ void LauncherManager::show(FragmentType type)
         return;
     }
 
+    if (BootFragment::isVisible())
+    {
+        BootFragment::hide();
+    }
     if (ClockFragment::isVisible())
     {
         ClockFragment::hide();
