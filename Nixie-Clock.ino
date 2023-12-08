@@ -1,5 +1,6 @@
 #include <SerialParser.h>
 #include "include/common/Log.h"
+#include "include/controller/HardwareController.h"
 #include "include/controller/WifiMaster.h"
 #include "include/manager/LauncherManager.h"
 
@@ -106,8 +107,9 @@ void task2Handler(void *data)
 	LOG("Start task 2");
 	while (true)
 	{
+		HardwareController::loop();
 		debugHandler();
-		vTaskDelay(20 / portTICK_PERIOD_MS);
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -118,6 +120,7 @@ void setup()
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
+	HardwareController::init();
 	LauncherManager::init();
 	delay(500);
 
