@@ -40,8 +40,8 @@
 #if TFT_CS != -1
 #error TFT_CS must be -1
 #endif
-#if TFT_DC != 2
-#error TFT_DC must be 2
+#if TFT_DC != 5
+#error TFT_DC must be 5
 #endif
 #if TFT_RST != 4
 #error TFT_RST must be 4
