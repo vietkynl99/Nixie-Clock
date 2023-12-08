@@ -1,6 +1,7 @@
 #include "../../include/controller/HardwareController.h"
 
 int HardwareController::mTouchPin[TOUCH_PIN_COUNT] = {TOUCH_PIN_ENTER, TOUCH_PIN_UP, TOUCH_PIN_DOWN};
+int HardwareController::mBuzzerCount = 0;
 
 static constexpr const char *const TAG = "HARDWARE";
 
@@ -19,6 +20,7 @@ void HardwareController::init()
 void HardwareController::loop()
 {
     buttonHandler();
+    buzzerHandler();
 }
 
 void HardwareController::buttonHandler()
@@ -26,6 +28,7 @@ void HardwareController::buttonHandler()
     static uint32_t timeTick = 0;
     static bool prevState[TOUCH_PIN_COUNT] = {false, false, false};
     static bool newState[TOUCH_PIN_COUNT] = {false, false, false};
+    static bool longState[TOUCH_PIN_COUNT] = {false, false, false};
     static uint32_t risingTimeTick[TOUCH_PIN_COUNT] = {0, 0, 0};
 
     if (xTaskGetTickCount() > timeTick)
@@ -39,7 +42,7 @@ void HardwareController::buttonHandler()
 #ifdef ENABLE_TOUCH_DEBUG
             if (abs(prevState[i] - newState[i]) > newState[i] * 0.2)
             {
-                LOG("Touch index: %d, value: %d -> %d", i, data, newState[i]);
+                LOG("Button %d, value: %d -> %d", i + 1, data, newState[i]);
             }
 #endif
             if (!prevState[i] && newState[i])
@@ -48,15 +51,47 @@ void HardwareController::buttonHandler()
             }
             if (prevState[i] && !newState[i])
             {
+                longState[i] = false;
                 uint32_t pressTime = xTaskGetTickCount() - risingTimeTick[i];
-#ifdef ENABLE_TOUCH_DEBUG
-                LOG("Button %d press time: %d", pressTime);
-#endif
                 if (pressTime > TOUCH_SHORT_PRESS_TIME && pressTime < TOUCH_SHORT_PRESS_TIMEOUT)
                 {
                     LOG("Button %d short pressed", i + 1);
+                    bip(1);
                 }
             }
+            if (newState[i] && !longState[i] && xTaskGetTickCount() - risingTimeTick[i] > TOUCH_LONG_PRESS_TIME)
+            {
+                longState[i] = true;
+                LOG("Button %d long pressed", i + 1);
+                bip(2);
+            }
         }
+    }
+}
+
+void HardwareController::buzzerHandler()
+{
+    static uint32_t timeTick = 0;
+
+    if (xTaskGetTickCount() > timeTick)
+    {
+        timeTick = xTaskGetTickCount() + 70 / portTICK_PERIOD_MS;
+        if (mBuzzerCount > 0)
+        {
+            mBuzzerCount--;
+            digitalWrite(BUZZER_PIN, !digitalRead(BUZZER_PIN));
+        }
+        else if (digitalRead(BUZZER_PIN))
+        {
+            digitalWrite(BUZZER_PIN, LOW);
+        }
+    }
+}
+
+void HardwareController::bip(int n)
+{
+    if (mBuzzerCount == 0)
+    {
+        mBuzzerCount = 2 * n;
     }
 }

@@ -16,19 +16,22 @@
 #define TOUCH_SHORT_PRESS_TIMEOUT 700
 #define TOUCH_LONG_PRESS_TIME 3000
 
-#define ENABLE_TOUCH_DEBUG
+// #define ENABLE_TOUCH_DEBUG
 
 class HardwareController
 {
 private:
     static int mTouchPin[TOUCH_PIN_COUNT];
+    static int mBuzzerCount;
 
 public:
     static void init();
     static void loop();
+    static void bip(int n);
 
 private:
     static void buttonHandler();
+    static void buzzerHandler();
 };
 
 #endif
