@@ -9,7 +9,6 @@ class MenuFragment
 {
 private:
     static MenuItemList *mMenuItemList;
-    static bool mIsInitialized;
     static bool mIsVisible;
     static bool mNeedsRedraw;
     static bool mIsFirstTime;

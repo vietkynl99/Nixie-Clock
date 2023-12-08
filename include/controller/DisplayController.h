@@ -71,7 +71,6 @@ class DisplayController
 {
 private:
     static TFT_eSPI *tft;
-    static bool mIsInitialized;
     static int mCsPinList[TFT_MAX];
 
 public:

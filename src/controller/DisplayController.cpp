@@ -3,17 +3,17 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 TFT_eSPI *DisplayController::tft = new TFT_eSPI();
-bool DisplayController::mIsInitialized = false;
 int DisplayController::mCsPinList[TFT_MAX] = {TFT1_CS, TFT2_CS, TFT3_CS, TFT4_CS, TFT5_CS, TFT6_CS};
 
 static constexpr const char *const TAG = "DISPLAY";
 
 void DisplayController::init()
 {
-    if (!mIsInitialized)
+    static bool initialized = false;
+    if (!initialized)
     {
         LOG("init");
-        mIsInitialized = true;
+        initialized = true;
 
         for (int i = 0; i < TFT_MAX; i++)
         {

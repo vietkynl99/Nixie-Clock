@@ -1,7 +1,6 @@
 #include "../../include/fragment/MenuFragment.h"
 #include "../../include/controller/DisplayController.h"
 
-bool MenuFragment::mIsInitialized = false;
 bool MenuFragment::mIsVisible = false;
 bool MenuFragment::mNeedsRedraw = false;
 bool MenuFragment::mIsFirstTime = false;
@@ -14,9 +13,10 @@ static constexpr const char *const TAG = "MENU";
 
 void MenuFragment::init()
 {
-    if (!mIsInitialized)
+    static bool initialized = false;
+    if (!initialized)
     {
-        mIsInitialized = true;
+        initialized = true;
         DisplayController::init();
         createMenuList();
     }
