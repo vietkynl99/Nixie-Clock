@@ -48,8 +48,8 @@
 #endif
 
 #define TFT_MAX     6 // Number of TFT displays
-#define TFT1_CS     22
-#define TFT2_CS     21
+#define TFT1_CS     27
+#define TFT2_CS     15
 #define TFT3_CS     13
 #define TFT4_CS     14
 #define TFT5_CS     25
