@@ -3,6 +3,7 @@
 
 #include "../common/Log.h"
 #include "../controller/DisplayController.h"
+#include "../../include/controller/RTCController.h"
 
 class ClockFragment
 {

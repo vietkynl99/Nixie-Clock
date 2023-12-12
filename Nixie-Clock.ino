@@ -79,6 +79,16 @@ void debugHandler()
 			{
 				MenuFragment::back();
 			}
+			// set time: Ex 19:25:23 -> 190523
+			else if (!strcmp(cmd, "TIME"))
+			{
+				RTCController::setTime(code / 10000, code % 10000 / 100, code % 100);
+			}
+			// set date: Ex 2023/01/08 -> 20230108 (year: 2000 -> 2099)
+			else if (!strcmp(cmd, "DATE"))
+			{
+				RTCController::setDate(code / 10000, code % 10000 / 100, code % 100);
+			}
 			else
 			{
 				LOG("Unknown command: '%s'", cmd);
@@ -115,8 +125,8 @@ void task2Handler(void *data)
 
 void setup()
 {
+	delay(500);
 	mMutex = xSemaphoreCreateMutex();
-
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);

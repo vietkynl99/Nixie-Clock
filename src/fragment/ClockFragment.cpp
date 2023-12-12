@@ -9,6 +9,7 @@ static constexpr const char *const TAG = "CLOCK";
 
 void ClockFragment::init()
 {
+    RTCController::init();
     DisplayController::init();
 }
 
@@ -16,29 +17,42 @@ void ClockFragment::loop()
 {
     static uint32_t timeTick = 0, digitTimeTick = 0;
     static int digit = 0;
+    static uint32_t prevUnixTime = 0;
 
     if (mIsVisible && xTaskGetTickCount() > digitTimeTick)
     {
-        digitTimeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
-        digit++;
-        if (digit > 9)
+        digitTimeTick = xTaskGetTickCount() + 300 / portTICK_PERIOD_MS;
+
+        DateTime now = RTCController::getCurrentDateTime();
+        if (RTCController::isValid(now))
         {
-            digit = 0;
+            if (prevUnixTime != now.unixtime())
+            {
+                prevUnixTime = now.unixtime();
+                LOG("time: %s", RTCController::getString(now).c_str());
+                digit++;
+                if (digit > 9)
+                {
+                    digit = 0;
+                }
+                mNeedsRedraw = true;
+            }
         }
-        mNeedsRedraw = true;
+        else
+        {
+            LOG("Invalid date time: %s", RTCController::getString(now).c_str());
+        }
+        mIsFirstTime = false;
     }
+
     if (mNeedsRedraw && xTaskGetTickCount() > timeTick)
     {
         timeTick = xTaskGetTickCount() + 10 / portTICK_PERIOD_MS;
         if (mIsVisible)
         {
-            if (mIsFirstTime)
-            {
-                DisplayController::clear();
-            }
             showDigit(digit);
         }
-
+        
         mIsFirstTime = false;
         mNeedsRedraw = false;
     }
@@ -70,7 +84,6 @@ bool ClockFragment::isVisible()
 {
     return mIsVisible;
 }
-
 
 void ClockFragment::showDigit(int digit)
 {
