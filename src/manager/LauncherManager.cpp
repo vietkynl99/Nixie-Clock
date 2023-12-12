@@ -66,6 +66,7 @@ void LauncherManager::show(FragmentType type)
         CubeFragment::hide();
     }
 
+    DisplayController::selectDisplay(TFT_MAX);
     DisplayController::clear();
 
     switch (type)

@@ -71,6 +71,7 @@ void ClockFragment::show()
         mIsVisible = true;
         mIsFirstTime = true;
         mNeedsRedraw = true;
+        DisplayController::selectDisplay(TFT_MAX);
     }
 }
 

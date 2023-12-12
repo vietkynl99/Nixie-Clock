@@ -63,6 +63,7 @@ void MenuFragment::show()
         mIsFirstTime = true;
         mCurrentIndex = 0;
         setEditPanelVisible(false);
+        DisplayController::selectDisplay(0);
     }
 }
 

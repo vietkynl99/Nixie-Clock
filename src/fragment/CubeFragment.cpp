@@ -130,6 +130,7 @@ void CubeFragment::show()
         mIsVisible = true;
         mIsFirstTime = true;
         mNeedsRedraw = true;
+        DisplayController::selectDisplay(TFT_MAX);
     }
 }
 
