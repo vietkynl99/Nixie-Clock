@@ -16,8 +16,8 @@ void ClockFragment::init()
 void ClockFragment::loop()
 {
     static uint32_t timeTick = 0, digitTimeTick = 0;
-    static int digit = 0;
     static uint32_t prevUnixTime = 0;
+    static int digit[TFT_MAX];
 
     if (mIsVisible && xTaskGetTickCount() > digitTimeTick)
     {
@@ -30,12 +30,29 @@ void ClockFragment::loop()
             {
                 prevUnixTime = now.unixtime();
                 LOG("time: %s", RTCController::getString(now).c_str());
-                digit++;
-                if (digit > 9)
+
+                for (int i = 0; i < TFT_MAX; i++)
                 {
-                    digit = 0;
+                    int number = -1;
+                    switch (i)
+                    {
+                    case 0:
+                        number = now.second() / 10;
+                        break;
+                    case 1:
+                        number = now.second() % 10;
+                        break;
+                    default:
+                        break;
+                    }
+
+                    if (number >= 0 && (mIsFirstTime || digit[i] != number))
+                    {
+                        digit[i] = number;
+                        DisplayController::selectDisplay(i);
+                        showDigit(digit[i]);
+                    }
                 }
-                mNeedsRedraw = true;
             }
         }
         else
@@ -43,18 +60,6 @@ void ClockFragment::loop()
             LOG("Invalid date time: %s", RTCController::getString(now).c_str());
         }
         mIsFirstTime = false;
-    }
-
-    if (mNeedsRedraw && xTaskGetTickCount() > timeTick)
-    {
-        timeTick = xTaskGetTickCount() + 10 / portTICK_PERIOD_MS;
-        if (mIsVisible)
-        {
-            showDigit(digit);
-        }
-        
-        mIsFirstTime = false;
-        mNeedsRedraw = false;
     }
 }
 
