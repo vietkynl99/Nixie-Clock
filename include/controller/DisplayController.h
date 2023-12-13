@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include <JPEGDecoder.h>
 #include "../common/FreeFonts.h"
 #include "../model/MenuItemList.h"
 #include "../common/Log.h"
@@ -82,12 +81,11 @@ public:
 
     static TFT_eSPI *getTft();
 
-    static void drawArrayJpeg(const uint8_t arrayname[], uint32_t array_size, int xpos, int ypos);
-    static void drawArrayJpegInCenter(const uint8_t arrayname[], uint32_t array_size);
+    static void drawArrayJpeg(const uint8_t array[], uint32_t arraySize, int xpos, int ypos);
+    static void drawArrayJpegInCenter(const uint8_t array[], uint32_t arraySize);
 
 private:
-    static void renderJPEG(int xpos, int ypos);
-    static void jpegInfo();
+    static bool outputDMACallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap);
     static void showTime(uint32_t msTime);
 };
 
