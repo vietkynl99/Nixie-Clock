@@ -1,5 +1,6 @@
 #include <SerialParser.h>
 #include "include/common/Log.h"
+#include "include/common/MessageEvent.h"
 #include "include/controller/HardwareController.h"
 #include "include/controller/WifiMaster.h"
 #include "include/manager/LauncherManager.h"
@@ -100,11 +101,19 @@ void debugHandler()
 
 void task1Handler(void *data)
 {
+	Message message;
+
 	LOG("Start task 1");
 	while (true)
 	{
-		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
+		if (mMutex && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
+			if(MessageEvent::get(message))
+			{
+				LOG("Received message: type: %d, value: %d", message.type, message.value);
+				LauncherManager::handleEvent(message);
+			}
+
 			LauncherManager::loop();
 			xSemaphoreGive(mMutex);
 		}
@@ -130,6 +139,7 @@ void setup()
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
+	MessageEvent::init();
 	HardwareController::init();
 	LauncherManager::init();
 	delay(500);

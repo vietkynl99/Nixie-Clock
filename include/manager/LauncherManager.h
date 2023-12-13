@@ -2,12 +2,15 @@
 #define _LAUNCHER_MANAGER_H_
 
 #include "../common/Log.h"
+#include "../common/MessageEvent.h"
+#include "../controller/HardwareController.h"
 #include "../fragment/BootFragment.h"
 #include "../fragment/ClockFragment.h"
 #include "../fragment/MenuFragment.h"
 #include "../fragment/CubeFragment.h"
 
-enum FragmentType {
+enum FragmentType
+{
     FRAGMENT_TYPE_NONE,
     FRAGMENT_TYPE_CLOCK,
     FRAGMENT_TYPE_MENU,
@@ -20,12 +23,16 @@ enum FragmentType {
 class LauncherManager
 {
 private:
-    static FragmentType mCurrentFragmentType;
+    static int mCurrentFragmentType;
 
 public:
     static void init();
     static void loop();
-    static void show(FragmentType type);
+    static void show(int type);
+    static void handleEvent(const Message &message);
+
+private:
+    static void changeToNextFragment();
 };
 
 #endif

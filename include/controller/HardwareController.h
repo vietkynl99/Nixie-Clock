@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "../common/Log.h"
+#include "../common/MessageEvent.h"
 
 #define TOUCH_PIN_COUNT 3
 
@@ -10,6 +11,10 @@
 #define TOUCH_PIN_ENTER T6
 #define TOUCH_PIN_UP T5
 #define TOUCH_PIN_DOWN T4
+
+#define BUTTON_ENTER 0
+#define BUTTON_UP 1
+#define BUTTON_DOWN 2
 
 #define TOUCH_THRESHOLD 40
 #define TOUCH_SHORT_PRESS_TIME 70

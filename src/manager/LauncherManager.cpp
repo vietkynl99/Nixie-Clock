@@ -1,6 +1,6 @@
 #include "../../include/manager/LauncherManager.h"
 
-FragmentType LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_NONE;
+int LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_NONE;
 
 static constexpr const char *const TAG = "LAUNCHER";
 
@@ -37,7 +37,7 @@ void LauncherManager::loop()
     }
 }
 
-void LauncherManager::show(FragmentType type)
+void LauncherManager::show(int type)
 {
     if (type < FRAGMENT_TYPE_NONE || type >= FRAGMENT_TYPE_MAX)
     {
@@ -48,6 +48,7 @@ void LauncherManager::show(FragmentType type)
     {
         return;
     }
+    mCurrentFragmentType = type;
 
     if (BootFragment::isVisible())
     {
@@ -69,7 +70,7 @@ void LauncherManager::show(FragmentType type)
     DisplayController::selectDisplay(TFT_MAX);
     DisplayController::clear();
 
-    switch (type)
+    switch (mCurrentFragmentType)
     {
     case FRAGMENT_TYPE_CLOCK:
         ClockFragment::show();
@@ -83,6 +84,55 @@ void LauncherManager::show(FragmentType type)
     default:
         break;
     }
+}
 
-    mCurrentFragmentType = type;
+void LauncherManager::handleEvent(const Message &message)
+{
+    LOG("Get event %d", message.type);
+
+    switch (message.type)
+    {
+    case MESSAGE_TYPE_BUTTON_LONG_PRESSED:
+    {
+        if (message.value == BUTTON_ENTER)
+        {
+            changeToNextFragment();
+        }
+        break;
+    }
+    case MESSAGE_TYPE_BUTTON_SHORT_PRESSED:
+    {
+        if (mCurrentFragmentType == FRAGMENT_TYPE_MENU)
+        {
+            switch (message.value)
+            {
+            case BUTTON_ENTER:
+                MenuFragment::enter();
+                break;
+            case BUTTON_UP:
+                MenuFragment::up();
+                break;
+            case BUTTON_DOWN:
+                MenuFragment::down();
+                break;
+                break;
+            default:
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void LauncherManager::changeToNextFragment()
+{
+    LOG("Change to next fragment");
+    int type = mCurrentFragmentType + 1;
+    if (type >= FRAGMENT_TYPE_MAX)
+    {
+        type = FRAGMENT_TYPE_NONE + 1;
+    }
+    show(type);
 }

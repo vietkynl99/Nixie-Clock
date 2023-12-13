@@ -42,7 +42,7 @@ void HardwareController::buttonHandler()
 #ifdef ENABLE_TOUCH_DEBUG
             if (abs(prevState[i] - newState[i]) > newState[i] * 0.2)
             {
-                LOG("Button %d, value: %d -> %d", i + 1, data, newState[i]);
+                LOG("Button %d, value: %d -> %d", i, data, newState[i]);
             }
 #endif
             if (!prevState[i] && newState[i])
@@ -55,14 +55,18 @@ void HardwareController::buttonHandler()
                 uint32_t pressTime = xTaskGetTickCount() - risingTimeTick[i];
                 if (pressTime > TOUCH_SHORT_PRESS_TIME && pressTime < TOUCH_SHORT_PRESS_TIMEOUT)
                 {
-                    LOG("Button %d short pressed", i + 1);
+                    Message event = {MESSAGE_TYPE_BUTTON_SHORT_PRESSED, i};
+                    MessageEvent::send(event);
+                    LOG("Button %d short pressed", i);
                     bip(1);
                 }
             }
             if (newState[i] && !longState[i] && xTaskGetTickCount() - risingTimeTick[i] > TOUCH_LONG_PRESS_TIME)
             {
                 longState[i] = true;
-                LOG("Button %d long pressed", i + 1);
+                Message event = {MESSAGE_TYPE_BUTTON_LONG_PRESSED, i};
+                MessageEvent::send(event);
+                LOG("Button %d long pressed", i);
                 bip(2);
             }
         }
