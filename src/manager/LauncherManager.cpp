@@ -115,8 +115,8 @@ void LauncherManager::handleEvent(const Message &message)
             case BUTTON_DOWN:
                 MenuFragment::down();
                 break;
-                break;
             default:
+                break;
             }
         }
         break;
