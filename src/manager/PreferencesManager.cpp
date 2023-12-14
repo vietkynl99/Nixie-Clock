@@ -15,7 +15,7 @@ void PreferencesManager::clear(const char *name)
 
 void PreferencesManager::putInt(const char *name, const char *key, int value)
 {
-    LOG("Saved %s", name);
+    LOG("Saved %s", key);
     mPreferences->begin(name, false);
     mPreferences->putInt(key, value);
     mPreferences->end();
