@@ -132,7 +132,7 @@ void LauncherManager::changeToNextFragment()
     int type = mCurrentFragmentType + 1;
     if (type >= FRAGMENT_TYPE_MAX)
     {
-        type = 1;
+        type = 0;
     }
     show(type);
 }
