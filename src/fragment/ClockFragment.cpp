@@ -1,3 +1,4 @@
+#include "../../include/fragment/MenuFragment.h"
 #include "../../include/fragment/ClockFragment.h"
 #include "../../include/common/ClockDigit.h"
 
@@ -29,7 +30,10 @@ void ClockFragment::loop()
             if (prevUnixTime != now.unixtime())
             {
                 prevUnixTime = now.unixtime();
-                LOG("time: %s", RTCController::getString(now).c_str());
+                if (MenuFragment::isRTCDebugEnabled())
+                {
+                    LOG("time: %s", RTCController::getString(now).c_str());
+                }
 
                 for (int i = 0; i < TFT_MAX; i++)
                 {

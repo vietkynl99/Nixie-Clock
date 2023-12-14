@@ -153,9 +153,36 @@ void MenuFragment::back()
 }
 
 /* ATTENTION: The index of the setting MUST BE same as the list */
-bool MenuFragment::isWebServerEnable()
+bool MenuFragment::isWebServerEnabled()
 {
     return mMenuItemList->get(0)->getBoolValue();
+}
+
+bool MenuFragment::isRTCDebugEnabled()
+{
+    return mMenuItemList->get(1)->getBoolValue();
+}
+
+void MenuFragment::createMenuList()
+{
+    mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false));
+    mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
+    mMenuItemList->add(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 5", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 6", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 7", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->add(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
+    mMenuItemList->loadData();
+
+    LOG("Settings list loaded:");
+    for (int i = 0; i < mMenuItemList->length(); i++)
+    {
+        MenuItem *item = mMenuItemList->get(i);
+        LOG("%d. %s: %s", i + 1, item->getName().c_str(), item->getStringValue().c_str());
+    }
 }
 
 void MenuFragment::setEditPanelVisible(bool visible)
@@ -175,28 +202,6 @@ void MenuFragment::setEditPanelVisible(bool visible)
 bool MenuFragment::getEditPanelVisible()
 {
     return mEditPanelVisible;
-}
-
-void MenuFragment::createMenuList()
-{
-    mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false));
-    mMenuItemList->add(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
-    mMenuItemList->add(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 5", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 6", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 7", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 8", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->add(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
-    mMenuItemList->loadData();
-
-    LOG("Settings list loaded:");
-    for (int i = 0; i < mMenuItemList->length(); i++)
-    {
-        MenuItem *item = mMenuItemList->get(i);
-        LOG("%d. %s: %s", i + 1, item->getName().c_str(), item->getStringValue().c_str());
-    }
 }
 
 void MenuFragment::showHeader(const char *text)

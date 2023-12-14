@@ -27,12 +27,13 @@ public:
     static void enter();
     static void back();
 
-    static bool isWebServerEnable();
+    static bool isWebServerEnabled();
+    static bool isRTCDebugEnabled();
 
 private:
+    static void createMenuList();
     static void setEditPanelVisible(bool visible);
     static bool getEditPanelVisible();
-    static void createMenuList();
 
     static void showHeader(const char *text);
     static void showMenuList();

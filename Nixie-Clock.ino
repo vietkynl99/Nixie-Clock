@@ -125,7 +125,7 @@ void task2Handler(void *data)
 {
 	LOG("Start task 2");
 
-	bool webServerEnabled = MenuFragment::isWebServerEnable();
+	bool webServerEnabled = MenuFragment::isWebServerEnabled();
 	if (webServerEnabled)
 	{
 		WifiMaster::init();
