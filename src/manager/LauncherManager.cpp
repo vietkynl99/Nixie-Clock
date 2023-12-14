@@ -9,6 +9,7 @@ void LauncherManager::init()
     DisplayController::init();
 
     BootFragment::init();
+    ReBootFragment::init();
     ClockFragment::init();
     MenuFragment::init();
     CubeFragment::init();
@@ -31,6 +32,7 @@ void LauncherManager::loop()
     }
     else
     {
+        ReBootFragment::loop();
         ClockFragment::loop();
         MenuFragment::loop();
         CubeFragment::loop();
@@ -53,6 +55,10 @@ void LauncherManager::show(int type)
     if (BootFragment::isVisible())
     {
         BootFragment::hide();
+    }
+    if (ReBootFragment::isVisible())
+    {
+        ReBootFragment::hide();
     }
     if (ClockFragment::isVisible())
     {
@@ -80,6 +86,9 @@ void LauncherManager::show(int type)
         break;
     case FRAGMENT_TYPE_CUBE:
         CubeFragment::show();
+        break;
+    case FRAGMENT_TYPE_REBOOT:
+        ReBootFragment::show();
         break;
     default:
         break;
@@ -121,6 +130,11 @@ void LauncherManager::handleEvent(const Message &message)
         }
         break;
     }
+    case MESSAGE_TYPE_REBOOT:
+    {
+        show(FRAGMENT_TYPE_REBOOT);
+        break;
+    }
     default:
         break;
     }
@@ -130,7 +144,7 @@ void LauncherManager::changeToNextFragment()
 {
     LOG("Change to next fragment");
     int type = mCurrentFragmentType + 1;
-    if (type >= FRAGMENT_TYPE_MAX)
+    if (type >= FRAGMENT_TYPE_REBOOT)
     {
         type = 0;
     }

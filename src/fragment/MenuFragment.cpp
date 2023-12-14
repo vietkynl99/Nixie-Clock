@@ -135,11 +135,21 @@ void MenuFragment::enter()
     {
         return;
     }
+    bool reDraw = true;
     if (mDataChanged && getEditPanelVisible())
     {
         mMenuItemList->get(mCurrentIndex)->save();
+        if (mMenuItemList->get(mCurrentIndex)->needToReboot())
+        {
+            LOG("Need to reboot");
+            reDraw = false;
+            MessageEvent::send(MESSAGE_TYPE_REBOOT);
+        }
     }
-    setEditPanelVisible(!getEditPanelVisible());
+    if (reDraw)
+    {
+        setEditPanelVisible(!getEditPanelVisible());
+    }
     mDataChanged = false;
 }
 
@@ -165,7 +175,7 @@ bool MenuFragment::isRTCDebugEnabled()
 
 void MenuFragment::createMenuList()
 {
-    mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false));
+    mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false, 0, 1, true));
     mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));

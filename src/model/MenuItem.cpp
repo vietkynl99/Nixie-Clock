@@ -3,11 +3,12 @@
 
 #define PREFERENCES_NAME "MenuItem"
 
-MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue)
+MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue, bool needToReboot)
 {
     mName = name;
     mValue = value;
     mType = type;
+    mNeedToReboot = needToReboot;
     if (mType == MENU_ITEM_TYPE_BOOL)
     {
         mMinValue = 0;
@@ -74,6 +75,11 @@ bool MenuItem::getBoolValue()
     {
         return false;
     }
+}
+
+bool MenuItem::needToReboot()
+{
+    return mNeedToReboot;
 }
 
 bool MenuItem::isMinimum()

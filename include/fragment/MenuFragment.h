@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "../common/Log.h"
+#include "../common/MessageEvent.h"
 #include "../model/MenuItemList.h"
 
 class MenuFragment

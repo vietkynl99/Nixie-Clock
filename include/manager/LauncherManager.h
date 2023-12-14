@@ -8,12 +8,14 @@
 #include "../fragment/ClockFragment.h"
 #include "../fragment/MenuFragment.h"
 #include "../fragment/CubeFragment.h"
+#include "../fragment/ReBootFragment.h"
 
 enum FragmentType
 {
     FRAGMENT_TYPE_CLOCK,
     FRAGMENT_TYPE_MENU,
     FRAGMENT_TYPE_CUBE,
+    FRAGMENT_TYPE_REBOOT,
     FRAGMENT_TYPE_MAX
 };
 

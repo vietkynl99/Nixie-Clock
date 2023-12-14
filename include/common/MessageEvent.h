@@ -6,7 +6,8 @@
 
 enum MessageType{
     MESSAGE_TYPE_BUTTON_SHORT_PRESSED,
-    MESSAGE_TYPE_BUTTON_LONG_PRESSED
+    MESSAGE_TYPE_BUTTON_LONG_PRESSED,
+    MESSAGE_TYPE_REBOOT
 };
 
 typedef struct
@@ -23,6 +24,7 @@ private:
 public:
     static bool init();
     static bool send(const Message &message);
+    static bool send(MessageType type);
     static bool get(Message &message);
 };
 

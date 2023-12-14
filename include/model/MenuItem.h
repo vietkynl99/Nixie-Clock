@@ -17,9 +17,10 @@ private:
     int mValue;
     int mMinValue;
     int mMaxValue;
+    bool mNeedToReboot;
 
 public:
-    MenuItem(const String& name, MenuItemType type, int value, int minValue = 0, int maxValue = 0);
+    MenuItem(const String& name, MenuItemType type, int value, int minValue = 0, int maxValue = 0, bool needToReboot = false);
 
     bool setValue(int value);
 
@@ -27,6 +28,7 @@ public:
     int getValue();
     String getStringValue();
     bool getBoolValue();
+    bool needToReboot();
 
     bool isMinimum();
     bool isMaximum();
