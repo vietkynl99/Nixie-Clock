@@ -1,6 +1,6 @@
 #include "../../include/manager/LauncherManager.h"
 
-int LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_NONE;
+int LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_MAX;
 
 static constexpr const char *const TAG = "LAUNCHER";
 
@@ -39,7 +39,7 @@ void LauncherManager::loop()
 
 void LauncherManager::show(int type)
 {
-    if (type < FRAGMENT_TYPE_NONE || type >= FRAGMENT_TYPE_MAX)
+    if (type < 0 || type >= FRAGMENT_TYPE_MAX)
     {
         LOG("Invalid fragment type: %d", type);
         return;
@@ -132,7 +132,7 @@ void LauncherManager::changeToNextFragment()
     int type = mCurrentFragmentType + 1;
     if (type >= FRAGMENT_TYPE_MAX)
     {
-        type = FRAGMENT_TYPE_NONE + 1;
+        type = 1;
     }
     show(type);
 }
