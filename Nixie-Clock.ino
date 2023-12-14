@@ -28,7 +28,7 @@ void debugHandler()
 			}
 			else if (!strcmp(cmd, "RSWIFI"))
 			{
-				WifiMaster::resetWifiSettings();
+				WifiMaster::resetSettings();
 			}
 			else if (!strcmp(cmd, "LAUNCHER"))
 			{
@@ -108,7 +108,7 @@ void task1Handler(void *data)
 	{
 		if (mMutex && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
-			if(MessageEvent::get(message))
+			if (MessageEvent::get(message))
 			{
 				LOG("Received message: type: %d, value: %d", message.type, message.value);
 				LauncherManager::handleEvent(message);
@@ -124,10 +124,20 @@ void task1Handler(void *data)
 void task2Handler(void *data)
 {
 	LOG("Start task 2");
+
+	bool webServerEnabled = MenuFragment::isWebServerEnable();
+	if (webServerEnabled)
+	{
+		WifiMaster::init();
+	}
 	while (true)
 	{
-		HardwareController::loop();
 		debugHandler();
+		HardwareController::loop();
+		if (webServerEnabled)
+		{
+			WifiMaster::loop();
+		}
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }

@@ -19,7 +19,6 @@ void PreferencesManager::putInt(const char *name, const char *key, int value)
     mPreferences->begin(name, false);
     mPreferences->putInt(key, value);
     mPreferences->end();
-
 }
 
 int PreferencesManager::getInt(const char *name, const char *key, int defaultValue)

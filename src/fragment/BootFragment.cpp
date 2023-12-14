@@ -135,7 +135,6 @@ void BootFragment::createInstance()
                 mLengthMax = mLengthList[i];
             }
         }
-        LOG("Length max: %d", mLengthMax);
     }
     if (!mColorList)
     {

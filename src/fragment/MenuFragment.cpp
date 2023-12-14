@@ -152,6 +152,12 @@ void MenuFragment::back()
     setEditPanelVisible(false);
 }
 
+/* ATTENTION: The index of the setting MUST BE same as the list */
+bool MenuFragment::isWebServerEnable()
+{
+    return mMenuItemList->get(0)->getBoolValue();
+}
+
 void MenuFragment::setEditPanelVisible(bool visible)
 {
     if (mEditPanelVisible != visible)
@@ -173,8 +179,7 @@ bool MenuFragment::getEditPanelVisible()
 
 void MenuFragment::createMenuList()
 {
-    LOG("Create menu list")
-    mMenuItemList->add(new MenuItem("Setting 1", MENU_ITEM_TYPE_BOOL, false));
+    mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Setting 2", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Setting 3", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 4", MENU_ITEM_TYPE_INT, 0, 0, 10));
@@ -185,6 +190,13 @@ void MenuFragment::createMenuList()
     mMenuItemList->add(new MenuItem("Setting 9", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->add(new MenuItem("Setting 10", MENU_ITEM_TYPE_INT, 0, 0, 10));
     mMenuItemList->loadData();
+
+    LOG("Settings list loaded:");
+    for (int i = 0; i < mMenuItemList->length(); i++)
+    {
+        MenuItem *item = mMenuItemList->get(i);
+        LOG("%d. %s: %s", i + 1, item->getName().c_str(), item->getStringValue().c_str());
+    }
 }
 
 void MenuFragment::showHeader(const char *text)
@@ -295,6 +307,6 @@ void MenuFragment::showEditPanel(MenuItem *item)
     DisplayController::getTft()->setTextDatum(CC_DATUM);
     String before = item->isMinimum() ? "     " : "  <  ";
     String after = item->isMaximum() ? "     " : "  >  ";
-    String str = before + item->getValueAsString() + after;
+    String str = before + item->getStringValue() + after;
     DisplayController::getTft()->drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
 }

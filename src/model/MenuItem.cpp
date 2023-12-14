@@ -52,7 +52,7 @@ bool MenuItem::setValue(int value)
     return false;
 }
 
-String MenuItem::getValueAsString()
+String MenuItem::getStringValue()
 {
     if (mType == MENU_ITEM_TYPE_BOOL)
     {
@@ -61,6 +61,18 @@ String MenuItem::getValueAsString()
     else
     {
         return String(mValue);
+    }
+}
+
+bool MenuItem::getBoolValue()
+{
+    if (mType == MENU_ITEM_TYPE_BOOL)
+    {
+        return mValue != 0;
+    }
+    else
+    {
+        return false;
     }
 }
 

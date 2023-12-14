@@ -27,6 +27,8 @@ public:
     static void enter();
     static void back();
 
+    static bool isWebServerEnable();
+
 private:
     static void setEditPanelVisible(bool visible);
     static bool getEditPanelVisible();

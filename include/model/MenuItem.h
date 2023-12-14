@@ -20,10 +20,14 @@ private:
 
 public:
     MenuItem(const String& name, MenuItemType type, int value, int minValue = 0, int maxValue = 0);
+
+    bool setValue(int value);
+
     String getName();
     int getValue();
-    bool setValue(int value);
-    String getValueAsString();
+    String getStringValue();
+    bool getBoolValue();
+
     bool isMinimum();
     bool isMaximum();
     bool inc();
