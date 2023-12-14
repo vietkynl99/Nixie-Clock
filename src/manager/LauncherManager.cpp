@@ -101,7 +101,7 @@ void LauncherManager::handleEvent(const Message &message)
     {
     case MESSAGE_TYPE_BUTTON_LONG_PRESSED:
     {
-        if (message.value == BUTTON_ENTER)
+        if (message.value == BUTTON1_INDEX)
         {
             changeToNextFragment();
         }
@@ -113,13 +113,13 @@ void LauncherManager::handleEvent(const Message &message)
         {
             switch (message.value)
             {
-            case BUTTON_ENTER:
+            case BUTTON1_INDEX:
                 MenuFragment::enter();
                 break;
-            case BUTTON_UP:
+            case BUTTON2_INDEX:
                 MenuFragment::up();
                 break;
-            case BUTTON_DOWN:
+            case BUTTON3_INDEX:
                 MenuFragment::down();
                 break;
             default:

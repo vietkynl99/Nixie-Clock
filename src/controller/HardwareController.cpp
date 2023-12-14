@@ -1,6 +1,6 @@
 #include "../../include/controller/HardwareController.h"
 
-int HardwareController::mTouchPin[TOUCH_PIN_COUNT] = {TOUCH_PIN_ENTER, TOUCH_PIN_UP, TOUCH_PIN_DOWN};
+int HardwareController::mTouchPin[TOUCH_PIN_COUNT] = {TOUCH_PIN_BUTTON1, TOUCH_PIN_BUTTON2, TOUCH_PIN_BUTTON3};
 int HardwareController::mBuzzerCount = 0;
 
 static constexpr const char *const TAG = "HARDWARE";
