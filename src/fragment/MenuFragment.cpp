@@ -143,7 +143,8 @@ void MenuFragment::enter()
         {
             LOG("Need to reboot");
             reDraw = false;
-            MessageEvent::send(MESSAGE_TYPE_REBOOT);
+            Message message = {MESSAGE_TYPE_REBOOT, 0};
+            MessageEvent::send(message);
         }
     }
     if (reDraw)

@@ -24,7 +24,6 @@ private:
 public:
     static bool init();
     static bool send(const Message &message);
-    static bool send(MessageType type);
     static bool get(Message &message);
 };
 

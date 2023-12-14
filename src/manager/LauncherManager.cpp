@@ -97,8 +97,6 @@ void LauncherManager::show(int type)
 
 void LauncherManager::handleEvent(const Message &message)
 {
-    LOG("Get event %d", message.type);
-
     switch (message.type)
     {
     case MESSAGE_TYPE_BUTTON_LONG_PRESSED:

@@ -31,12 +31,6 @@ bool MessageEvent::send(const Message &message)
     }
 }
 
-bool MessageEvent::send(MessageType type)
-{
-    Message message = {type, 0};
-    send(message);
-}
-
 bool MessageEvent::get(Message &message)
 {
     if (!mQueueHandle || uxQueueMessagesWaiting(mQueueHandle) <= 0)
