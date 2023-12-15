@@ -30,6 +30,7 @@ public:
     static void back();
 
     static bool isWebServerEnabled();
+    static bool isNTPEnabled();
     static bool isRTCDebugEnabled();
 
 private:

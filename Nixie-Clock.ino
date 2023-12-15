@@ -90,6 +90,10 @@ void debugHandler()
 			{
 				RTCController::setDate(code / 10000, code % 10000 / 100, code % 100);
 			}
+			else if (!strcmp(cmd, "NTP"))
+			{
+				LOG("NTP time: %s", WebServerManager::getNTPTime().c_str());
+			}
 			else
 			{
 				LOG("Unknown command: '%s'", cmd);

@@ -1,8 +1,13 @@
 #include "../../include/manager/WebServerManager.h"
 
 WebServer *WebServerManager::mServer = nullptr;
+WiFiUDP WebServerManager::mNtpUDP;
+NTPClient *WebServerManager::mTimeClient = nullptr;
 
 static constexpr const char *const TAG = "SERVER";
+
+#define NTP_TIME_OFFSET (25200)				 // UTC+7 (Vietnam)
+#define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
 
 void WebServerManager::init()
 {
@@ -13,10 +18,23 @@ void WebServerManager::loop()
 {
 	WifiMaster::loop();
 	statusHandler();
-	if (mServer != nullptr)
+	if (mServer)
 	{
 		mServer->handleClient();
 	}
+	if (mTimeClient)
+	{
+		mTimeClient->update();
+	}
+}
+
+String WebServerManager::getNTPTime()
+{
+	if (!mTimeClient)
+	{
+		return "";
+	}
+	return mTimeClient->getFormattedDate();
 }
 
 void WebServerManager::startServer()
@@ -26,6 +44,7 @@ void WebServerManager::startServer()
 	if (!started)
 	{
 		started = true;
+		LOG("Starting server")
 		mServer = new WebServer(80);
 		mServer->onNotFound(notFoundHandler);
 		mServer->on("/login", loginHandler);
@@ -43,6 +62,24 @@ void WebServerManager::startServer()
 			LOG("mDNS responder started: http://" MDNS_SERVER_NAME ".local");
 			// MDNS.addService("http", "tcp", 80);
 		}
+	}
+}
+
+void WebServerManager::startNTP()
+{
+	static bool started = false;
+	if (!started && MenuFragment::isNTPEnabled())
+	{
+		started = true;
+		LOG("Starting NTP")
+		mTimeClient = new NTPClient(mNtpUDP);
+		mTimeClient->begin();
+#ifdef NTP_TIME_OFFSET
+		mTimeClient->setTimeOffset(NTP_TIME_OFFSET);
+#endif
+#ifdef NTP_UPDATE_INTERVAL
+		mTimeClient->setUpdateInterval(NTP_UPDATE_INTERVAL);
+#endif
 	}
 }
 
@@ -156,6 +193,7 @@ void WebServerManager::statusHandler()
 			{
 				LOG("WiFi connected: SSID: %s, IP: %s", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
 				startServer();
+				startNTP();
 			}
 			else
 			{

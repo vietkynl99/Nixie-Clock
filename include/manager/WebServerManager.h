@@ -6,9 +6,12 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../controller/WifiMaster.h"
+#include "../fragment/MenuFragment.h"
 
 #define MDNS_SERVER_NAME "kynlclock"
 
@@ -19,13 +22,18 @@ class WebServerManager
 {
 private:
     static WebServer *mServer;
+    static WiFiUDP mNtpUDP;
+    static NTPClient *mTimeClient;
 
 public:
     static void init();
     static void loop();
 
+    static String getNTPTime();
+
 private:
     static void startServer();
+    static void startNTP();
     static void notFoundHandler();
     static void loginHandler();
     static void rootHandler();
