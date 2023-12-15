@@ -30,11 +30,12 @@ void WebServerManager::loop()
 
 String WebServerManager::getNTPTime()
 {
-	if (!mTimeClient)
+	if (!mTimeClient || !mTimeClient->isTimeSet())
 	{
 		return "";
 	}
-	return mTimeClient->getFormattedDate();
+	DateTime now(mTimeClient->getEpochTime());
+	return RTCController::getString(now);
 }
 
 void WebServerManager::startServer()
