@@ -7,7 +7,7 @@ bool MenuFragment::mIsFirstTime = false;
 MenuItemList *MenuFragment::mMenuItemList = new MenuItemList();
 int MenuFragment::mCurrentIndex = 0;
 bool MenuFragment::mEditPanelVisible = false;
-bool MenuFragment::mDataChanged = false;
+int MenuFragment::mPrevValue = 0;
 
 static constexpr const char *const TAG = "MENU";
 
@@ -95,7 +95,6 @@ void MenuFragment::up()
     {
         if (mMenuItemList->get(mCurrentIndex)->inc())
         {
-            mDataChanged = true;
             mNeedsRedraw = true;
         }
     }
@@ -117,7 +116,6 @@ void MenuFragment::down()
     {
         if (mMenuItemList->get(mCurrentIndex)->dec())
         {
-            mDataChanged = true;
             mNeedsRedraw = true;
         }
     }
@@ -134,8 +132,10 @@ void MenuFragment::enter()
     {
         return;
     }
+    
+    // Save data before exit edit panel
     bool reDraw = true;
-    if (mDataChanged && getEditPanelVisible())
+    if (getEditPanelVisible() && mPrevValue != mMenuItemList->get(mCurrentIndex)->getValue())
     {
         if (mMenuItemList->get(mCurrentIndex)->needToReboot())
         {
@@ -162,11 +162,23 @@ void MenuFragment::enter()
             mMenuItemList->get(mCurrentIndex)->save();
         }
     }
+    else
+    { 
+        // Restore old value
+        mMenuItemList->get(mCurrentIndex)->load();
+    }
+
+    // Toggle edit panel
     if (reDraw)
     {
         setEditPanelVisible(!getEditPanelVisible());
     }
-    mDataChanged = false;
+
+    // After switch to edit panel
+    if(getEditPanelVisible())
+    {
+        mPrevValue = mMenuItemList->get(mCurrentIndex)->getValue();
+    }
 }
 
 void MenuFragment::back()

@@ -16,7 +16,7 @@ private:
     static bool mIsFirstTime;
     static int mCurrentIndex;
     static bool mEditPanelVisible;
-    static bool mDataChanged;
+    static int mPrevValue;
 
 public:
     static void init();
