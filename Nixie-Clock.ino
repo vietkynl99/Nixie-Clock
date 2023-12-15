@@ -2,7 +2,7 @@
 #include "include/common/Log.h"
 #include "include/common/MessageEvent.h"
 #include "include/controller/HardwareController.h"
-#include "include/controller/WifiMaster.h"
+#include "include/manager/WebServerManager.h"
 #include "include/manager/LauncherManager.h"
 
 #define TASK1_STACK_SIZE 10000
@@ -128,7 +128,7 @@ void task2Handler(void *data)
 	bool webServerEnabled = MenuFragment::isWebServerEnabled();
 	if (webServerEnabled)
 	{
-		WifiMaster::init();
+		WebServerManager::init();
 	}
 	while (true)
 	{
@@ -136,9 +136,9 @@ void task2Handler(void *data)
 		HardwareController::loop();
 		if (webServerEnabled)
 		{
-			WifiMaster::loop();
+			WebServerManager::loop();
 		}
-		vTaskDelay(10 / portTICK_PERIOD_MS);
+		vTaskDelay(5 / portTICK_PERIOD_MS);
 	}
 }
 

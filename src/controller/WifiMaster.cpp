@@ -46,12 +46,6 @@ void WifiMaster::init()
 void WifiMaster::loop()
 {
     mWiFiManager.process();
-    statusHandler();
-}
-
-void WifiMaster::printConnectedWifiInfo()
-{
-    LOG("SSID: %s, IP: %s", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
 }
 
 void WifiMaster::resetSettings()
@@ -59,28 +53,4 @@ void WifiMaster::resetSettings()
     LOG("Reset WiFi settings");
     mWiFiManager.resetSettings();
     ESP.restart();
-}
-
-void WifiMaster::statusHandler()
-{
-    static uint32_t timeTick = 0;
-    static bool status = false;
-
-    if (xTaskGetTickCount() > timeTick)
-    {
-        timeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
-        if (status != WiFi.isConnected())
-        {
-            status = WiFi.isConnected();
-            if (status)
-            {
-                LOG("WiFi connected");
-                printConnectedWifiInfo();
-            }
-            else
-            {
-                LOG("WiFi disconnected");
-            }
-        }
-    }
 }

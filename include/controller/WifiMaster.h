@@ -17,11 +17,7 @@ private:
 public:
     static void init();
     static void loop();
-    static void printConnectedWifiInfo();
     static void resetSettings();
-
-private:
-    static void statusHandler();
 };
 
 #endif
