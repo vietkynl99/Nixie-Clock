@@ -5,6 +5,7 @@
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../model/MenuItemList.h"
+#include "../fragment/PopupFragment.h"
 
 class MenuFragment
 {

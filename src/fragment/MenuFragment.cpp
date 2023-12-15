@@ -75,7 +75,6 @@ void MenuFragment::hide()
         mIsVisible = false;
         mNeedsRedraw = true;
         mIsFirstTime = true;
-        mCurrentIndex = 0;
         setEditPanelVisible(false);
     }
 }
@@ -138,13 +137,29 @@ void MenuFragment::enter()
     bool reDraw = true;
     if (mDataChanged && getEditPanelVisible())
     {
-        mMenuItemList->get(mCurrentIndex)->save();
         if (mMenuItemList->get(mCurrentIndex)->needToReboot())
         {
-            LOG("Need to reboot");
             reDraw = false;
-            Message message = {MESSAGE_TYPE_REBOOT, 0};
+            PopupFragment::setCallback([](bool selection) {
+                LOG("Selection: %d", selection);
+                if (selection)
+                {
+                    mMenuItemList->get(mCurrentIndex)->save();
+                    Message message = {MESSAGE_TYPE_REBOOT, 0};
+                    MessageEvent::send(message);
+                }
+                else
+                {
+                    Message message = {MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT, 0};
+                    MessageEvent::send(message);
+                }
+            });
+            Message message = {MESSAGE_TYPE_SHOW_POPUP, POPUP_TYPE_CONFIRM_REBOOT};
             MessageEvent::send(message);
+        }
+        else
+        {
+            mMenuItemList->get(mCurrentIndex)->save();
         }
     }
     if (reDraw)

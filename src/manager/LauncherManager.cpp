@@ -1,5 +1,6 @@
 #include "../../include/manager/LauncherManager.h"
 
+int LauncherManager::mPrevFragmentType = FRAGMENT_TYPE_MAX;
 int LauncherManager::mCurrentFragmentType = FRAGMENT_TYPE_MAX;
 
 static constexpr const char *const TAG = "LAUNCHER";
@@ -13,6 +14,7 @@ void LauncherManager::init()
     ClockFragment::init();
     MenuFragment::init();
     CubeFragment::init();
+    PopupFragment::init();
 
     BootFragment::show();
 }
@@ -36,10 +38,11 @@ void LauncherManager::loop()
         ClockFragment::loop();
         MenuFragment::loop();
         CubeFragment::loop();
+        PopupFragment::loop();
     }
 }
 
-void LauncherManager::show(int type)
+void LauncherManager::show(int type, bool clearDisplay)
 {
     if (type < 0 || type >= FRAGMENT_TYPE_MAX)
     {
@@ -50,31 +53,21 @@ void LauncherManager::show(int type)
     {
         return;
     }
+    mPrevFragmentType = mCurrentFragmentType;
     mCurrentFragmentType = type;
 
-    if (BootFragment::isVisible())
-    {
-        BootFragment::hide();
-    }
-    if (ReBootFragment::isVisible())
-    {
-        ReBootFragment::hide();
-    }
-    if (ClockFragment::isVisible())
-    {
-        ClockFragment::hide();
-    }
-    if (MenuFragment::isVisible())
-    {
-        MenuFragment::hide();
-    }
-    if (CubeFragment::isVisible())
-    {
-        CubeFragment::hide();
-    }
+    BootFragment::hide();
+    ReBootFragment::hide();
+    ClockFragment::hide();
+    MenuFragment::hide();
+    CubeFragment::hide();
+    PopupFragment::hide();
 
-    DisplayController::selectDisplay(TFT_MAX);
-    DisplayController::clear();
+    if (clearDisplay)
+    {
+        DisplayController::selectDisplay(TFT_MAX);
+        DisplayController::clear();
+    }
 
     switch (mCurrentFragmentType)
     {
@@ -89,6 +82,9 @@ void LauncherManager::show(int type)
         break;
     case FRAGMENT_TYPE_REBOOT:
         ReBootFragment::show();
+        break;
+    case FRAGMENT_TYPE_POPUP:
+        PopupFragment::show();
         break;
     default:
         break;
@@ -117,20 +113,35 @@ void LauncherManager::handleEvent(const Message &message)
                 MenuFragment::enter();
                 break;
             case BUTTON2_INDEX:
-                MenuFragment::up();
+                MenuFragment::down();
                 break;
             case BUTTON3_INDEX:
-                MenuFragment::down();
+                MenuFragment::up();
                 break;
             default:
                 break;
             }
+        }
+        else if (mCurrentFragmentType == FRAGMENT_TYPE_POPUP)
+        {
+            PopupFragment::handleEvent(message);
         }
         break;
     }
     case MESSAGE_TYPE_REBOOT:
     {
         show(FRAGMENT_TYPE_REBOOT);
+        break;
+    }
+    case MESSAGE_TYPE_SHOW_POPUP:
+    {
+        PopupFragment::setType(message.value);
+        show(FRAGMENT_TYPE_POPUP, false);
+        break;
+    }
+    case MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT:
+    {
+        show(mPrevFragmentType);
         break;
     }
     default:

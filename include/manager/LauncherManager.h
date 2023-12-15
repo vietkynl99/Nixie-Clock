@@ -9,6 +9,7 @@
 #include "../fragment/MenuFragment.h"
 #include "../fragment/CubeFragment.h"
 #include "../fragment/ReBootFragment.h"
+#include "../fragment/PopupFragment.h"
 
 enum FragmentType
 {
@@ -16,6 +17,7 @@ enum FragmentType
     FRAGMENT_TYPE_MENU,
     FRAGMENT_TYPE_CUBE,
     FRAGMENT_TYPE_REBOOT,
+    FRAGMENT_TYPE_POPUP,
     FRAGMENT_TYPE_MAX
 };
 
@@ -24,12 +26,13 @@ enum FragmentType
 class LauncherManager
 {
 private:
+    static int mPrevFragmentType;
     static int mCurrentFragmentType;
 
 public:
     static void init();
     static void loop();
-    static void show(int type);
+    static void show(int type, bool clearDisplay = true);
     static void handleEvent(const Message &message);
 
 private:

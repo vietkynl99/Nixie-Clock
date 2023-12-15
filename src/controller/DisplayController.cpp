@@ -101,6 +101,16 @@ void DisplayController::drawArrayJpegInCenter(const uint8_t array[], uint32_t ar
     drawArrayJpeg(array, arraySize, x, y);
 }
 
+void DisplayController::drawButton(int x, int y, int width, int height, String label, bool hightlight)
+{
+    tft->fillRoundRect(x, y, width, height, 8, hightlight ? BUTTON_HIGHLIGH_BACKGROUND : BUTTON_BACKGROUND);
+    tft->setFreeFont(FSB12);
+    tft->setTextSize(1);
+    tft->setTextColor(hightlight ? TFT_WHITE : TFT_BLACK);
+    tft->setTextDatum(CC_DATUM);
+    tft->drawString(label, x + width / 2, y + height / 2);
+}
+
 bool DisplayController::outputDMACallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
 {
     static uint16_t dmaBuffer1[16 * 16]; // Toggle buffer for 16*16 MCU block, 512bytes
