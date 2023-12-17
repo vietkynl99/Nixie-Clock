@@ -9,44 +9,6 @@
 #include "../model/MenuItemList.h"
 #include "../common/Log.h"
 
-/*
-  #########################################################################
-  ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
-  ######       TO SELECT YOUR DISPLAY TYPE AND ENABLE FONTS          ######
-  #########################################################################
-*/
-
-#ifndef ST7789_DRIVER
-#error ST7789_DRIVER must be choosen
-#endif
-#if TFT_RGB_ORDER != TFT_BGR
-#error TFT_RGB_ORDER must be TFT_BGR
-#endif
-#if TFT_WIDTH != 240
-#error TFT_WIDTH must be 240
-#endif
-#if TFT_HEIGHT != 240
-#error TFT_HEIGHT must be 240
-#endif
-#if TFT_MISO != -1
-#error TFT_MISO must be -1
-#endif
-#if TFT_MOSI != 23
-#error TFT_MOSI must be 23
-#endif
-#if TFT_SCLK != 18
-#error TFT_SCLK must be 18
-#endif
-#if TFT_CS != -1
-#error TFT_CS must be -1
-#endif
-#if TFT_DC != 33
-#error TFT_DC must be 33
-#endif
-#if TFT_RST != 4
-#error TFT_RST must be 4
-#endif
-
 // #define SHOW_RENDER_TIME
 
 #define MENU_FONT                       FSB18 // Serif Bold 18pt

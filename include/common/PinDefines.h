@@ -13,7 +13,12 @@
 #define BUTTON2_INDEX 1
 #define BUTTON3_INDEX 2
 
+// WS2812 led
+#define WS2812_LED_COUNT 6
+#define WS2812_LED_PIN 26
+
 // TFT display
+// DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY
 #define TFT_COUNT     6 // Number of TFT displays
 #define DISPLAY_ROTATION    2 // rotation 180 degrees
 
@@ -21,8 +26,35 @@
 #define HC595_STCP 2
 #define HC595_DS 5
 
-// WS2812 led
-#define WS2812_LED_COUNT 6
-#define WS2812_LED_PIN 26
+#ifndef ST7789_DRIVER
+#error ST7789_DRIVER must be choosen
+#endif
+#if TFT_RGB_ORDER != TFT_BGR
+#error TFT_RGB_ORDER must be TFT_BGR
+#endif
+#if TFT_WIDTH != 240
+#error TFT_WIDTH must be 240
+#endif
+#if TFT_HEIGHT != 240
+#error TFT_HEIGHT must be 240
+#endif
+#if TFT_MISO != -1
+#error TFT_MISO must be -1
+#endif
+#if TFT_MOSI != 23
+#error TFT_MOSI must be 23
+#endif
+#if TFT_SCLK != 18
+#error TFT_SCLK must be 18
+#endif
+#if TFT_CS != -1
+#error TFT_CS must be -1
+#endif
+#if TFT_DC != 33
+#error TFT_DC must be 33
+#endif
+#if TFT_RST != 4
+#error TFT_RST must be 4
+#endif
 
 #endif
