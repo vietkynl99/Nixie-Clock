@@ -14,6 +14,7 @@ void HardwareController::init()
         initialized = true;
         pinMode(BUZZER_PIN, OUTPUT);
         digitalWrite(BUZZER_PIN, LOW);
+        LedController::init();
     }
 }
 
@@ -21,6 +22,7 @@ void HardwareController::loop()
 {
     buttonHandler();
     buzzerHandler();
+    LedController::loop();
 }
 
 void HardwareController::buttonHandler()

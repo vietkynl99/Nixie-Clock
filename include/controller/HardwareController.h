@@ -5,6 +5,7 @@
 #include "../common/PinDefines.h"
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
+#include "../controller/LedController.h"
 
 #define TOUCH_THRESHOLD 40
 #define TOUCH_SHORT_PRESS_TIME 70
