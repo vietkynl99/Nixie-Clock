@@ -6,13 +6,7 @@
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../controller/LedController.h"
-
-#define TOUCH_THRESHOLD 17
-#define TOUCH_SHORT_PRESS_TIME 70
-#define TOUCH_SHORT_PRESS_TIMEOUT 700
-#define TOUCH_LONG_PRESS_TIME 1000
-
-// #define ENABLE_TOUCH_DEBUG
+#include "../fragment/MenuFragment.h"
 
 class HardwareController
 {
@@ -28,6 +22,7 @@ public:
 private:
     static void buttonHandler();
     static void buzzerHandler();
+    static void setBuzzerState(bool state);
 };
 
 #endif

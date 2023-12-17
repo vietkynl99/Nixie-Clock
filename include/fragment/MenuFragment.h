@@ -32,6 +32,7 @@ public:
     static bool isWebServerEnabled();
     static bool isNTPEnabled();
     static bool isRTCDebugEnabled();
+    static int getBuzzerVolume();
 
 private:
     static void createMenuList();

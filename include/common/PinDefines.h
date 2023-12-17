@@ -5,8 +5,10 @@
 
 // Hardware Controller
 #define TOUCH_PIN_COUNT 3
-
 #define BUZZER_PIN 27
+#define BUZZER_PWM_CHANNEL 0
+#define BUZZER_PWM_FREQUENCY 500 // 12kHz
+#define BUZZER_PWM_RESOLUTION 8 // 8bit
 #define TOUCH_PIN_BUTTON1 T4
 #define TOUCH_PIN_BUTTON2 T5
 #define TOUCH_PIN_BUTTON3 T6

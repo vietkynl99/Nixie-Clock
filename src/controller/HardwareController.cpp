@@ -1,5 +1,14 @@
 #include "../../include/controller/HardwareController.h"
 
+// #define ENABLE_TOUCH_DEBUG
+
+#define BUZZER_PWM_VALUE_MIN 30
+#define BUZZER_PWM_VALUE_MAX 254
+
+#define TOUCH_THRESHOLD 17
+#define TOUCH_SHORT_PRESS_TIMEOUT 700
+#define TOUCH_LONG_PRESS_TIME 1000
+
 int HardwareController::mTouchPin[TOUCH_PIN_COUNT] = {TOUCH_PIN_BUTTON1, TOUCH_PIN_BUTTON2, TOUCH_PIN_BUTTON3};
 int HardwareController::mBuzzerCount = 0;
 
@@ -12,8 +21,9 @@ void HardwareController::init()
     if (!initialized)
     {
         initialized = true;
-        pinMode(BUZZER_PIN, OUTPUT);
-        digitalWrite(BUZZER_PIN, LOW);
+        ledcAttachPin(BUZZER_PIN, BUZZER_PWM_CHANNEL);
+        ledcSetup(BUZZER_PWM_CHANNEL, BUZZER_PWM_FREQUENCY, BUZZER_PWM_RESOLUTION);
+        ledcWrite(BUZZER_PWM_CHANNEL, 0);
         LedController::init();
     }
 }
@@ -23,6 +33,14 @@ void HardwareController::loop()
     buttonHandler();
     buzzerHandler();
     LedController::loop();
+}
+
+void HardwareController::bip(int n)
+{
+    if (mBuzzerCount == 0)
+    {
+        mBuzzerCount = 2 * n;
+    }
 }
 
 void HardwareController::buttonHandler()
@@ -42,7 +60,7 @@ void HardwareController::buttonHandler()
             prevState[i] = newState[i];
             newState[i] = data < TOUCH_THRESHOLD;
 #ifdef ENABLE_TOUCH_DEBUG
-            if (abs(prevState[i] - newState[i]) > newState[i] * 0.2)
+            if (abs(prevState[i] - newState[i]) > newState[i] * 0.1)
             {
                 LOG("Button %d, value: %d -> %d", i, data, newState[i]);
             }
@@ -55,7 +73,7 @@ void HardwareController::buttonHandler()
             {
                 longState[i] = false;
                 uint32_t pressTime = xTaskGetTickCount() - risingTimeTick[i];
-                if (pressTime > TOUCH_SHORT_PRESS_TIME && pressTime < TOUCH_SHORT_PRESS_TIMEOUT)
+                if (pressTime < TOUCH_SHORT_PRESS_TIMEOUT)
                 {
                     Message event = {MESSAGE_TYPE_BUTTON_SHORT_PRESSED, i};
                     MessageEvent::send(event);
@@ -78,6 +96,7 @@ void HardwareController::buttonHandler()
 void HardwareController::buzzerHandler()
 {
     static uint32_t timeTick = 0;
+    static bool state = false;
 
     if (xTaskGetTickCount() > timeTick)
     {
@@ -85,19 +104,24 @@ void HardwareController::buzzerHandler()
         if (mBuzzerCount > 0)
         {
             mBuzzerCount--;
-            digitalWrite(BUZZER_PIN, !digitalRead(BUZZER_PIN));
+            state ^= 1;
+            setBuzzerState(state);
         }
-        else if (digitalRead(BUZZER_PIN))
+        else if (state)
         {
-            digitalWrite(BUZZER_PIN, LOW);
+            state = false;
+            setBuzzerState(state);
         }
     }
 }
 
-void HardwareController::bip(int n)
+void HardwareController::setBuzzerState(bool state)
 {
-    if (mBuzzerCount == 0)
+    int pwmValue = 0;
+    int volume = MenuFragment::getBuzzerVolume();
+    if (volume > 0)
     {
-        mBuzzerCount = 2 * n;
+        pwmValue = (volume - 1) / 9.0 * (BUZZER_PWM_VALUE_MAX - BUZZER_PWM_VALUE_MIN) + BUZZER_PWM_VALUE_MIN;
     }
+    ledcWrite(BUZZER_PWM_CHANNEL, state ? pwmValue : 0);
 }
