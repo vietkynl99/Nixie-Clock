@@ -1,6 +1,8 @@
 #ifndef _PIN_DEFINES_H_
 #define _PIN_DEFINES_H_
 
+#include <TFT_eSPI.h>
+
 // Hardware Controller
 #define TOUCH_PIN_COUNT 3
 
@@ -18,7 +20,7 @@
 #define WS2812_LED_PIN 26
 
 // TFT display
-// DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY
+// DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY TFT_eSPI
 #define TFT_COUNT     6 // Number of TFT displays
 #define DISPLAY_ROTATION    2 // rotation 180 degrees
 
