@@ -5,9 +5,15 @@
 #include <WiFiManager.h>
 #include "../common/Log.h"
 
-/* AP mode */
+#define USE_WIFI_MANAGER
+
+#ifdef USE_WIFI_MANAGER
 #define AP_SSID "Kynl Clock"
 #define AP_PASSWORD "12345678"
+#else
+#define WIFI_SSID "Wifi Chua"
+#define WIFI_PASSWORD "khongcomatkhau"
+#endif
 
 class WifiMaster
 {

@@ -8,6 +8,7 @@ void WifiMaster::init()
 {
     WiFi.mode(WIFI_STA);
 
+#ifdef USE_WIFI_MANAGER
     // mWiFiManager.resetSettings(); // wipe settings
 
     mWiFiManager.setConfigPortalBlocking(false);
@@ -41,16 +42,24 @@ void WifiMaster::init()
     // res = mWiFiManager.autoConnect(); // auto generated AP name from chipid
     // res = mWiFiManager.autoConnect("AutoConnectAP"); // anonymous ap
     mWiFiManager.autoConnect(AP_SSID, AP_PASSWORD); // password protected ap
+#else
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    LOG("Connecting to " WIFI_SSID);
+#endif
 }
 
 void WifiMaster::loop()
 {
+#ifdef USE_WIFI_MANAGER
     mWiFiManager.process();
+#endif
 }
 
 void WifiMaster::resetSettings()
 {
+#ifdef USE_WIFI_MANAGER
     LOG("Reset WiFi settings");
     mWiFiManager.resetSettings();
     ESP.restart();
+#endif
 }
