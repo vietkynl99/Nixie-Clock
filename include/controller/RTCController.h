@@ -16,8 +16,9 @@ public:
 
     static void getCurrentTime(int &hour, int &minute, int &second);
     static void getCurrentDate(int &year, int &month, int &day);
-    static DateTime getCurrentDateTime();
     static String getString(const DateTime &dateTime);
+    static DateTime getCurrentDateTime();
+    static String getCurrentDateTimeStr();
 
     static void setDateTime(const DateTime &dateTime);
     static void setTime(int hour, int minute, int second);

@@ -31,6 +31,12 @@ void RTCController::getCurrentDate(int &year, int &month, int &day)
     day = mRTC->getDate();
 }
 
+String RTCController::getString(const DateTime &dateTime)
+{
+    return String(dateTime.hour()) + ":" + String(dateTime.minute()) + ":" + String(dateTime.second()) + " " +
+           String(dateTime.year()) + "/" + String(dateTime.month()) + "/" + String(dateTime.day());
+}
+
 DateTime RTCController::getCurrentDateTime()
 {
     int hour, minute, second, year, month, day;
@@ -39,10 +45,9 @@ DateTime RTCController::getCurrentDateTime()
     return DateTime(year, month, day, hour, minute, second);
 }
 
-String RTCController::getString(const DateTime &dateTime)
+String RTCController::getCurrentDateTimeStr()
 {
-    return String(dateTime.hour()) + ":" + String(dateTime.minute()) + ":" + String(dateTime.second()) + " " +
-           String(dateTime.year()) + "/" + String(dateTime.month()) + "/" + String(dateTime.day());
+    return getString(getCurrentDateTime());
 }
 
 void RTCController::setDateTime(const DateTime &dateTime)

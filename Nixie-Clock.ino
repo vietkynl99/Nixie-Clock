@@ -94,6 +94,10 @@ void debugHandler()
 			{
 				LOG("NTP time: %s", WebServerManager::getNTPTime().c_str());
 			}
+			else if (!strcmp(cmd, "RTC"))
+			{
+				LOG("RTC time: %s", RTCController::getCurrentDateTimeStr().c_str());
+			}
 			else
 			{
 				LOG("Unknown command: '%s'", cmd);
