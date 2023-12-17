@@ -9,13 +9,24 @@ static constexpr const char *const TAG = "SERVER";
 #define NTP_TIME_OFFSET (25200)				 // UTC+7 (Vietnam)
 #define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
 
+bool enabled = false;
+
 void WebServerManager::init()
 {
+	enabled = MenuFragment::isWebServerEnabled();
+	if (!enabled)
+	{
+		return;
+	}
 	WifiMaster::init();
 }
 
 void WebServerManager::loop()
 {
+	if (!enabled)
+	{
+		return;
+	}
 	WifiMaster::loop();
 	statusHandler();
 	if (mServer)

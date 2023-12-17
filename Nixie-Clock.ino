@@ -133,26 +133,17 @@ void task2Handler(void *data)
 {
 	LOG("Start task 2");
 
-	bool webServerEnabled = MenuFragment::isWebServerEnabled();
-	if (webServerEnabled)
-	{
-		WebServerManager::init();
-	}
 	while (true)
 	{
 		debugHandler();
 		HardwareController::loop();
-		if (webServerEnabled)
-		{
-			WebServerManager::loop();
-		}
+		WebServerManager::loop();
 		vTaskDelay(5 / portTICK_PERIOD_MS);
 	}
 }
 
 void setup()
 {
-	delay(500);
 	mMutex = xSemaphoreCreateMutex();
 	Serial.begin(115200);
 	SerialParser::setFeedbackEnable(true);
@@ -160,6 +151,7 @@ void setup()
 	MessageEvent::init();
 	HardwareController::init();
 	LauncherManager::init();
+	WebServerManager::init();
 	delay(500);
 
 	xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0);
