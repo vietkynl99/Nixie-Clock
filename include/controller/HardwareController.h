@@ -2,19 +2,9 @@
 #define _HARDWARE_CONTROLLER_H_
 
 #include <Arduino.h>
+#include "../common/PinDefines.h"
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
-
-#define TOUCH_PIN_COUNT 3
-
-#define BUZZER_PIN 2
-#define TOUCH_PIN_BUTTON1 T6
-#define TOUCH_PIN_BUTTON2 T5
-#define TOUCH_PIN_BUTTON3 T4
-
-#define BUTTON1_INDEX 0
-#define BUTTON2_INDEX 1
-#define BUTTON3_INDEX 2
 
 #define TOUCH_THRESHOLD 40
 #define TOUCH_SHORT_PRESS_TIME 70

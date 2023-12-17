@@ -44,7 +44,7 @@ void ReBootFragment::show()
         mIsVisible = true;
         mIsFirstTime = true;
         mNeedsRedraw = true;
-        DisplayController::selectDisplay(TFT_MAX);
+        DisplayController::selectDisplay(TFT_COUNT);
     }
 }
 

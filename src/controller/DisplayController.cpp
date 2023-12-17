@@ -2,7 +2,6 @@
 #include <TJpg_Decoder.h>
 
 TFT_eSPI *DisplayController::tft = new TFT_eSPI();
-int DisplayController::mCsPinList[TFT_MAX] = {TFT1_CS, TFT2_CS, TFT3_CS, TFT4_CS, TFT5_CS, TFT6_CS};
 
 static constexpr const char *const TAG = "DISPLAY";
 
@@ -14,13 +13,11 @@ void DisplayController::init()
         LOG("init");
         initialized = true;
 
-        for (int i = 0; i < TFT_MAX; i++)
-        {
-            pinMode(mCsPinList[i], OUTPUT);
-            digitalWrite(mCsPinList[i], LOW);
-        }
+        pinMode(HC595_SHCP, OUTPUT);
+        pinMode(HC595_STCP, OUTPUT);
+        pinMode(HC595_DS, OUTPUT);
 
-        selectDisplay(TFT_MAX);
+        selectDisplay(TFT_COUNT);
         tft->begin();
         tft->setRotation(DISPLAY_ROTATION);
         clear();
@@ -48,20 +45,21 @@ void DisplayController::selectDisplay(int index)
 {
     static int mPrevIndex = -1;
 
-    if (index < 0 || index > TFT_MAX)
+    if (index < 0 || index > TFT_COUNT)
     {
         LOG("Invalid index %d", index);
         return;
     }
-
-    if (mPrevIndex != index)
+    if (mPrevIndex == index)
     {
-        mPrevIndex = index;
-        for (int i = 0; i < TFT_MAX; i++)
-        {
-            digitalWrite(mCsPinList[i], !(index == TFT_MAX || i == index));
-        }
+        return;
     }
+    mPrevIndex = index;
+
+    uint8_t bitMask = (index == TFT_COUNT) ? 0 : 0b01111110 & ~(1 << (index + 1));
+    digitalWrite(HC595_STCP, LOW);
+    shiftOut(HC595_DS, HC595_SHCP, MSBFIRST, bitMask);
+    digitalWrite(HC595_STCP, HIGH);
 }
 
 TFT_eSPI *DisplayController::getTft()

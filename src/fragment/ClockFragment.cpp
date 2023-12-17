@@ -18,7 +18,7 @@ void ClockFragment::loop()
 {
     static uint32_t timeTick = 0, digitTimeTick = 0;
     static uint32_t prevUnixTime = 0;
-    static int digit[TFT_MAX];
+    static int digit[TFT_COUNT];
 
     if (mIsVisible && xTaskGetTickCount() > digitTimeTick)
     {
@@ -35,15 +35,27 @@ void ClockFragment::loop()
                     LOG("time: %s", RTCController::getString(now).c_str());
                 }
 
-                for (int i = 0; i < TFT_MAX; i++)
+                for (int i = 0; i < TFT_COUNT; i++)
                 {
                     int number = -1;
                     switch (i)
                     {
                     case 0:
-                        number = now.second() / 10;
+                        number = now.hour() / 10;
                         break;
                     case 1:
+                        number = now.hour() % 10;
+                        break;
+                    case 2:
+                        number = now.minute() / 10;
+                        break;
+                    case 3:
+                        number = now.minute() % 10;
+                        break;
+                    case 4:
+                        number = now.second() / 10;
+                        break;
+                    case 5:
                         number = now.second() % 10;
                         break;
                     default:
@@ -75,7 +87,7 @@ void ClockFragment::show()
         mIsVisible = true;
         mIsFirstTime = true;
         mNeedsRedraw = true;
-        DisplayController::selectDisplay(TFT_MAX);
+        DisplayController::selectDisplay(TFT_COUNT);
     }
 }
 

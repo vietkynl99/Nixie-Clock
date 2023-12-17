@@ -65,7 +65,7 @@ void LauncherManager::show(int type, bool clearDisplay)
 
     if (clearDisplay)
     {
-        DisplayController::selectDisplay(TFT_MAX);
+        DisplayController::selectDisplay(TFT_COUNT);
         DisplayController::clear();
     }
 

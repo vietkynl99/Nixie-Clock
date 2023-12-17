@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
+#include "../common/PinDefines.h"
 #include "../common/FreeFonts.h"
 #include "../model/MenuItemList.h"
 #include "../common/Log.h"
@@ -39,22 +40,12 @@
 #if TFT_CS != -1
 #error TFT_CS must be -1
 #endif
-#if TFT_DC != 5
-#error TFT_DC must be 5
+#if TFT_DC != 33
+#error TFT_DC must be 33
 #endif
 #if TFT_RST != 4
 #error TFT_RST must be 4
 #endif
-
-#define TFT_MAX     6 // Number of TFT displays
-#define TFT1_CS     27
-#define TFT2_CS     15
-#define TFT3_CS     13
-#define TFT4_CS     14
-#define TFT5_CS     25
-#define TFT6_CS     26
-
-#define DISPLAY_ROTATION    2 // rotation 180 degrees
 
 // #define SHOW_RENDER_TIME
 
@@ -87,7 +78,7 @@ class DisplayController
 {
 private:
     static TFT_eSPI *tft;
-    static int mCsPinList[TFT_MAX];
+    // static int mCsPinList[TFT_COUNT];
 
 public:
     static void init();
