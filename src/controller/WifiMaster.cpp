@@ -1,6 +1,8 @@
 #include "../../include/controller/WifiMaster.h"
 
+#ifdef USE_WIFI_MANAGER
 WiFiManager WifiMaster::mWiFiManager;
+#endif
 
 static constexpr const char *const TAG = "WIFI";
 

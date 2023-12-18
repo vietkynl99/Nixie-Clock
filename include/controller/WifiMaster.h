@@ -2,12 +2,14 @@
 #define _WIFI_MASTER_H_
 
 #include <Arduino.h>
-#include <WiFiManager.h>
+#include <WiFi.h>
 #include "../common/Log.h"
 
 #define USE_WIFI_MANAGER
 
 #ifdef USE_WIFI_MANAGER
+#include <WiFiManager.h>
+
 #define AP_SSID "Kynl Clock"
 #define AP_PASSWORD "12345678"
 #else
@@ -18,7 +20,9 @@
 class WifiMaster
 {
 private:
+#ifdef USE_WIFI_MANAGER
     static WiFiManager mWiFiManager;
+#endif
 
 public:
     static void init();
