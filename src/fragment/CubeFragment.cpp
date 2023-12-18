@@ -4,9 +4,9 @@ bool CubeFragment::mIsVisible = false;
 bool CubeFragment::mNeedsRedraw = false;
 bool CubeFragment::mIsFirstTime = false;
 
-TFT_eSprite *CubeFragment::mTftSpr[2];
+TFT_eSprite *CubeFragment::mTftSpr[2] = {nullptr, nullptr};
 bool CubeFragment::mTftSprSel = 0;
-uint16_t *CubeFragment::mTftSprPtr[2];
+uint16_t *CubeFragment::mTftSprPtr[2] = {nullptr, nullptr};
 bool CubeFragment::mSpin[3] = {true, true, true};
 int CubeFragment::mMinX = 0;
 int CubeFragment::mMinY = 0;
@@ -18,23 +18,6 @@ static constexpr const char *const TAG = "CUBE";
 void CubeFragment::init()
 {
     DisplayController::init();
-
-    mTftSpr[0] = new TFT_eSprite(DisplayController::getTft());
-    mTftSpr[1] = new TFT_eSprite(DisplayController::getTft());
-
-    // Define cprite colour depth
-    mTftSpr[0]->setColorDepth(COLOR_DEPTH);
-    mTftSpr[1]->setColorDepth(COLOR_DEPTH);
-
-    // Create the 2 sprites
-    mTftSprPtr[0] = (uint16_t *)mTftSpr[0]->createSprite(IWIDTH, IHEIGHT);
-    mTftSprPtr[1] = (uint16_t *)mTftSpr[1]->createSprite(IWIDTH, IHEIGHT);
-
-    // Define text datum and text colour for Sprites
-    mTftSpr[0]->setTextColor(TFT_BLACK);
-    mTftSpr[0]->setTextDatum(MC_DATUM);
-    mTftSpr[1]->setTextColor(TFT_BLACK);
-    mTftSpr[1]->setTextDatum(MC_DATUM);
 
 #ifdef USE_DMA_TO_TFT
     // DMA - should work with ESP32, STM32F2xx/F4xx/F7xx processors
@@ -131,6 +114,7 @@ void CubeFragment::show()
         mIsFirstTime = true;
         mNeedsRedraw = true;
         DisplayController::selectDisplay(TFT_COUNT);
+        createInstance();
     }
 }
 
@@ -142,12 +126,51 @@ void CubeFragment::hide()
         mIsVisible = false;
         mIsFirstTime = true;
         mNeedsRedraw = true;
+        destroyInstance();
     }
 }
 
 bool CubeFragment::isVisible()
 {
     return mIsVisible;
+}
+
+void CubeFragment::createInstance()
+{
+    if (!mTftSpr[0])
+    {
+        mTftSpr[0] = new TFT_eSprite(DisplayController::getTft());
+        mTftSpr[0]->setColorDepth(COLOR_DEPTH);
+        mTftSpr[0]->setTextColor(TFT_BLACK);
+        mTftSpr[0]->setTextDatum(MC_DATUM);
+        mTftSprPtr[0] = (uint16_t *)mTftSpr[0]->createSprite(IWIDTH, IHEIGHT);
+    }
+
+    if (!mTftSpr[1])
+    {
+        mTftSpr[1] = new TFT_eSprite(DisplayController::getTft());
+        mTftSpr[1]->setColorDepth(COLOR_DEPTH);
+        mTftSpr[1]->setTextColor(TFT_BLACK);
+        mTftSpr[1]->setTextDatum(MC_DATUM);
+        mTftSprPtr[1] = (uint16_t *)mTftSpr[1]->createSprite(IWIDTH, IHEIGHT);
+    }
+}
+
+void CubeFragment::destroyInstance()
+{
+    if (mTftSpr[0])
+    {
+        delete mTftSpr[0];
+        mTftSpr[0] = nullptr;
+        mTftSprPtr[0] = nullptr;
+    }
+
+    if (mTftSpr[1])
+    {
+        delete mTftSpr[1];
+        mTftSpr[1] = nullptr;
+        mTftSprPtr[1] = nullptr;
+    }
 }
 
 /**

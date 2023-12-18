@@ -124,6 +124,8 @@ void task1Handler(void *data)
 	Message message;
 
 	LOGF("Start task 1");
+	showFreeMemory();
+
 	while (true)
 	{
 		fps++;
@@ -160,6 +162,7 @@ void task2Handler(void *data)
 
 	LOGF("Start task 2");
 	WebServerManager::init();
+	showFreeMemory();
 	
 	while (true)
 	{
