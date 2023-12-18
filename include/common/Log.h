@@ -3,8 +3,16 @@
 
 #include <Arduino.h>
 
+#define ENABLE_LOG
 #define USE_MUTEX
+
+#ifdef ENABLE_LOG
 #define LOG(...) Log::print(TAG, __VA_ARGS__);
+#define LOGF(...) Log::print(TAG, __VA_ARGS__);
+#else
+#define LOG(...)
+#define LOGF(...) Log::print(TAG, __VA_ARGS__);
+#endif
 
 class Log
 {

@@ -5,13 +5,23 @@
 #include "include/manager/WebServerManager.h"
 #include "include/manager/LauncherManager.h"
 
+// #define DEBUG_FREE_MEMORY
+// #define DEBUG_TASK_FPS
+
 #define TASK1_STACK_SIZE 10000
 #define TASK2_STACK_SIZE 10000
 
 TaskHandle_t task1, task2;
 SemaphoreHandle_t mMutex;
+size_t totalHeap = 0;
 
 static constexpr const char *const TAG = "SYSTEM";
+
+void showFreeMemory()
+{
+	size_t freeHeap = ESP.getFreeHeap();
+	LOGF("Free Heap: %d bytes (%d%% free)", freeHeap, (freeHeap * 100) / (totalHeap + 1));
+}
 
 void debugHandler()
 {
@@ -109,11 +119,25 @@ void debugHandler()
 
 void task1Handler(void *data)
 {
+	uint32_t timeTick = 0;
+	int fps = 0;
 	Message message;
 
-	LOG("Start task 1");
+	LOGF("Start task 1");
 	while (true)
 	{
+		fps++;
+		if (xTaskGetTickCount() > timeTick)
+		{
+			timeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
+#ifdef DEBUG_TASK_FPS
+			LOG("Task 1: %d fps", fps);
+#endif
+#ifdef DEBUG_FREE_MEMORY
+			showFreeMemory();
+#endif
+			fps = 0;
+		}
 		if (mMutex && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
 			if (MessageEvent::get(message))
@@ -131,10 +155,24 @@ void task1Handler(void *data)
 
 void task2Handler(void *data)
 {
-	LOG("Start task 2");
+	uint32_t timeTick = 0;
+	int fps = 0;
 
+	LOGF("Start task 2");
 	while (true)
 	{
+		fps++;
+		if (xTaskGetTickCount() > timeTick)
+		{
+			timeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
+#ifdef DEBUG_TASK_FPS
+			LOG("Task 2: %d fps", fps);
+#endif
+#ifdef DEBUG_FREE_MEMORY
+			showFreeMemory();
+#endif
+			fps = 0;
+		}
 		debugHandler();
 		HardwareController::loop();
 		WebServerManager::loop();
@@ -146,6 +184,10 @@ void setup()
 {
 	mMutex = xSemaphoreCreateMutex();
 	Serial.begin(115200);
+
+	totalHeap = ESP.getHeapSize();
+	LOGF("Total Heap: %d bytes", totalHeap);
+
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
 	MessageEvent::init();
@@ -154,10 +196,22 @@ void setup()
 	WebServerManager::init();
 	delay(500);
 
-	xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0);
-	xTaskCreatePinnedToCore(task2Handler, "task2", TASK2_STACK_SIZE, NULL, 1, &task2, 1);
+	showFreeMemory();
+
+	int ret;
+	if ((ret = xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0)) != pdPASS)
+	{
+		LOGF("Failed to create task1: %d", ret);
+		showFreeMemory();
+	}
+	if ((ret = xTaskCreatePinnedToCore(task2Handler, "task2", TASK2_STACK_SIZE, NULL, 1, &task2, 1)) != pdPASS)
+	{
+		LOGF("Failed to create task2: %d", ret);
+		showFreeMemory();
+	}
 }
 
 void loop()
 {
+	vTaskDelay(100);
 }
