@@ -22,7 +22,6 @@ static constexpr const char *const TAG = "BOOT";
 void BootFragment::init()
 {
     DisplayController::init();
-    createInstance();
 }
 
 void BootFragment::loop()
