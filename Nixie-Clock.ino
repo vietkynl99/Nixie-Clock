@@ -159,6 +159,8 @@ void task2Handler(void *data)
 	int fps = 0;
 
 	LOGF("Start task 2");
+	WebServerManager::init();
+	
 	while (true)
 	{
 		fps++;
@@ -193,7 +195,6 @@ void setup()
 	MessageEvent::init();
 	HardwareController::init();
 	LauncherManager::init();
-	WebServerManager::init();
 	delay(500);
 
 	showFreeMemory();
