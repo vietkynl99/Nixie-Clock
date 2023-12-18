@@ -29,6 +29,7 @@ public:
     static void enter();
     static void back();
 
+    static bool isWiFiEnabled();
     static bool isWebServerEnabled();
     static bool isNTPEnabled();
     static bool isRTCDebugEnabled();

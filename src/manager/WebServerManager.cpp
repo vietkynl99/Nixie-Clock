@@ -9,12 +9,12 @@ static constexpr const char *const TAG = "SERVER";
 #define NTP_TIME_OFFSET (25200)				 // UTC+7 (Vietnam)
 #define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
 
-bool enabled = false;
+bool wifiEnabled = false;
 
 void WebServerManager::init()
 {
-	enabled = MenuFragment::isWebServerEnabled();
-	if (!enabled)
+	wifiEnabled = MenuFragment::isWiFiEnabled();
+	if (!wifiEnabled)
 	{
 		return;
 	}
@@ -23,7 +23,7 @@ void WebServerManager::init()
 
 void WebServerManager::loop()
 {
-	if (!enabled)
+	if (!wifiEnabled)
 	{
 		return;
 	}
@@ -80,7 +80,7 @@ void WebServerManager::startServer()
 void WebServerManager::startNTP()
 {
 	static bool started = false;
-	if (!started && MenuFragment::isNTPEnabled())
+	if (!started)
 	{
 		started = true;
 		LOG("Starting NTP")
@@ -204,8 +204,14 @@ void WebServerManager::statusHandler()
 			if (status)
 			{
 				LOG("WiFi connected: SSID: %s, IP: %s", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-				startServer();
-				startNTP();
+				if (MenuFragment::isWebServerEnabled())
+				{
+					startServer();
+				}
+				if (MenuFragment::isNTPEnabled())
+				{
+					startNTP();
+				}
 			}
 			else
 			{

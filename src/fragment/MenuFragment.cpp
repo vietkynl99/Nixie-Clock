@@ -191,28 +191,34 @@ void MenuFragment::back()
 }
 
 /* ATTENTION: The index of the setting MUST BE same as the list */
-bool MenuFragment::isWebServerEnabled()
+bool MenuFragment::isWiFiEnabled()
 {
     return mMenuItemList->get(0)->getBoolValue();
 }
 
-bool MenuFragment::isNTPEnabled()
+bool MenuFragment::isWebServerEnabled()
 {
     return mMenuItemList->get(1)->getBoolValue();
 }
 
-bool MenuFragment::isRTCDebugEnabled()
+bool MenuFragment::isNTPEnabled()
 {
     return mMenuItemList->get(2)->getBoolValue();
 }
 
+bool MenuFragment::isRTCDebugEnabled()
+{
+    return mMenuItemList->get(3)->getBoolValue();
+}
+
 int MenuFragment::getBuzzerVolume()
 {
-    return mMenuItemList->get(3)->getValue();
+    return mMenuItemList->get(4)->getValue();
 }
 
 void MenuFragment::createMenuList()
 {
+    mMenuItemList->add(new MenuItem("WiFi", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false, 0, 1, true));
     mMenuItemList->add(new MenuItem("NTP Service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
