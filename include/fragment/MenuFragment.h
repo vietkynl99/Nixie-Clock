@@ -4,13 +4,11 @@
 #include <Arduino.h>
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
-#include "../model/MenuItemList.h"
 #include "../fragment/PopupFragment.h"
 
 class MenuFragment
 {
 private:
-    static MenuItemList *mMenuItemList;
     static bool mIsVisible;
     static bool mNeedsRedraw;
     static bool mIsFirstTime;
@@ -29,14 +27,7 @@ public:
     static void enter();
     static void back();
 
-    static bool isWiFiEnabled();
-    static bool isWebServerEnabled();
-    static bool isNTPEnabled();
-    static bool isRTCDebugEnabled();
-    static int getBuzzerVolume();
-
 private:
-    static void createMenuList();
     static void setEditPanelVisible(bool visible);
     static bool getEditPanelVisible();
 

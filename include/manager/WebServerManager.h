@@ -12,7 +12,7 @@
 #include "../common/MessageEvent.h"
 #include "../common/Helper.h"
 #include "../controller/WifiMaster.h"
-#include "../fragment/MenuFragment.h"
+#include "../manager/SettingsManager.h"
 
 #define MDNS_SERVER_NAME "kynlclock"
 

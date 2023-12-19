@@ -5,6 +5,7 @@
 #include "../common/Helper.h"
 #include "../controller/DisplayController.h"
 #include "../controller/RTCController.h"
+#include "../manager/SettingsManager.h"
 
 class ClockFragment
 {

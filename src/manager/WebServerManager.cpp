@@ -13,7 +13,7 @@ bool wifiEnabled = false;
 
 void WebServerManager::init()
 {
-	wifiEnabled = MenuFragment::isWiFiEnabled();
+	wifiEnabled = SettingsManager::isWiFiEnabled();
 	if (!wifiEnabled)
 	{
 		return;
@@ -204,11 +204,11 @@ void WebServerManager::statusHandler()
 			if (status)
 			{
 				LOG("WiFi connected: SSID: %s, IP: %s", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-				if (MenuFragment::isWebServerEnabled())
+				if (SettingsManager::isWebServerEnabled())
 				{
 					startServer();
 				}
-				if (MenuFragment::isNTPEnabled())
+				if (SettingsManager::isNTPEnabled())
 				{
 					startNTP();
 				}

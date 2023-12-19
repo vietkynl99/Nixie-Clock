@@ -1,4 +1,3 @@
-#include "../../include/fragment/MenuFragment.h"
 #include "../../include/fragment/ClockFragment.h"
 #include "../../include/common/ClockDigit.h"
 
@@ -39,7 +38,7 @@ void ClockFragment::loop()
             if (currentTime.unixtime() != now.unixtime())
             {
                 currentTime = now;
-                if (MenuFragment::isRTCDebugEnabled())
+                if (SettingsManager::isRTCDebugEnabled())
                 {
                     LOG("%s", Helper::convertDateTimeToString(now).c_str());
                 }

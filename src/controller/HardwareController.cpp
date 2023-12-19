@@ -118,7 +118,7 @@ void HardwareController::buzzerHandler()
 void HardwareController::setBuzzerState(bool state)
 {
     int pwmValue = 0;
-    int volume = MenuFragment::getBuzzerVolume();
+    int volume = SettingsManager::getBuzzerVolume();
     if (volume > 0)
     {
         pwmValue = (volume - 1) / 9.0 * (BUZZER_PWM_VALUE_MAX - BUZZER_PWM_VALUE_MIN) + BUZZER_PWM_VALUE_MIN;

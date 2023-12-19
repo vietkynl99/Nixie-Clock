@@ -6,7 +6,7 @@
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../controller/LedController.h"
-#include "../fragment/MenuFragment.h"
+#include "../manager/SettingsManager.h"
 
 class HardwareController
 {

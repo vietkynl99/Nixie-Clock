@@ -4,7 +4,6 @@
 bool MenuFragment::mIsVisible = false;
 bool MenuFragment::mNeedsRedraw = false;
 bool MenuFragment::mIsFirstTime = false;
-MenuItemList *MenuFragment::mMenuItemList = new MenuItemList();
 int MenuFragment::mCurrentIndex = 0;
 bool MenuFragment::mEditPanelVisible = false;
 int MenuFragment::mPrevValue = 0;
@@ -18,7 +17,6 @@ void MenuFragment::init()
     {
         initialized = true;
         DisplayController::init();
-        createMenuList();
     }
 }
 
@@ -43,7 +41,7 @@ void MenuFragment::loop()
             }
             else
             {
-                showEditPanel(mMenuItemList->get(mCurrentIndex));
+                showEditPanel(SettingsManager::getItem(mCurrentIndex));
             }
             measureTimeTick = xTaskGetTickCount() - measureTimeTick;
             LOG("Draw time: %dms", measureTimeTick / portTICK_PERIOD_MS);
@@ -93,7 +91,7 @@ void MenuFragment::up()
     LOG("Up");
     if (getEditPanelVisible())
     {
-        if (mMenuItemList->get(mCurrentIndex)->inc())
+        if (SettingsManager::getItem(mCurrentIndex)->inc())
         {
             mNeedsRedraw = true;
         }
@@ -114,12 +112,12 @@ void MenuFragment::down()
     LOG("Down");
     if (getEditPanelVisible())
     {
-        if (mMenuItemList->get(mCurrentIndex)->dec())
+        if (SettingsManager::getItem(mCurrentIndex)->dec())
         {
             mNeedsRedraw = true;
         }
     }
-    else if (mCurrentIndex < mMenuItemList->length() - 1)
+    else if (mCurrentIndex < SettingsManager::getLength() - 1)
     {
         mCurrentIndex++;
         mNeedsRedraw = true;
@@ -135,16 +133,16 @@ void MenuFragment::enter()
     
     // Save data before exit edit panel
     bool reDraw = true;
-    if (getEditPanelVisible() && mPrevValue != mMenuItemList->get(mCurrentIndex)->getValue())
+    if (getEditPanelVisible() && mPrevValue != SettingsManager::getItem(mCurrentIndex)->getValue())
     {
-        if (mMenuItemList->get(mCurrentIndex)->needToReboot())
+        if (SettingsManager::getItem(mCurrentIndex)->needToReboot())
         {
             reDraw = false;
             PopupFragment::setCallback([](bool selection) {
                 LOG("Selection: %d", selection);
                 if (selection)
                 {
-                    mMenuItemList->get(mCurrentIndex)->save();
+                    SettingsManager::getItem(mCurrentIndex)->save();
                     Message message = {MESSAGE_TYPE_REBOOT, 0};
                     MessageEvent::send(message);
                 }
@@ -159,13 +157,13 @@ void MenuFragment::enter()
         }
         else
         {
-            mMenuItemList->get(mCurrentIndex)->save();
+            SettingsManager::getItem(mCurrentIndex)->save();
         }
     }
     else
     { 
         // Restore old value
-        mMenuItemList->get(mCurrentIndex)->load();
+        SettingsManager::getItem(mCurrentIndex)->load();
     }
 
     // Toggle edit panel
@@ -177,7 +175,7 @@ void MenuFragment::enter()
     // After switch to edit panel
     if(getEditPanelVisible())
     {
-        mPrevValue = mMenuItemList->get(mCurrentIndex)->getValue();
+        mPrevValue = SettingsManager::getItem(mCurrentIndex)->getValue();
     }
 }
 
@@ -188,49 +186,6 @@ void MenuFragment::back()
         return;
     }
     setEditPanelVisible(false);
-}
-
-/* ATTENTION: The index of the setting MUST BE same as the list */
-bool MenuFragment::isWiFiEnabled()
-{
-    return mMenuItemList->get(0)->getBoolValue();
-}
-
-bool MenuFragment::isWebServerEnabled()
-{
-    return mMenuItemList->get(1)->getBoolValue();
-}
-
-bool MenuFragment::isNTPEnabled()
-{
-    return mMenuItemList->get(2)->getBoolValue();
-}
-
-bool MenuFragment::isRTCDebugEnabled()
-{
-    return mMenuItemList->get(3)->getBoolValue();
-}
-
-int MenuFragment::getBuzzerVolume()
-{
-    return mMenuItemList->get(4)->getValue();
-}
-
-void MenuFragment::createMenuList()
-{
-    mMenuItemList->add(new MenuItem("WiFi", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
-    mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false, 0, 1, true));
-    mMenuItemList->add(new MenuItem("NTP Service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
-    mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
-    mMenuItemList->add(new MenuItem("Buzzer volume", MENU_ITEM_TYPE_INT, 8, 0, 10));
-    mMenuItemList->loadData();
-
-    LOG("Settings list loaded:");
-    for (int i = 0; i < mMenuItemList->length(); i++)
-    {
-        MenuItem *item = mMenuItemList->get(i);
-        LOG("%d. %s: %s", i + 1, item->getName().c_str(), item->getStringValue().c_str());
-    }
 }
 
 void MenuFragment::setEditPanelVisible(bool visible)
@@ -271,9 +226,9 @@ void MenuFragment::showMenuList()
     static int startIndex = 0;
 
     LOG("showMenuList %d", mIsFirstTime);
-    if (!mMenuItemList)
+    if (SettingsManager::getLength() == 0)
     {
-        LOG("mMenuItemList is null");
+        LOG("Menu Item List is empty");
         return;
     }
 
@@ -298,7 +253,7 @@ void MenuFragment::showMenuList()
     }
     else
     {
-        if (mCurrentIndex > mPrevIndex && startIndex + maxDrawableItems <= mMenuItemList->length() && mCurrentIndex > startIndex + maxDrawableItems - 2)
+        if (mCurrentIndex > mPrevIndex && startIndex + maxDrawableItems <= SettingsManager::getLength() && mCurrentIndex > startIndex + maxDrawableItems - 2)
         {
             startIndex++;
         }
@@ -308,7 +263,7 @@ void MenuFragment::showMenuList()
         }
     }
 
-    for (int i = startIndex; i < mMenuItemList->length() && i < startIndex + maxDrawableItems; i++)
+    for (int i = startIndex; i < SettingsManager::getLength() && i < startIndex + maxDrawableItems; i++)
     {
         if (mCurrentIndex != mPrevIndex)
         {
@@ -329,11 +284,11 @@ void MenuFragment::showMenuList()
         {
             DisplayController::getTft()->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
         }
-        String itemName = mMenuItemList->get(i)->getName() + "    ";
+        String itemName = SettingsManager::getItem(i)->getName() + "    ";
         DisplayController::getTft()->drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
         ypos += itemHeight;
     }
-    if (startIndex + maxDrawableItems > mMenuItemList->length())
+    if (startIndex + maxDrawableItems > SettingsManager::getLength())
     {
         DisplayController::getTft()->fillRect(0, ypos, TFT_WIDTH, TFT_HEIGHT - ypos, MENU_BACKGROUND_COLOR);
     }

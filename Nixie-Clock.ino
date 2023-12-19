@@ -3,6 +3,7 @@
 #include "include/common/MessageEvent.h"
 #include "include/common/Helper.h"
 #include "include/controller/HardwareController.h"
+#include "include/manager/SettingsManager.h"
 #include "include/manager/WebServerManager.h"
 #include "include/manager/LauncherManager.h"
 
@@ -201,6 +202,7 @@ void setup()
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
 	MessageEvent::init();
+	SettingsManager::init();
 	HardwareController::init();
 	LauncherManager::init();
 	delay(500);
