@@ -11,7 +11,6 @@ void SettingsManager::init()
         return;
     }
     mMenuItemList = new MenuItemList();
-    mMenuItemList->add(new MenuItem("WiFi", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false, 0, 1, true));
     mMenuItemList->add(new MenuItem("NTP Service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
@@ -44,25 +43,25 @@ int SettingsManager::getLength()
 /* ATTENTION: The index of the setting MUST BE same as the list */
 bool SettingsManager::isWiFiEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(0)->getBoolValue() : false;
+    return isWebServerEnabled() || isNTPEnabled();
 }
 
 bool SettingsManager::isWebServerEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(1)->getBoolValue() : false;
+    return mMenuItemList ? mMenuItemList->get(0)->getBoolValue() : false;
 }
 
 bool SettingsManager::isNTPEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(2)->getBoolValue() : false;
+    return mMenuItemList ? mMenuItemList->get(1)->getBoolValue() : false;
 }
 
 bool SettingsManager::isRTCDebugEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(3)->getBoolValue() : false;
+    return mMenuItemList ? mMenuItemList->get(2)->getBoolValue() : false;
 }
 
 int SettingsManager::getBuzzerVolume()
 {
-    return mMenuItemList ? mMenuItemList->get(4)->getValue() : 0;
+    return mMenuItemList ? mMenuItemList->get(3)->getValue() : 0;
 }
