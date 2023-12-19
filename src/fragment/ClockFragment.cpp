@@ -16,23 +16,32 @@ void ClockFragment::init()
 
 void ClockFragment::loop()
 {
-    static uint32_t timeTick = 0, digitTimeTick = 0;
-    static uint32_t prevUnixTime = 0;
-    static int digit[TFT_COUNT];
+    static uint32_t timeTick = 0, digitTimeTick = 0, clockTimeTick = 0;
+    static uint8_t digit[TFT_COUNT];
+    static DateTime currentTime;
+    static uint8_t transitionEffect = 0;
+    static int effectNumber = 0;
+    static uint8_t effectMask = 0xFF;
 
-    if (mIsVisible && xTaskGetTickCount() > digitTimeTick)
+    if (mIsVisible && xTaskGetTickCount() > clockTimeTick)
     {
-        digitTimeTick = xTaskGetTickCount() + 300 / portTICK_PERIOD_MS;
+        clockTimeTick = xTaskGetTickCount() + 300 / portTICK_PERIOD_MS;
+        if (mIsFirstTime)
+        {
+            transitionEffect = 1;
+            effectNumber = 9;
+            effectMask = 0xFF;
+        }
 
         DateTime now = RTCController::getCurrentDateTime();
         if (RTCController::isValid(now))
         {
-            if (prevUnixTime != now.unixtime())
+            if (currentTime.unixtime() != now.unixtime())
             {
-                prevUnixTime = now.unixtime();
+                currentTime = now;
                 if (MenuFragment::isRTCDebugEnabled())
                 {
-                    LOG("time: %s", RTCController::getString(now).c_str());
+                    LOG("%s", RTCController::getString(now).c_str());
                 }
 
                 for (int i = 0; i < TFT_COUNT; i++)
@@ -65,17 +74,58 @@ void ClockFragment::loop()
                     if (number >= 0 && (mIsFirstTime || digit[i] != number))
                     {
                         digit[i] = number;
-                        DisplayController::selectDisplay(i);
-                        showDigit(digit[i]);
+                        if (!transitionEffect)
+                        {
+                            DisplayController::selectDisplay(i);
+                            showDigit(digit[i]);
+                        }
                     }
                 }
             }
         }
-        else
-        {
-            LOG("Invalid date time: %s", RTCController::getString(now).c_str());
-        }
         mIsFirstTime = false;
+    }
+
+    if (mIsVisible && transitionEffect && xTaskGetTickCount() > digitTimeTick)
+    {
+        digitTimeTick = xTaskGetTickCount() + 100 / portTICK_PERIOD_MS;
+
+        if (transitionEffect)
+        {
+            if (transitionEffect == 2)
+            {
+                for (int i = 0; i < TFT_COUNT; i++)
+                {
+                    if (digit[i] < effectNumber)
+                    {
+                        bitClear(effectMask, i);
+                    }
+                }
+            }
+            DisplayController::selectMultiDisplay(effectMask);
+            showDigit(effectNumber);
+
+            if (transitionEffect == 1)
+            {
+                effectNumber--;
+                if (effectNumber < 1)
+                {
+                    transitionEffect = 2;
+                    effectNumber = 0;
+                }
+            }
+            else
+            {
+                effectNumber++;
+                if (effectNumber > 9 || effectMask == 0)
+                {
+                    transitionEffect = 0;
+                    effectNumber = 0;
+                    // redraw clock
+                    clockTimeTick = 0;
+                }
+            }
+        }
     }
 }
 

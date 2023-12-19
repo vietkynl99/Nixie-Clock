@@ -2,8 +2,9 @@
 #define _CLOCK_FRAGMENT_H_
 
 #include "../common/Log.h"
+#include "../common/Helper.h"
 #include "../controller/DisplayController.h"
-#include "../../include/controller/RTCController.h"
+#include "../controller/RTCController.h"
 
 class ClockFragment
 {
