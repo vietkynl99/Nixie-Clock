@@ -46,6 +46,7 @@ String RTCController::getCurrentDateTimeStr()
 
 void RTCController::setDateTime(const DateTime &dateTime)
 {
+    LOG("Set dateTime to %s", Helper::convertDateTimeToString(dateTime).c_str());
     setDate(dateTime.year(), dateTime.month(), dateTime.day());
     setTime(dateTime.hour(), dateTime.minute(), dateTime.second());
 }
@@ -69,7 +70,7 @@ void RTCController::setDate(int year, int month, int day)
 {
     if (Helper::isValidDate(year, month, day))
     {
-        LOG("Set time to %d/%d/%d", year, month, day);
+        LOG("Set date to %d/%d/%d", year, month, day);
         mRTC->setYear(year - 2000);
         mRTC->setMonth(month);
         mRTC->setDate(day);

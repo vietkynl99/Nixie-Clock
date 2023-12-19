@@ -104,7 +104,18 @@ void debugHandler()
 			}
 			else if (!strcmp(cmd, "NTP"))
 			{
-				LOG("NTP time: %s", WebServerManager::getNTPTime().c_str());
+				if (!SettingsManager::isWiFiEnabled())
+				{
+					LOG("WiFi is not enabled");
+				}
+				else if (!SettingsManager::isNTPEnabled())
+				{
+					LOG("NTP is not enabled");
+				}
+				else
+				{
+					LOG("NTP time: %s", WebServerManager::getNTPTime().c_str());
+				}
 			}
 			else if (!strcmp(cmd, "RTC"))
 			{
@@ -169,7 +180,7 @@ void task2Handler(void *data)
 	LOGF("Start task 2");
 	WebServerManager::init();
 	showFreeMemory();
-	
+
 	while (true)
 	{
 		fps++;
