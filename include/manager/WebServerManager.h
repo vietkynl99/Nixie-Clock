@@ -12,6 +12,7 @@
 #include "../common/MessageEvent.h"
 #include "../common/Helper.h"
 #include "../controller/WifiMaster.h"
+#include "../controller/RTCController.h"
 #include "../manager/SettingsManager.h"
 
 #define MDNS_SERVER_NAME "kynlclock"
@@ -40,5 +41,6 @@ private:
     static void rootHandler();
     static bool isAuthentified();
     static void statusHandler();
+    static void ntpHandler();
 };
 #endif

@@ -8,6 +8,7 @@ static constexpr const char *const TAG = "SERVER";
 
 #define NTP_TIME_OFFSET (25200)				 // UTC+7 (Vietnam)
 #define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
+#define NTP_RTC_DIFF_TIME 60 // (s) If the difference between NTP and RTC time is greater than this time, RTC time will be set according to NTP time
 
 bool wifiEnabled = false;
 
@@ -29,13 +30,10 @@ void WebServerManager::loop()
 	}
 	WifiMaster::loop();
 	statusHandler();
+	ntpHandler();
 	if (mServer)
 	{
 		mServer->handleClient();
-	}
-	if (mTimeClient)
-	{
-		mTimeClient->update();
 	}
 }
 
@@ -216,6 +214,33 @@ void WebServerManager::statusHandler()
 			else
 			{
 				LOG("WiFi disconnected");
+			}
+		}
+	}
+}
+
+void WebServerManager::ntpHandler()
+{
+	static uint32_t timeTick = 0;
+	static bool timeSet = false;
+
+	if (!mTimeClient)
+	{
+		return;
+	}
+
+	mTimeClient->update();
+
+	if (xTaskGetTickCount() > timeTick)
+	{
+		timeTick = xTaskGetTickCount() + 500 / portTICK_PERIOD_MS;
+		if (!timeSet && mTimeClient->isTimeSet())
+		{
+			timeSet = true;
+			LOG("NTP time has been set to %s", getNTPTime().c_str());
+			if (abs(RTCController::getCurrentDateTime().unixtime() - mTimeClient->getEpochTime()) >= NTP_RTC_DIFF_TIME)
+			{
+				RTCController::setDateTime(DateTime(mTimeClient->getEpochTime()));
 			}
 		}
 	}
