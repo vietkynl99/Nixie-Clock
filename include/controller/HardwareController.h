@@ -2,6 +2,7 @@
 #define _HARDWARE_CONTROLLER_H_
 
 #include <Arduino.h>
+#include <DHT_Async.h>
 #include "../common/PinDefines.h"
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
@@ -13,6 +14,9 @@ class HardwareController
 private:
     static int mTouchPin[TOUCH_PIN_COUNT];
     static int mBuzzerCount;
+    static float mTemperature;
+    static float mHumidity;
+    static DHT_Async mDHT;
 
 public:
     static void init();
@@ -22,6 +26,7 @@ public:
 private:
     static void buttonHandler();
     static void buzzerHandler();
+    static void dhtHandler();
     static void setBuzzerState(bool state);
 };
 

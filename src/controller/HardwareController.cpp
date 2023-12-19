@@ -9,8 +9,13 @@
 #define TOUCH_SHORT_PRESS_TIMEOUT 700
 #define TOUCH_LONG_PRESS_TIME 1000
 
+#define DHT_SENSOR_UPDATE_TIME 10000UL // (ms)
+
 int HardwareController::mTouchPin[TOUCH_PIN_COUNT] = {TOUCH_PIN_BUTTON1, TOUCH_PIN_BUTTON2, TOUCH_PIN_BUTTON3};
 int HardwareController::mBuzzerCount = 0;
+float HardwareController::mTemperature = -1;
+float HardwareController::mHumidity = -1;
+DHT_Async HardwareController::mDHT(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 
 static constexpr const char *const TAG = "HARDWARE";
 
@@ -32,6 +37,7 @@ void HardwareController::loop()
 {
     buttonHandler();
     buzzerHandler();
+    dhtHandler();
     LedController::loop();
 }
 
@@ -111,6 +117,26 @@ void HardwareController::buzzerHandler()
         {
             state = false;
             setBuzzerState(state);
+        }
+    }
+}
+
+void HardwareController::dhtHandler()
+{
+    static uint32_t timeTick = 0;
+    static float temperature, humidity;
+
+    if (xTaskGetTickCount() > timeTick)
+    {
+        if (mDHT.measure(&temperature, &humidity))
+        {
+            timeTick = xTaskGetTickCount() + DHT_SENSOR_UPDATE_TIME / portTICK_PERIOD_MS;
+            if (abs(mTemperature - temperature) >= 0.1 || abs(mHumidity - humidity) >= 0.1)
+            {
+                mTemperature = temperature;
+                mHumidity = humidity;
+                LOG("Temp: %.1fC, Hum: %.1f%", mTemperature, mHumidity);
+            }
         }
     }
 }
