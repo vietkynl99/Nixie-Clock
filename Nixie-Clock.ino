@@ -1,6 +1,7 @@
 #include <SerialParser.h>
 #include "include/common/Log.h"
 #include "include/common/MessageEvent.h"
+#include "include/common/Helper.h"
 #include "include/controller/HardwareController.h"
 #include "include/manager/WebServerManager.h"
 #include "include/manager/LauncherManager.h"
@@ -107,6 +108,10 @@ void debugHandler()
 			else if (!strcmp(cmd, "RTC"))
 			{
 				LOG("RTC time: %s", RTCController::getCurrentDateTimeStr().c_str());
+			}
+			else if (!strcmp(cmd, "TEST"))
+			{
+				Helper::mTestValue = code;
 			}
 			else
 			{

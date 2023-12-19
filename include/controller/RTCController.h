@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <DS3231.h>
 #include "../common/Log.h"
+#include "../common/Helper.h"
 
 class RTCController
 {
@@ -16,19 +17,12 @@ public:
 
     static void getCurrentTime(int &hour, int &minute, int &second);
     static void getCurrentDate(int &year, int &month, int &day);
-    static String getString(const DateTime &dateTime);
     static DateTime getCurrentDateTime();
     static String getCurrentDateTimeStr();
 
     static void setDateTime(const DateTime &dateTime);
     static void setTime(int hour, int minute, int second);
     static void setDate(int year, int month, int day);
-
-    static bool isValid(const DateTime &dateTime);
-
-private:
-    static bool isValidTime(int hour, int minute, int second);
-    static bool isValidDate(int year, int month, int day);
 };
 
 #endif

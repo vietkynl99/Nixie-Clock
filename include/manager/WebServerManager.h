@@ -10,8 +10,8 @@
 #include <WiFiUdp.h>
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
+#include "../common/Helper.h"
 #include "../controller/WifiMaster.h"
-#include "../controller/RTCController.h"
 #include "../fragment/MenuFragment.h"
 
 #define MDNS_SERVER_NAME "kynlclock"

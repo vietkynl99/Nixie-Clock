@@ -46,7 +46,7 @@ String WebServerManager::getNTPTime()
 		return "";
 	}
 	DateTime now(mTimeClient->getEpochTime());
-	return RTCController::getString(now);
+	return Helper::convertDateTimeToString(now);
 }
 
 void WebServerManager::startServer()

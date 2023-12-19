@@ -31,12 +31,6 @@ void RTCController::getCurrentDate(int &year, int &month, int &day)
     day = mRTC->getDate();
 }
 
-String RTCController::getString(const DateTime &dateTime)
-{
-    return String(dateTime.hour()) + ":" + String(dateTime.minute()) + ":" + String(dateTime.second()) + " " +
-           String(dateTime.year()) + "/" + String(dateTime.month()) + "/" + String(dateTime.day());
-}
-
 DateTime RTCController::getCurrentDateTime()
 {
     int hour, minute, second, year, month, day;
@@ -47,7 +41,7 @@ DateTime RTCController::getCurrentDateTime()
 
 String RTCController::getCurrentDateTimeStr()
 {
-    return getString(getCurrentDateTime());
+    return Helper::convertDateTimeToString(getCurrentDateTime());
 }
 
 void RTCController::setDateTime(const DateTime &dateTime)
@@ -58,7 +52,7 @@ void RTCController::setDateTime(const DateTime &dateTime)
 
 void RTCController::setTime(int hour, int minute, int second)
 {
-    if (isValidTime(hour, minute, second))
+    if (Helper::isValidTime(hour, minute, second))
     {
         LOG("Set time to %d:%d:%d", hour, minute, second);
         mRTC->setHour(hour);
@@ -73,7 +67,7 @@ void RTCController::setTime(int hour, int minute, int second)
 
 void RTCController::setDate(int year, int month, int day)
 {
-    if (isValidDate(year, month, day))
+    if (Helper::isValidDate(year, month, day))
     {
         LOG("Set time to %d/%d/%d", year, month, day);
         mRTC->setYear(year - 2000);
@@ -84,37 +78,4 @@ void RTCController::setDate(int year, int month, int day)
     {
         LOG("Invalid date: %d/%d/%d", year, month, day);
     }
-}
-
-bool RTCController::isValid(const DateTime &dateTime)
-{
-    return isValidTime(dateTime.hour(), dateTime.minute(), dateTime.second()) &&
-           isValidDate(dateTime.year(), dateTime.month(), dateTime.day());
-}
-
-bool RTCController::isValidTime(int hour, int minute, int second)
-{
-    return hour >= 0 && hour <= 23 &&
-           minute >= 0 && minute <= 59 &&
-           second >= 0 && second <= 59;
-}
-
-bool RTCController::isValidDate(int year, int month, int day)
-{
-    if (year < 2000 || year > 2099 || month < 1 || month > 12 || day < 1 || day > 31)
-    {
-        return false;
-    }
-
-    int maxDays = 31;
-    if (month == 4 || month == 6 || month == 9 || month == 11)
-    {
-        maxDays = 30;
-    }
-    else if (month == 2)
-    {
-        maxDays = year % 4 == 0 ? 29 : 28;
-    }
-
-    return (day <= maxDays);
 }

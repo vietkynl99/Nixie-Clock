@@ -34,14 +34,14 @@ void ClockFragment::loop()
         }
 
         DateTime now = RTCController::getCurrentDateTime();
-        if (RTCController::isValid(now))
+        if (Helper::isValidDateTime(now))
         {
             if (currentTime.unixtime() != now.unixtime())
             {
                 currentTime = now;
                 if (MenuFragment::isRTCDebugEnabled())
                 {
-                    LOG("%s", RTCController::getString(now).c_str());
+                    LOG("%s", Helper::convertDateTimeToString(now).c_str());
                 }
 
                 for (int i = 0; i < TFT_COUNT; i++)
