@@ -49,6 +49,7 @@ public:
 
     static void setFont(const GFXfont *font, uint8_t size);
     static void selectDisplay(int index);
+    static void selectMultiDisplay(uint8_t mask);
 
     static void drawArrayJpeg(const uint8_t array[], uint32_t arraySize, int xpos, int ypos);
     static void drawArrayJpegInCenter(const uint8_t array[], uint32_t arraySize);

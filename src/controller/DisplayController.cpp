@@ -56,9 +56,21 @@ void DisplayController::selectDisplay(int index)
     }
     mPrevIndex = index;
 
-    uint8_t bitMask = (index == TFT_COUNT) ? 0 : 0b01111110 & ~(1 << (index + 1));
+    selectMultiDisplay(index == TFT_COUNT ? 0xFF : 1<<index);
+}
+
+void DisplayController::selectMultiDisplay(uint8_t mask)
+{
+    static uint8_t prevMask = 0;
+
+    if (prevMask == mask)
+    {
+        return;
+    }
+    prevMask = mask;
+
     digitalWrite(HC595_STCP, LOW);
-    shiftOut(HC595_DS, HC595_SHCP, MSBFIRST, bitMask);
+    shiftOut(HC595_DS, HC595_SHCP, MSBFIRST, ~(mask << 1));
     digitalWrite(HC595_STCP, HIGH);
 }
 
