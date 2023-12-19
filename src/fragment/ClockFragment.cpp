@@ -16,20 +16,26 @@ void ClockFragment::init()
 void ClockFragment::loop()
 {
     static uint32_t timeTick = 0, digitTimeTick = 0, clockTimeTick = 0;
+    static uint8_t displayCount = TFT_COUNT;
     static uint8_t digit[TFT_COUNT];
     static DateTime currentTime;
     static uint8_t transitionEffect = 0;
     static int effectNumber = 0;
-    static uint8_t effectMask = 0xFF;
+    static uint8_t effectMask = 0;
 
     if (mIsVisible && xTaskGetTickCount() > clockTimeTick)
     {
         clockTimeTick = xTaskGetTickCount() + 300 / portTICK_PERIOD_MS;
         if (mIsFirstTime)
         {
+            displayCount = SettingsManager::isFullDisplayClockMode() ? TFT_COUNT : 4;
             transitionEffect = 1;
             effectNumber = 9;
-            effectMask = 0xFF;
+            effectMask = 0;
+            for (int i = 0; i < displayCount; i++)
+            {
+                bitSet(effectMask, i);
+            }
         }
 
         DateTime now = RTCController::getCurrentDateTime();
@@ -43,7 +49,7 @@ void ClockFragment::loop()
                     LOG("%s", Helper::convertDateTimeToString(now).c_str());
                 }
 
-                for (int i = 0; i < TFT_COUNT; i++)
+                for (int i = 0; i < displayCount; i++)
                 {
                     int number = -1;
                     switch (i)
@@ -93,7 +99,7 @@ void ClockFragment::loop()
         {
             if (transitionEffect == 2)
             {
-                for (int i = 0; i < TFT_COUNT; i++)
+                for (int i = 0; i < displayCount; i++)
                 {
                     if (digit[i] < effectNumber)
                     {

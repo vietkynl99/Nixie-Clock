@@ -43,19 +43,11 @@ void DisplayController::setFont(const GFXfont *font, uint8_t size)
 
 void DisplayController::selectDisplay(int index)
 {
-    static int mPrevIndex = -1;
-
     if (index < 0 || index > TFT_COUNT)
     {
         LOG("Invalid index %d", index);
         return;
     }
-    if (mPrevIndex == index)
-    {
-        return;
-    }
-    mPrevIndex = index;
-
     selectMultiDisplay(index == TFT_COUNT ? 0xFF : 1<<index);
 }
 

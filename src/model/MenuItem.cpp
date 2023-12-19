@@ -83,14 +83,7 @@ String MenuItem::getStringValue()
 
 bool MenuItem::getBoolValue()
 {
-    if (mType == MENU_ITEM_TYPE_BOOL)
-    {
-        return mValue != 0;
-    }
-    else
-    {
-        return false;
-    }
+    return mValue != 0;
 }
 
 bool MenuItem::needToReboot()
