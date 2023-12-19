@@ -8,7 +8,7 @@ static constexpr const char *const TAG = "SERVER";
 
 #define NTP_TIME_OFFSET (25200)				 // UTC+7 (Vietnam)
 #define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
-#define NTP_RTC_DIFF_TIME 60 // (s) If the difference between NTP and RTC time is greater than this time, RTC time will be set according to NTP time
+#define NTP_RTC_DIFF_TIME 60				 // (s) If the difference between NTP and RTC time is greater than this time, RTC time will be set according to NTP time
 
 bool wifiEnabled = false;
 
@@ -238,7 +238,8 @@ void WebServerManager::ntpHandler()
 		{
 			timeSet = true;
 			LOG("NTP time has been set to %s", getNTPTime().c_str());
-			if (abs(RTCController::getCurrentDateTime().unixtime() - mTimeClient->getEpochTime()) >= NTP_RTC_DIFF_TIME)
+			long long diff = mTimeClient->getEpochTime() - RTCController::getCurrentDateTime().unixtime();
+			if (abs(diff) >= NTP_RTC_DIFF_TIME)
 			{
 				RTCController::setDateTime(DateTime(mTimeClient->getEpochTime()));
 			}
