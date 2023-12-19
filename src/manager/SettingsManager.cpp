@@ -1,4 +1,5 @@
 #include "../../include/manager/SettingsManager.h"
+#include "../../include/manager/PreferencesManager.h"
 
 MenuItemList *SettingsManager::mMenuItemList = nullptr;
 
@@ -11,10 +12,12 @@ void SettingsManager::init()
         return;
     }
     mMenuItemList = new MenuItemList();
+    mMenuItemList->add(new MenuItem("Clock mode", MENU_ITEM_TYPE_CLOCK_MODE, 1));
     mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false, 0, 1, true));
-    mMenuItemList->add(new MenuItem("NTP Service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
+    mMenuItemList->add(new MenuItem("NTP service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Buzzer volume", MENU_ITEM_TYPE_INT, 8, 0, 10));
+    mMenuItemList->add(new MenuItem("Reset settings", MENU_ITEM_TYPE_RESET));
     mMenuItemList->loadData();
 
     LOG("Settings list loaded:");
@@ -23,6 +26,14 @@ void SettingsManager::init()
         MenuItem *item = mMenuItemList->get(i);
         LOG("%d. %s: %s", i + 1, item->getName().c_str(), item->getStringValue().c_str());
     }
+}
+
+void SettingsManager::reset()
+{
+    PreferencesManager::clear(PREFERENCES_NAME);
+    delete mMenuItemList;
+    mMenuItemList = nullptr;
+    // init();
 }
 
 MenuItemList *SettingsManager::getItemList()
@@ -41,6 +52,11 @@ int SettingsManager::getLength()
 }
 
 /* ATTENTION: The index of the setting MUST BE same as the list */
+bool SettingsManager::isFullDisplayClockMode()
+{
+    return mMenuItemList ? mMenuItemList->get(0)->getBoolValue() : false;
+}
+
 bool SettingsManager::isWiFiEnabled()
 {
     return isWebServerEnabled() || isNTPEnabled();
@@ -48,20 +64,20 @@ bool SettingsManager::isWiFiEnabled()
 
 bool SettingsManager::isWebServerEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(0)->getBoolValue() : false;
+    return mMenuItemList ? mMenuItemList->get(1)->getBoolValue() : false;
 }
 
 bool SettingsManager::isNTPEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(1)->getBoolValue() : false;
+    return mMenuItemList ? mMenuItemList->get(2)->getBoolValue() : false;
 }
 
 bool SettingsManager::isRTCDebugEnabled()
 {
-    return mMenuItemList ? mMenuItemList->get(2)->getBoolValue() : false;
+    return mMenuItemList ? mMenuItemList->get(3)->getBoolValue() : false;
 }
 
 int SettingsManager::getBuzzerVolume()
 {
-    return mMenuItemList ? mMenuItemList->get(3)->getValue() : 0;
+    return mMenuItemList ? mMenuItemList->get(4)->getValue() : 0;
 }

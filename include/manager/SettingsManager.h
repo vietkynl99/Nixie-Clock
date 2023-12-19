@@ -13,10 +13,12 @@ private:
 
 public:
     static void init();
+    static void reset();
     static MenuItemList* getItemList();
     static MenuItem* getItem(int index);
     static int getLength();
     
+    static bool isFullDisplayClockMode();
     static bool isWiFiEnabled();
     static bool isWebServerEnabled();
     static bool isNTPEnabled();

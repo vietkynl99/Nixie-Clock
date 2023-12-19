@@ -130,7 +130,28 @@ void MenuFragment::enter()
     {
         return;
     }
-    
+
+    // Check if enter to MENU_ITEM_TYPE_RESET
+    if (!getEditPanelVisible() && SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_RESET)
+    {
+        PopupFragment::setCallback([](bool selection)
+                                   {
+                if (selection)
+                {
+                    SettingsManager::reset();
+                    Message message = {MESSAGE_TYPE_REBOOT, 0};
+                    MessageEvent::send(message);
+                }
+                else
+                {
+                    Message message = {MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT, 0};
+                    MessageEvent::send(message);
+                } });
+        Message message = {MESSAGE_TYPE_SHOW_POPUP, POPUP_TYPE_CONFIRM_REBOOT};
+        MessageEvent::send(message);
+        return;
+    }
+
     // Save data before exit edit panel
     bool reDraw = true;
     if (getEditPanelVisible() && mPrevValue != SettingsManager::getItem(mCurrentIndex)->getValue())
@@ -138,8 +159,8 @@ void MenuFragment::enter()
         if (SettingsManager::getItem(mCurrentIndex)->needToReboot())
         {
             reDraw = false;
-            PopupFragment::setCallback([](bool selection) {
-                LOG("Selection: %d", selection);
+            PopupFragment::setCallback([](bool selection)
+                                       {
                 if (selection)
                 {
                     SettingsManager::getItem(mCurrentIndex)->save();
@@ -150,8 +171,7 @@ void MenuFragment::enter()
                 {
                     Message message = {MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT, 0};
                     MessageEvent::send(message);
-                }
-            });
+                } });
             Message message = {MESSAGE_TYPE_SHOW_POPUP, POPUP_TYPE_CONFIRM_REBOOT};
             MessageEvent::send(message);
         }
@@ -161,7 +181,7 @@ void MenuFragment::enter()
         }
     }
     else
-    { 
+    {
         // Restore old value
         SettingsManager::getItem(mCurrentIndex)->load();
     }
@@ -173,7 +193,7 @@ void MenuFragment::enter()
     }
 
     // After switch to edit panel
-    if(getEditPanelVisible())
+    if (getEditPanelVisible())
     {
         mPrevValue = SettingsManager::getItem(mCurrentIndex)->getValue();
     }
