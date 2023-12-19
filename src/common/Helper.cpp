@@ -2,6 +2,8 @@
 
 int Helper::mTestValue = 0;
 
+static constexpr const char *const TAG = "HELPER";
+
 String Helper::convertDateTimeToString(const DateTime &dateTime)
 {
     return String(dateTime.hour()) + ":" + String(dateTime.minute()) + ":" + String(dateTime.second()) + " " +
@@ -40,4 +42,12 @@ bool Helper::isValidDate(int year, int month, int day)
     }
 
     return (day <= maxDays);
+}
+
+void Helper::showFreeMemory()
+{
+	static size_t totalHeap = ESP.getHeapSize();
+	size_t freeHeap = ESP.getFreeHeap();
+
+	LOGF("Free Heap: %d bytes (%d%% free)", freeHeap, (freeHeap * 100) / (totalHeap + 1));
 }

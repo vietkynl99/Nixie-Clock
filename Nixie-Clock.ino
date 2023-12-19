@@ -15,15 +15,8 @@
 
 TaskHandle_t task1, task2;
 SemaphoreHandle_t mMutex;
-size_t totalHeap = 0;
 
 static constexpr const char *const TAG = "SYSTEM";
-
-void showFreeMemory()
-{
-	size_t freeHeap = ESP.getFreeHeap();
-	LOGF("Free Heap: %d bytes (%d%% free)", freeHeap, (freeHeap * 100) / (totalHeap + 1));
-}
 
 void debugHandler()
 {
@@ -141,7 +134,7 @@ void task1Handler(void *data)
 	Message message;
 
 	LOGF("Start task 1");
-	showFreeMemory();
+	Helper::showFreeMemory();
 
 	while (true)
 	{
@@ -153,7 +146,7 @@ void task1Handler(void *data)
 			LOG("Task 1: %d fps", fps);
 #endif
 #ifdef DEBUG_FREE_MEMORY
-			showFreeMemory();
+			Helper::showFreeMemory();
 #endif
 			fps = 0;
 		}
@@ -179,7 +172,7 @@ void task2Handler(void *data)
 
 	LOGF("Start task 2");
 	WebServerManager::init();
-	showFreeMemory();
+	Helper::showFreeMemory();
 
 	while (true)
 	{
@@ -191,7 +184,7 @@ void task2Handler(void *data)
 			LOG("Task 2: %d fps", fps);
 #endif
 #ifdef DEBUG_FREE_MEMORY
-			showFreeMemory();
+			Helper::showFreeMemory();
 #endif
 			fps = 0;
 		}
@@ -207,9 +200,6 @@ void setup()
 	mMutex = xSemaphoreCreateMutex();
 	Serial.begin(115200);
 
-	totalHeap = ESP.getHeapSize();
-	LOGF("Total Heap: %d bytes", totalHeap);
-
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
 	MessageEvent::init();
@@ -218,18 +208,18 @@ void setup()
 	LauncherManager::init();
 	delay(500);
 
-	showFreeMemory();
+	Helper::showFreeMemory();
 
 	int ret;
 	if ((ret = xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0)) != pdPASS)
 	{
 		LOGF("Failed to create task1: %d", ret);
-		showFreeMemory();
+		Helper::showFreeMemory();
 	}
 	if ((ret = xTaskCreatePinnedToCore(task2Handler, "task2", TASK2_STACK_SIZE, NULL, 1, &task2, 1)) != pdPASS)
 	{
 		LOGF("Failed to create task2: %d", ret);
-		showFreeMemory();
+		Helper::showFreeMemory();
 	}
 }
 

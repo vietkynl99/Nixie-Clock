@@ -26,6 +26,7 @@ void LauncherManager::loop()
         if (BootFragment::isDone())
         {
             show(FRAGMENT_TYPE_DEFAULT);
+            Helper::showFreeMemory();
         }
         else
         {
