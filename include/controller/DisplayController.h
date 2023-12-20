@@ -62,7 +62,7 @@ public:
     static void drawArrayJpeg(const uint8_t array[], uint32_t arraySize, int xpos, int ypos);
     static void drawArrayJpegInCenter(const uint8_t array[], uint32_t arraySize);
     static void drawButton(int x, int y, int width, int height, String label, bool hightlight);
-    static void drawWifiIcon(int x, int y, WifiIconType type, bool clearBackground = true);
+    static void drawWifiIcon(int x, int y, WifiIconType type, uint16_t color, bool clearBackground = true);
 
 private:
     static bool outputDMACallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap);

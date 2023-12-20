@@ -7,6 +7,8 @@ bool ClockFragment::mIsFirstTime = false;
 
 static constexpr const char *const TAG = "CLOCK";
 
+#define INFORMATION_SCREEN_TEXT_COLOR 0xCE79 // white
+
 void ClockFragment::init()
 {
     RTCController::init();
@@ -257,7 +259,7 @@ void ClockFragment::updateWiFiIcon(bool firstTime)
     {
         prevType = type;
         DisplayController::selectDisplay(TFT_COUNT - 1);
-        DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type);
+        DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR);
     }
 }
 
@@ -269,7 +271,7 @@ void ClockFragment::updateInformationScreen(bool firstTime)
 
     DisplayController::selectDisplay(TFT_COUNT - 1);
     DisplayController::setFont(FSB12, 1);
-    DisplayController::getTft()->setTextColor(TFT_WHITE, TFT_BLACK);
+    DisplayController::getTft()->setTextColor(INFORMATION_SCREEN_TEXT_COLOR, TFT_BLACK);
     DisplayController::getTft()->setTextDatum(TL_DATUM);
 
     DisplayController::getTft()->drawString(Helper::convertDateToString(RTCController::getCurrentDateTime()), xpos, ypos);

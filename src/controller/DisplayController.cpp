@@ -113,7 +113,7 @@ void DisplayController::drawButton(int x, int y, int width, int height, String l
     tft->drawString(label, x + width / 2, y + height / 2);
 }
 
-void DisplayController::drawWifiIcon(int x, int y, WifiIconType type, bool clearBackground)
+void DisplayController::drawWifiIcon(int x, int y, WifiIconType type, uint16_t color, bool clearBackground)
 {
     x += 21;
     y += 40;
@@ -122,16 +122,16 @@ void DisplayController::drawWifiIcon(int x, int y, WifiIconType type, bool clear
         tft->fillRect(x - 21, y - 32, 42, 40, TFT_BLACK);
     }
 
-    tft->fillCircle(x, y, 3, TFT_WHITE);
+    tft->fillCircle(x, y, 3, color);
     for (int i = 1; i < 4; i++)
     {
-        tft->drawArc(x, y, 8 * i + 2, 8 * i, 135, 225, TFT_WHITE, TFT_BLACK);
+        tft->drawArc(x, y, 8 * i + 2, 8 * i, 135, 225, color, TFT_BLACK);
     }
 
     if (type == WIFI_ICON_TYPE_DISCONNECTED)
     {
         setFont(FF8, 1);
-        tft->setTextColor(TFT_WHITE);
+        tft->setTextColor(color);
         tft->setTextDatum(CC_DATUM);
         tft->drawString("\\", x, y - 16);
     }
