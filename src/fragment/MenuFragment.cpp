@@ -159,11 +159,12 @@ void MenuFragment::enter()
         if (SettingsManager::getItem(mCurrentIndex)->needToReboot())
         {
             reDraw = false;
+            static int lastIndex = mCurrentIndex;
             PopupFragment::setCallback([](bool selection)
                                        {
                 if (selection)
                 {
-                    SettingsManager::getItem(mCurrentIndex)->save();
+                    SettingsManager::getItem(lastIndex)->save();
                     Message message = {MESSAGE_TYPE_REBOOT, 0};
                     MessageEvent::send(message);
                 }
