@@ -15,7 +15,7 @@ void ClockFragment::init()
 
 void ClockFragment::loop()
 {
-    static uint32_t timeTick = 0, digitTimeTick = 0, clockTimeTick = 0;
+    static uint32_t digitTimeTick = 0, clockTimeTick = 0;
     static uint8_t displayCount = TFT_COUNT;
     static uint8_t digit[TFT_COUNT];
     static DateTime currentTime;
@@ -91,6 +91,7 @@ void ClockFragment::loop()
         mIsFirstTime = false;
     }
 
+    // Transition effect
     if (mIsVisible && transitionEffect && xTaskGetTickCount() > digitTimeTick)
     {
         digitTimeTick = xTaskGetTickCount() + 100 / portTICK_PERIOD_MS;
@@ -132,6 +133,12 @@ void ClockFragment::loop()
             }
         }
     }
+
+    // Information screen
+    if (!SettingsManager::isFullDisplayClockMode())
+    {
+        informationScreenHandler();
+    }
 }
 
 void ClockFragment::show()
@@ -160,6 +167,28 @@ void ClockFragment::hide()
 bool ClockFragment::isVisible()
 {
     return mIsVisible;
+}
+
+void ClockFragment::handleEvent(const Message &message)
+{
+    if (!mIsVisible)
+    {
+        return;
+    }
+
+    switch (message.type)
+    {
+    case MESSAGE_TYPE_UPDATE_TEMP_AND_RH:
+    {
+        if (!SettingsManager::isFullDisplayClockMode())
+        {
+            updateInformationScreen(false);
+        }
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void ClockFragment::showDigit(int digit)
@@ -198,5 +227,67 @@ void ClockFragment::showDigit(int digit)
         break;
     default:
         break;
+    }
+}
+
+void ClockFragment::updateInformationScreen(bool firstTime)
+{
+    int xpos = 10;
+    int ypos = 10;
+    char buffer[32];
+
+    DisplayController::selectDisplay(TFT_COUNT - 1);
+    if (firstTime)
+    {
+        DisplayController::setFont(FSB12, 1);
+        DisplayController::getTft()->setTextColor(TFT_WHITE, TFT_BLACK);
+        DisplayController::getTft()->setTextDatum(TL_DATUM);
+    }
+
+    DisplayController::getTft()->drawString(Helper::convertDateToString(RTCController::getCurrentDateTime()), xpos, ypos);
+
+    ypos += DisplayController::getTft()->fontHeight() * 1.2;
+    if (HardwareController::isValidDhtValue(HardwareController::getTemperature()))
+    {
+        snprintf(buffer, sizeof(buffer), "Temp: %.1f C", HardwareController::getTemperature());
+        DisplayController::getTft()->drawString(String(buffer), xpos, ypos);
+    }
+    else
+    {
+        DisplayController::getTft()->drawString("Temp: -- C", xpos, ypos);
+    }
+
+    ypos += DisplayController::getTft()->fontHeight() * 1.2;
+    if (HardwareController::isValidDhtValue(HardwareController::getHumidity()))
+    {
+        snprintf(buffer, sizeof(buffer), "RH: %.1f %%", HardwareController::getHumidity());
+        DisplayController::getTft()->drawString(String(buffer), xpos, ypos);
+    }
+    else
+    {
+        DisplayController::getTft()->drawString("RH: -- %", xpos, ypos);
+    }
+}
+
+void ClockFragment::informationScreenHandler()
+{
+    static uint32_t timeTick = 0;
+    static bool isFirstTime = true;
+
+    if (xTaskGetTickCount() > timeTick)
+    {
+        timeTick = xTaskGetTickCount() + 20 / portTICK_PERIOD_MS;
+        if (mIsVisible)
+        {
+            if (isFirstTime)
+            {
+                isFirstTime = false;
+                updateInformationScreen(true);
+            }
+        }
+        else
+        {
+            isFirstTime = true;
+        }
     }
 }

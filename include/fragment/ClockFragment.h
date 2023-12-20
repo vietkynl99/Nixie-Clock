@@ -3,6 +3,8 @@
 
 #include "../common/Log.h"
 #include "../common/Helper.h"
+#include "../common/MessageEvent.h"
+#include "../controller/HardwareController.h"
 #include "../controller/DisplayController.h"
 #include "../controller/RTCController.h"
 #include "../manager/SettingsManager.h"
@@ -20,9 +22,12 @@ public:
     static void show();
     static void hide();
     static bool isVisible();
+    static void handleEvent(const Message &message);
 
 private:
     static void showDigit(int digit);
+    static void updateInformationScreen(bool firstTime);
+    static void informationScreenHandler();
 };
 
 #endif

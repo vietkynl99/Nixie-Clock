@@ -22,6 +22,9 @@ public:
     static void init();
     static void loop();
     static void bip(int n);
+    static float getTemperature();
+    static float getHumidity();
+    static bool isValidDhtValue(float value);
 
 private:
     static void buttonHandler();

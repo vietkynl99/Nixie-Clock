@@ -145,6 +145,14 @@ void LauncherManager::handleEvent(const Message &message)
         show(mPrevFragmentType);
         break;
     }
+    case MESSAGE_TYPE_UPDATE_TEMP_AND_RH:
+    {
+        if (mCurrentFragmentType == FRAGMENT_TYPE_CLOCK)
+        {
+            ClockFragment::handleEvent(message);
+        }
+        break;
+    }
     default:
         break;
     }

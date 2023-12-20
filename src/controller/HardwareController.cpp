@@ -10,11 +10,12 @@
 #define TOUCH_LONG_PRESS_TIME 1000
 
 #define DHT_SENSOR_UPDATE_TIME 10000UL // (ms)
+#define DHT_INVALID_VALUE -999
 
 int HardwareController::mTouchPin[TOUCH_PIN_COUNT] = {TOUCH_PIN_BUTTON1, TOUCH_PIN_BUTTON2, TOUCH_PIN_BUTTON3};
 int HardwareController::mBuzzerCount = 0;
-float HardwareController::mTemperature = -1;
-float HardwareController::mHumidity = -1;
+float HardwareController::mTemperature = DHT_INVALID_VALUE;
+float HardwareController::mHumidity = DHT_INVALID_VALUE;
 DHT_Async HardwareController::mDHT(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 
 static constexpr const char *const TAG = "HARDWARE";
@@ -47,6 +48,21 @@ void HardwareController::bip(int n)
     {
         mBuzzerCount = 2 * n;
     }
+}
+
+float HardwareController::getTemperature()
+{
+    return mTemperature;
+}
+
+float HardwareController::getHumidity()
+{
+    return mHumidity;
+}
+
+bool HardwareController::isValidDhtValue(float value)
+{
+    return value > DHT_INVALID_VALUE;
 }
 
 void HardwareController::buttonHandler()
@@ -136,6 +152,8 @@ void HardwareController::dhtHandler()
                 mTemperature = temperature;
                 mHumidity = humidity;
                 LOG("Temp: %.1fC, Hum: %.1f%%", mTemperature, mHumidity);
+                Message message = {MESSAGE_TYPE_UPDATE_TEMP_AND_RH, 0};
+                MessageEvent::send(message);
             }
         }
     }
