@@ -4,12 +4,30 @@ int Helper::mTestValue = 0;
 
 static constexpr const char *const TAG = "HELPER";
 
-String Helper::convertDateTimeToString(const DateTime &dateTime)
+String Helper::convertDateToString(const DateTime &dateTime)
 {
-    return String(dateTime.hour()) + ":" + String(dateTime.minute()) + ":" + String(dateTime.second()) + " " +
-           String(dateTime.year()) + "/" + String(dateTime.month()) + "/" + String(dateTime.day());
+    String result = String(dateTime.year()) + "/";
+    result += dateTime.month() > 9 ? String(dateTime.month()) : "0" + String(dateTime.month());
+    result += "/";
+    result += dateTime.day() > 9 ? String(dateTime.day()) : "0" + String(dateTime.day());
+    return result;
 }
 
+String Helper::convertTimeToString(const DateTime &dateTime)
+{
+    String result = "";
+    result += dateTime.hour() > 9 ? String(dateTime.hour()) : "0" + String(dateTime.hour());
+    result += ":";
+    result += dateTime.minute() > 9 ? String(dateTime.minute()) : "0" + String(dateTime.minute());
+    result += ":";
+    result += dateTime.second() > 9 ? String(dateTime.second()) : "0" + String(dateTime.second());
+    return result;
+}
+
+String Helper::convertDateTimeToString(const DateTime &dateTime)
+{
+    return convertTimeToString(dateTime) + " " + convertDateToString(dateTime);
+}
 
 bool Helper::isValidDateTime(const DateTime &dateTime)
 {
@@ -46,8 +64,8 @@ bool Helper::isValidDate(int year, int month, int day)
 
 void Helper::showFreeMemory()
 {
-	static size_t totalHeap = ESP.getHeapSize();
-	size_t freeHeap = ESP.getFreeHeap();
+    static size_t totalHeap = ESP.getHeapSize();
+    size_t freeHeap = ESP.getFreeHeap();
 
-	LOGF("Free Heap: %d bytes (%d%% free)", freeHeap, (freeHeap * 100) / (totalHeap + 1));
+    LOGF("Free Heap: %d bytes (%d%% free)", freeHeap, (freeHeap * 100) / (totalHeap + 1));
 }
