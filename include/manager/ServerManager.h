@@ -13,6 +13,7 @@
 #include "../common/Helper.h"
 #include "../controller/WifiMaster.h"
 #include "../controller/RTCController.h"
+#include "../controller/HardwareController.h"
 #include "../manager/SettingsManager.h"
 
 #define MDNS_SERVER_NAME "kynlclock"
@@ -26,6 +27,7 @@ private:
     static WebServer *mServer;
     static WiFiUDP mNtpUDP;
     static NTPClient *mTimeClient;
+    static bool mWifiEnabled;
 
 public:
     static void init();

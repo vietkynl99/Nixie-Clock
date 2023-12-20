@@ -3,6 +3,7 @@
 WebServer *ServerManager::mServer = nullptr;
 WiFiUDP ServerManager::mNtpUDP;
 NTPClient *ServerManager::mTimeClient = nullptr;
+bool ServerManager::mWifiEnabled = false;
 
 static constexpr const char *const TAG = "SERVER";
 
@@ -10,12 +11,10 @@ static constexpr const char *const TAG = "SERVER";
 #define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
 #define NTP_RTC_DIFF_TIME 60				 // (s) If the difference between NTP and RTC time is greater than this time, RTC time will be set according to NTP time
 
-bool wifiEnabled = false;
-
 void ServerManager::init()
 {
-	wifiEnabled = SettingsManager::isWiFiEnabled();
-	if (!wifiEnabled)
+	mWifiEnabled = SettingsManager::isWiFiEnabled();
+	if (!mWifiEnabled)
 	{
 		return;
 	}
@@ -24,7 +23,7 @@ void ServerManager::init()
 
 void ServerManager::loop()
 {
-	if (!wifiEnabled)
+	if (!mWifiEnabled)
 	{
 		return;
 	}
@@ -215,6 +214,9 @@ void ServerManager::statusHandler()
 			{
 				LOG("WiFi disconnected");
 			}
+			Message message = {MESSAGE_TYPE_UPDATE_WIFI_STATUS, 0};
+			MessageEvent::send(message);
+			HardwareController::bip(3);
 		}
 	}
 }
@@ -237,8 +239,8 @@ void ServerManager::ntpHandler()
 		if (!timeSet && mTimeClient->isTimeSet())
 		{
 			timeSet = true;
-			LOG("NTP time has been set to %s", getNTPTime().c_str());
 			long long diff = mTimeClient->getEpochTime() - RTCController::getCurrentDateTime().unixtime();
+			LOG("NTP time has been set to %s (%lds different from RTC time)", getNTPTime().c_str(), diff);
 			if (abs(diff) >= NTP_RTC_DIFF_TIME)
 			{
 				RTCController::setDateTime(DateTime(mTimeClient->getEpochTime()));

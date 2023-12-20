@@ -48,7 +48,7 @@ void DisplayController::selectDisplay(int index)
         LOG("Invalid index %d", index);
         return;
     }
-    selectMultiDisplay(index == TFT_COUNT ? 0xFF : 1<<index);
+    selectMultiDisplay(index == TFT_COUNT ? 0xFF : 1 << index);
 }
 
 void DisplayController::selectMultiDisplay(uint8_t mask)
@@ -111,6 +111,37 @@ void DisplayController::drawButton(int x, int y, int width, int height, String l
     tft->setTextColor(hightlight ? TFT_WHITE : TFT_BLACK);
     tft->setTextDatum(CC_DATUM);
     tft->drawString(label, x + width / 2, y + height / 2);
+}
+
+void DisplayController::drawWifiIcon(int x, int y, WifiIconType type, bool clearBackground)
+{
+    x += 21;
+    y += 40;
+    if (clearBackground)
+    {
+        tft->fillRect(x - 21, y - 32, 42, 40, TFT_BLACK);
+    }
+
+    tft->fillCircle(x, y, 3, TFT_WHITE);
+    for (int i = 1; i < 4; i++)
+    {
+        tft->drawArc(x, y, 8 * i + 2, 8 * i, 135, 225, TFT_WHITE, TFT_BLACK);
+    }
+
+    if (type == WIFI_ICON_TYPE_DISCONNECTED)
+    {
+        setFont(FF8, 1);
+        tft->setTextColor(TFT_WHITE);
+        tft->setTextDatum(CC_DATUM);
+        tft->drawString("\\", x, y - 16);
+    }
+    else if (type == WIFI_ICON_TYPE_DISABLED)
+    {
+        setFont(FF7, 1);
+        tft->setTextColor(TFT_RED);
+        tft->setTextDatum(CC_DATUM);
+        tft->drawString("x", x + 8, y - 9);
+    }
 }
 
 bool DisplayController::outputDMACallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)

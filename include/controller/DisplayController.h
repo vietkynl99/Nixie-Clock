@@ -6,13 +6,14 @@
 #include <TFT_eSPI.h>
 #include "../common/PinDefines.h"
 #include "../common/FreeFonts.h"
-#include "../model/MenuItemList.h"
 #include "../common/Log.h"
+#include "../common/Helper.h"
+#include "../model/MenuItemList.h"
 
 // #define SHOW_RENDER_TIME
 
-#define MENU_FONT                       FSB18 // Serif Bold 18pt
-#define MENU_FONT_SIZE                  1
+#define MENU_FONT FSB18 // Serif Bold 18pt
+#define MENU_FONT_SIZE 1
 #define MENU_HEADER_COLOR 0x3C91
 #define MENU_HIGHTLIGHT_COLOR 0x2124
 #define MENU_BACKGROUND_COLOR TFT_BLACK
@@ -36,6 +37,13 @@
 #define BUTTON_CANCEL_XPOS (POPUP_XPOS + BUTTON_WIDTH + (POPUP_WIDTH - 2 * BUTTON_WIDTH) * 2 / 3)
 #define BUTTON_YPOS (POPUP_YPOS + POPUP_HEIGHT - BUTTON_HEIGHT - BUTTON_BOTTOM_MARGIN)
 
+enum WifiIconType
+{
+    WIFI_ICON_TYPE_CONNECTED,
+    WIFI_ICON_TYPE_DISCONNECTED,
+    WIFI_ICON_TYPE_DISABLED
+};
+
 class DisplayController
 {
 private:
@@ -54,6 +62,7 @@ public:
     static void drawArrayJpeg(const uint8_t array[], uint32_t arraySize, int xpos, int ypos);
     static void drawArrayJpegInCenter(const uint8_t array[], uint32_t arraySize);
     static void drawButton(int x, int y, int width, int height, String label, bool hightlight);
+    static void drawWifiIcon(int x, int y, WifiIconType type, bool clearBackground = true);
 
 private:
     static bool outputDMACallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap);

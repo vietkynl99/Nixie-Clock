@@ -186,6 +186,14 @@ void ClockFragment::handleEvent(const Message &message)
         }
         break;
     }
+    case MESSAGE_TYPE_UPDATE_WIFI_STATUS:
+    {
+        if (!SettingsManager::isFullDisplayClockMode())
+        {
+            updateWiFiIcon(false);
+        }
+        break;
+    }
     default:
         break;
     }
@@ -230,6 +238,27 @@ void ClockFragment::showDigit(int digit)
     }
 }
 
+void ClockFragment::updateWiFiIcon(bool firstTime)
+{
+    static int prevType = -1;
+
+    int type;
+    if(SettingsManager::isWiFiEnabled())
+    {
+        type = WiFi.isConnected() ? WIFI_ICON_TYPE_CONNECTED : WIFI_ICON_TYPE_DISCONNECTED;
+    }
+    else
+    {
+        type = WIFI_ICON_TYPE_DISABLED;
+    }
+    if (firstTime || prevType != type)
+    {
+        prevType = type;
+        DisplayController::selectDisplay(TFT_COUNT - 1);
+        DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type);
+    }
+}
+
 void ClockFragment::updateInformationScreen(bool firstTime)
 {
     int xpos = 10;
@@ -237,12 +266,9 @@ void ClockFragment::updateInformationScreen(bool firstTime)
     char buffer[32];
 
     DisplayController::selectDisplay(TFT_COUNT - 1);
-    if (firstTime)
-    {
-        DisplayController::setFont(FSB12, 1);
-        DisplayController::getTft()->setTextColor(TFT_WHITE, TFT_BLACK);
-        DisplayController::getTft()->setTextDatum(TL_DATUM);
-    }
+    DisplayController::setFont(FSB12, 1);
+    DisplayController::getTft()->setTextColor(TFT_WHITE, TFT_BLACK);
+    DisplayController::getTft()->setTextDatum(TL_DATUM);
 
     DisplayController::getTft()->drawString(Helper::convertDateToString(RTCController::getCurrentDateTime()), xpos, ypos);
 
@@ -283,6 +309,7 @@ void ClockFragment::informationScreenHandler()
             {
                 isFirstTime = false;
                 updateInformationScreen(true);
+                updateWiFiIcon(true);
             }
         }
         else

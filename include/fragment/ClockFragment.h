@@ -1,6 +1,7 @@
 #ifndef _CLOCK_FRAGMENT_H_
 #define _CLOCK_FRAGMENT_H_
 
+#include <WiFi.h>
 #include "../common/Log.h"
 #include "../common/Helper.h"
 #include "../common/MessageEvent.h"
@@ -26,6 +27,7 @@ public:
 
 private:
     static void showDigit(int digit);
+    static void updateWiFiIcon(bool firstTime);
     static void updateInformationScreen(bool firstTime);
     static void informationScreenHandler();
 };
