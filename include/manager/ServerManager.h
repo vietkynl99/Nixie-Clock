@@ -1,5 +1,5 @@
-#ifndef _WEB_SERVER_MANAGER_H_
-#define _WEB_SERVER_MANAGER_H_
+#ifndef _SERVER_MANAGER_H_
+#define _SERVER_MANAGER_H_
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -20,7 +20,7 @@
 #define SERVER_USERNAME "kynl"
 #define SERVER_PASSWORD "123456"
 
-class WebServerManager
+class ServerManager
 {
 private:
     static WebServer *mServer;

@@ -4,7 +4,7 @@
 #include "include/common/Helper.h"
 #include "include/controller/HardwareController.h"
 #include "include/manager/SettingsManager.h"
-#include "include/manager/WebServerManager.h"
+#include "include/manager/ServerManager.h"
 #include "include/manager/LauncherManager.h"
 
 // #define DEBUG_FREE_MEMORY
@@ -108,7 +108,7 @@ void debugHandler()
 				}
 				else
 				{
-					LOG("NTP time: %s", WebServerManager::getNTPTime().c_str());
+					LOG("NTP time: %s", ServerManager::getNTPTime().c_str());
 				}
 			}
 			else if (!strcmp(cmd, "RTC"))
@@ -174,7 +174,7 @@ void task2Handler(void *data)
 	int fps = 0;
 
 	LOGF("Start task 2");
-	WebServerManager::init();
+	ServerManager::init();
 	Helper::showFreeMemory();
 
 	while (true)
@@ -193,7 +193,7 @@ void task2Handler(void *data)
 		}
 		debugHandler();
 		HardwareController::loop();
-		WebServerManager::loop();
+		ServerManager::loop();
 		vTaskDelay(5 / portTICK_PERIOD_MS);
 	}
 }

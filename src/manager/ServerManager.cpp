@@ -1,8 +1,8 @@
-#include "../../include/manager/WebServerManager.h"
+#include "../../include/manager/ServerManager.h"
 
-WebServer *WebServerManager::mServer = nullptr;
-WiFiUDP WebServerManager::mNtpUDP;
-NTPClient *WebServerManager::mTimeClient = nullptr;
+WebServer *ServerManager::mServer = nullptr;
+WiFiUDP ServerManager::mNtpUDP;
+NTPClient *ServerManager::mTimeClient = nullptr;
 
 static constexpr const char *const TAG = "SERVER";
 
@@ -12,7 +12,7 @@ static constexpr const char *const TAG = "SERVER";
 
 bool wifiEnabled = false;
 
-void WebServerManager::init()
+void ServerManager::init()
 {
 	wifiEnabled = SettingsManager::isWiFiEnabled();
 	if (!wifiEnabled)
@@ -22,7 +22,7 @@ void WebServerManager::init()
 	WifiMaster::init();
 }
 
-void WebServerManager::loop()
+void ServerManager::loop()
 {
 	if (!wifiEnabled)
 	{
@@ -37,7 +37,7 @@ void WebServerManager::loop()
 	}
 }
 
-String WebServerManager::getNTPTime()
+String ServerManager::getNTPTime()
 {
 	if (!mTimeClient || !mTimeClient->isTimeSet())
 	{
@@ -47,7 +47,7 @@ String WebServerManager::getNTPTime()
 	return Helper::convertDateTimeToString(now);
 }
 
-void WebServerManager::startServer()
+void ServerManager::startServer()
 {
 	static bool started = false;
 
@@ -75,7 +75,7 @@ void WebServerManager::startServer()
 	}
 }
 
-void WebServerManager::startNTP()
+void ServerManager::startNTP()
 {
 	static bool started = false;
 	if (!started)
@@ -93,12 +93,12 @@ void WebServerManager::startNTP()
 	}
 }
 
-void WebServerManager::notFoundHandler()
+void ServerManager::notFoundHandler()
 {
 	mServer->send(404, "text/plain", "404 Not Found");
 }
 
-void WebServerManager::loginHandler()
+void ServerManager::loginHandler()
 {
 	String msg;
 	if (mServer->hasHeader("Cookie"))
@@ -137,7 +137,7 @@ void WebServerManager::loginHandler()
 	mServer->send(200, "text/html", content);
 }
 
-void WebServerManager::rootHandler()
+void ServerManager::rootHandler()
 {
 	if (!isAuthentified())
 	{
@@ -172,7 +172,7 @@ void WebServerManager::rootHandler()
 	mServer->send(200, "text/html", temp);
 }
 
-bool WebServerManager::isAuthentified()
+bool ServerManager::isAuthentified()
 {
 	if (mServer->hasHeader("Cookie"))
 	{
@@ -188,7 +188,7 @@ bool WebServerManager::isAuthentified()
 	return false;
 }
 
-void WebServerManager::statusHandler()
+void ServerManager::statusHandler()
 {
 	static uint32_t timeTick = 0;
 	static bool status = false;
@@ -219,7 +219,7 @@ void WebServerManager::statusHandler()
 	}
 }
 
-void WebServerManager::ntpHandler()
+void ServerManager::ntpHandler()
 {
 	static uint32_t timeTick = 0;
 	static bool timeSet = false;
