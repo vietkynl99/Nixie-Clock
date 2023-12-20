@@ -9,6 +9,7 @@
 
 // #define DEBUG_FREE_MEMORY
 // #define DEBUG_TASK_FPS
+// #define DEBUG_SHOW_EVENT_INFORMATION
 
 #define TASK1_STACK_SIZE 10000
 #define TASK2_STACK_SIZE 10000
@@ -154,7 +155,9 @@ void task1Handler(void *data)
 		{
 			if (MessageEvent::get(message))
 			{
+#ifdef DEBUG_SHOW_EVENT_INFORMATION
 				LOG("Received message: type: %d, value: %d", message.type, message.value);
+#endif
 				LauncherManager::handleEvent(message);
 			}
 
