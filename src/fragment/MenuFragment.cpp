@@ -53,9 +53,9 @@ void MenuFragment::loop()
 
 void MenuFragment::show()
 {
-    LOG("Show");
     if (!mIsVisible)
     {
+        LOG("Show");
         mIsVisible = true;
         mNeedsRedraw = true;
         mIsFirstTime = true;
@@ -67,9 +67,9 @@ void MenuFragment::show()
 
 void MenuFragment::hide()
 {
-    LOG("Hide");
     if (mIsVisible)
     {
+        LOG("Hide");
         mIsVisible = false;
         mNeedsRedraw = true;
         mIsFirstTime = true;
