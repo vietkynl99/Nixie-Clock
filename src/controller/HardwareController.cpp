@@ -91,25 +91,28 @@ void HardwareController::buttonHandler()
             {
                 risingTimeTick[i] = xTaskGetTickCount();
             }
-            if (prevState[i] && !newState[i])
+            if (!BootFragment::isVisible())
             {
-                longState[i] = false;
-                uint32_t pressTime = xTaskGetTickCount() - risingTimeTick[i];
-                if (pressTime < TOUCH_SHORT_PRESS_TIMEOUT)
+                if (prevState[i] && !newState[i])
                 {
-                    Message event = {MESSAGE_TYPE_BUTTON_SHORT_PRESSED, i};
-                    MessageEvent::send(event);
-                    LOG("Button %d short pressed", i);
-                    bip(1);
+                    longState[i] = false;
+                    uint32_t pressTime = xTaskGetTickCount() - risingTimeTick[i];
+                    if (pressTime < TOUCH_SHORT_PRESS_TIMEOUT)
+                    {
+                        Message event = {MESSAGE_TYPE_BUTTON_SHORT_PRESSED, i};
+                        MessageEvent::send(event);
+                        LOG("Button %d short pressed", i);
+                        bip(1);
+                    }
                 }
-            }
-            if (newState[i] && !longState[i] && xTaskGetTickCount() - risingTimeTick[i] > TOUCH_LONG_PRESS_TIME)
-            {
-                longState[i] = true;
-                Message event = {MESSAGE_TYPE_BUTTON_LONG_PRESSED, i};
-                MessageEvent::send(event);
-                LOG("Button %d long pressed", i);
-                bip(2);
+                if (newState[i] && !longState[i] && xTaskGetTickCount() - risingTimeTick[i] > TOUCH_LONG_PRESS_TIME)
+                {
+                    longState[i] = true;
+                    Message event = {MESSAGE_TYPE_BUTTON_LONG_PRESSED, i};
+                    MessageEvent::send(event);
+                    LOG("Button %d long pressed", i);
+                    bip(2);
+                }
             }
         }
     }

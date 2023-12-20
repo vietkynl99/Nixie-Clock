@@ -8,6 +8,7 @@
 #include "../common/MessageEvent.h"
 #include "../controller/LedController.h"
 #include "../manager/SettingsManager.h"
+#include "../fragment/BootFragment.h"
 
 class HardwareController
 {
