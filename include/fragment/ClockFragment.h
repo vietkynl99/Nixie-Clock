@@ -29,7 +29,6 @@ private:
     static void showDigit(int digit);
     static void updateWiFiIcon(bool firstTime);
     static void updateInformationScreen(bool firstTime);
-    static void informationScreenHandler();
 };
 
 #endif

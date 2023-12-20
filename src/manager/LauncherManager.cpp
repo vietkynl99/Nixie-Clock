@@ -43,20 +43,8 @@ void LauncherManager::loop()
     }
 }
 
-void LauncherManager::show(int type, bool clearDisplay)
+void LauncherManager::refresh(bool clearDisplay)
 {
-    if (type < 0 || type >= FRAGMENT_TYPE_MAX)
-    {
-        LOG("Invalid fragment type: %d", type);
-        return;
-    }
-    if (mCurrentFragmentType == type)
-    {
-        return;
-    }
-    mPrevFragmentType = mCurrentFragmentType;
-    mCurrentFragmentType = type;
-
     BootFragment::hide();
     ReBootFragment::hide();
     ClockFragment::hide();
@@ -90,6 +78,23 @@ void LauncherManager::show(int type, bool clearDisplay)
     default:
         break;
     }
+}
+
+void LauncherManager::show(int type, bool clearDisplay)
+{
+    if (type < 0 || type >= FRAGMENT_TYPE_MAX)
+    {
+        LOG("Invalid fragment type: %d", type);
+        return;
+    }
+    if (mCurrentFragmentType == type)
+    {
+        return;
+    }
+    mPrevFragmentType = mCurrentFragmentType;
+    mCurrentFragmentType = type;
+
+    refresh(clearDisplay);
 }
 
 void LauncherManager::handleEvent(const Message &message)
@@ -146,6 +151,7 @@ void LauncherManager::handleEvent(const Message &message)
         break;
     }
     case MESSAGE_TYPE_UPDATE_TEMP_AND_RH:
+    case MESSAGE_TYPE_UPDATE_WIFI_STATUS:
     {
         if (mCurrentFragmentType == FRAGMENT_TYPE_CLOCK)
         {

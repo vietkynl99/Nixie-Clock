@@ -66,6 +66,10 @@ void debugHandler()
 			{
 				DisplayController::clear();
 			}
+			else if (!strcmp(cmd, "REFRESH"))
+			{
+				LauncherManager::refresh();
+			}
 			else if (!strcmp(cmd, "SELECT"))
 			{
 				DisplayController::selectDisplay(code);

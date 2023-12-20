@@ -32,6 +32,7 @@ private:
 public:
     static void init();
     static void loop();
+    static void refresh(bool clearDisplay = true);
     static void show(int type, bool clearDisplay = true);
     static void handleEvent(const Message &message);
 

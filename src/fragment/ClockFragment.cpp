@@ -38,6 +38,7 @@ void ClockFragment::loop()
             }
         }
 
+        // Update RTC time
         DateTime now = RTCController::getCurrentDateTime();
         if (Helper::isValidDateTime(now))
         {
@@ -88,6 +89,13 @@ void ClockFragment::loop()
                 }
             }
         }
+
+        // Information screen
+        if (mIsFirstTime && !SettingsManager::isFullDisplayClockMode())
+        {
+            updateInformationScreen(true);
+            updateWiFiIcon(true);
+        }
         mIsFirstTime = false;
     }
 
@@ -132,12 +140,6 @@ void ClockFragment::loop()
                 }
             }
         }
-    }
-
-    // Information screen
-    if (!SettingsManager::isFullDisplayClockMode())
-    {
-        informationScreenHandler();
     }
 }
 
@@ -243,7 +245,7 @@ void ClockFragment::updateWiFiIcon(bool firstTime)
     static int prevType = -1;
 
     int type;
-    if(SettingsManager::isWiFiEnabled())
+    if (SettingsManager::isWiFiEnabled())
     {
         type = WiFi.isConnected() ? WIFI_ICON_TYPE_CONNECTED : WIFI_ICON_TYPE_DISCONNECTED;
     }
@@ -292,29 +294,5 @@ void ClockFragment::updateInformationScreen(bool firstTime)
     else
     {
         DisplayController::getTft()->drawString("RH: -- %", xpos, ypos);
-    }
-}
-
-void ClockFragment::informationScreenHandler()
-{
-    static uint32_t timeTick = 0;
-    static bool isFirstTime = true;
-
-    if (xTaskGetTickCount() > timeTick)
-    {
-        timeTick = xTaskGetTickCount() + 20 / portTICK_PERIOD_MS;
-        if (mIsVisible)
-        {
-            if (isFirstTime)
-            {
-                isFirstTime = false;
-                updateInformationScreen(true);
-                updateWiFiIcon(true);
-            }
-        }
-        else
-        {
-            isFirstTime = true;
-        }
     }
 }
