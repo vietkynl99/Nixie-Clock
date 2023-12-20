@@ -31,7 +31,7 @@ void WifiMaster::init()
     // mWiFiManager.setConnectTimeout(20); // how long to try to connect for before continuing
     mWiFiManager.setConfigPortalTimeout(120); // auto close configportal after n seconds
     // mWiFiManager.setCaptivePortalEnable(false); // disable captive portal redirection
-    // mWiFiManager.setAPClientCheck(true); // avoid timeout if client connected to softap
+    mWiFiManager.setAPClientCheck(true); // avoid timeout if client connected to softap
 
     // wifi scan settings
     // mWiFiManager.setRemoveDuplicateAPs(false); // do not remove duplicate ap names (true)
