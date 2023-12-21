@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kynl Clock</title>
+    <link rel="icon" href="data:,">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        form {
+            width: 300px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #034078;
+            color: #FEFCFB;
+            cursor: pointer;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1282A2;
+        }
+
+        .topnav {
+            background-color: #333;
+            overflow: hidden;
+            text-align: center;
+            padding: 14px 0;
+        }
+
+        .topnav h1 {
+            margin: 0;
+            color: #fff;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .card-grid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .card {
+            margin: 10px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 600px) {
+            form {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topnav">
+        <h1>Kynl Clock</h1>
+    </div>
+    <div class="content">
+        <div class="card-grid">
+            <form action='/login' method='POST'>
+                <p>
+                    <label for="username">Username</label>
+                    <input type='text' id='username' name='USERNAME' placeholder='User Name'><br>
+                    <label for="password">Password</label>
+                    <input type='password' id='password' name='PASSWORD' placeholder='Password'><br>
+                    <input type='submit' id='submit' name='SUBMIT' value='Submit'>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

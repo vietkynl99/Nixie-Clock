@@ -92,9 +92,30 @@ void ServerManager::startNTP()
 	}
 }
 
-void ServerManager::notFoundHandler()
+bool ServerManager::isAuthentified()
+{
+	if (mServer->hasHeader("Cookie"))
+	{
+		String cookie = mServer->header("Cookie");
+		LOG("Found cookie: %s", cookie.c_str());
+		if (cookie.indexOf("ESPSESSIONID=1") != -1)
+		{
+			LOG("Authentification Successful");
+			return true;
+		}
+	}
+	LOG("Authentification Failed");
+	return false;
+}
+
+void ServerManager::sendNotFound()
 {
 	mServer->send(404, "text/plain", "404 Not Found");
+}
+
+void ServerManager::notFoundHandler()
+{
+	sendNotFound();
 }
 
 void ServerManager::loginHandler()
@@ -128,12 +149,17 @@ void ServerManager::loginHandler()
 		msg = "Wrong username/password! try again.";
 		LOG("Log in Failed");
 	}
-	String content = "<html><body><form action='/login' method='POST'>Login to access this page<br>";
-	content += "User:<input type='text' name='USERNAME' placeholder='user name'><br>";
-	content += "Password:<input type='password' name='PASSWORD' placeholder='password'><br>";
-	content += "<input type='submit' name='SUBMIT' value='Submit'></form>" + msg + "<br>";
-	// content += "You also can go <a href='/inline'>here</a></body></html>";
-	mServer->send(200, "text/html", content);
+
+	File file;
+	if (FileSystem::openFile(file, "/login.html"))
+	{
+		mServer->streamFile(file, "text/html");
+		file.close();
+	}
+	else
+	{
+		sendNotFound();
+	}
 }
 
 void ServerManager::rootHandler()
@@ -169,22 +195,6 @@ void ServerManager::rootHandler()
 </html>",
 			 hr, min % 60, sec % 60);
 	mServer->send(200, "text/html", temp);
-}
-
-bool ServerManager::isAuthentified()
-{
-	if (mServer->hasHeader("Cookie"))
-	{
-		String cookie = mServer->header("Cookie");
-		LOG("Found cookie: %s", cookie.c_str());
-		if (cookie.indexOf("ESPSESSIONID=1") != -1)
-		{
-			LOG("Authentification Successful");
-			return true;
-		}
-	}
-	LOG("Authentification Failed");
-	return false;
 }
 
 void ServerManager::statusHandler()

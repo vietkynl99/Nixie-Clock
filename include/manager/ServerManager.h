@@ -11,6 +11,7 @@
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../common/Helper.h"
+#include "../common/FileSystem.h"
 #include "../controller/WifiMaster.h"
 #include "../controller/RTCController.h"
 #include "../controller/HardwareController.h"
@@ -38,10 +39,12 @@ public:
 private:
     static void startServer();
     static void startNTP();
+    static bool isAuthentified();
+    static void sendNotFound();
+
     static void notFoundHandler();
     static void loginHandler();
     static void rootHandler();
-    static bool isAuthentified();
     static void statusHandler();
     static void ntpHandler();
 };

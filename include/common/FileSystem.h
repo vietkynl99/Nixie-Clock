@@ -12,7 +12,8 @@ class FileSystem
 public:
     static void init();
     static void listDir(const char *dirname, uint8_t levels);
-    static bool readFile(const char *path, String &content);
+    static bool readFile(String &content, const char *path);
+    static bool openFile(File &file, const char *path);
 };
 
 #endif

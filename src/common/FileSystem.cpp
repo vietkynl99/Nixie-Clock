@@ -49,7 +49,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
     }
 }
 
-bool FileSystem::readFile(const char *path, String &content)
+bool FileSystem::readFile(String &content, const char *path)
 {
     File file = SPIFFS.open(path);
     if (!file || file.isDirectory())
@@ -60,5 +60,16 @@ bool FileSystem::readFile(const char *path, String &content)
     LOG("File Content: %s", file.readString().c_str());
     content = file.readString();
     file.close();
+    return true;
+}
+
+bool FileSystem::openFile(File &file, const char *path)
+{
+    file = SPIFFS.open(path);
+    if (!file || file.isDirectory())
+    {
+        LOGE("Failed to open file %s for reading", path);
+        return false;
+    }
     return true;
 }
