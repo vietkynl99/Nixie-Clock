@@ -24,6 +24,9 @@ public:
     static bool isNTPEnabled();
     static bool isRTCDebugEnabled();
     static int getBuzzerVolume();
+    static int getLedMode();
+    static int getLedBrightness();
+    static int getLedSpeed();
 };
 
 #endif

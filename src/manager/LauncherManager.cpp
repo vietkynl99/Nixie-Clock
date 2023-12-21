@@ -159,6 +159,16 @@ void LauncherManager::handleEvent(const Message &message)
         }
         break;
     }
+    case MESSAGE_TYPE_LED_MODE_CHANGED:
+    {
+        LedController::reloadMode();
+        break;
+    }
+    case MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED:
+    {
+        LedController::reloadBrightness();
+        break;
+    }
     default:
         break;
     }

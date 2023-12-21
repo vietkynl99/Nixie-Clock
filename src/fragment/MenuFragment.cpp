@@ -23,14 +23,18 @@ void MenuFragment::init()
 void MenuFragment::loop()
 {
     static uint32_t timeTick = 0;
+#ifdef SHOW_RENDER_TIME
     static uint32_t measureTimeTick = 0;
+#endif
 
     if (mNeedsRedraw && xTaskGetTickCount() > timeTick)
     {
         timeTick = xTaskGetTickCount() + 10 / portTICK_PERIOD_MS;
         if (mIsVisible)
         {
+#ifdef SHOW_RENDER_TIME
             measureTimeTick = xTaskGetTickCount();
+#endif
             if (mIsFirstTime)
             {
                 DisplayController::setFont(MENU_FONT, MENU_FONT_SIZE);
@@ -43,8 +47,10 @@ void MenuFragment::loop()
             {
                 showEditPanel(SettingsManager::getItem(mCurrentIndex));
             }
+#ifdef SHOW_RENDER_TIME
             measureTimeTick = xTaskGetTickCount() - measureTimeTick;
             LOG("Draw time: %dms", measureTimeTick / portTICK_PERIOD_MS);
+#endif
         }
         mNeedsRedraw = false;
         mIsFirstTime = false;
@@ -94,6 +100,16 @@ void MenuFragment::up()
         if (SettingsManager::getItem(mCurrentIndex)->inc())
         {
             mNeedsRedraw = true;
+            if(SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_LED_MODE)
+            {
+                Message message = {MESSAGE_TYPE_LED_MODE_CHANGED, 0};
+                MessageEvent::send(message);
+            }
+            if(SettingsManager::getItem(mCurrentIndex)->getName().equals("Led brightness"))
+            {
+                Message message = {MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, 0};
+                MessageEvent::send(message);
+            }
         }
     }
     else if (mCurrentIndex > 0)
@@ -115,6 +131,16 @@ void MenuFragment::down()
         if (SettingsManager::getItem(mCurrentIndex)->dec())
         {
             mNeedsRedraw = true;
+            if(SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_LED_MODE)
+            {
+                Message message = {MESSAGE_TYPE_LED_MODE_CHANGED, 0};
+                MessageEvent::send(message);
+            }
+            if(SettingsManager::getItem(mCurrentIndex)->getName().equals("Led brightness"))
+            {
+                Message message = {MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, 0};
+                MessageEvent::send(message);
+            }
         }
     }
     else if (mCurrentIndex < SettingsManager::getLength() - 1)
@@ -179,6 +205,17 @@ void MenuFragment::enter()
         else
         {
             SettingsManager::getItem(mCurrentIndex)->save();
+            // notify value changed on saved
+            if(SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_LED_MODE)
+            {
+                Message message = {MESSAGE_TYPE_LED_MODE_CHANGED, 0};
+                MessageEvent::send(message);
+            }
+            if(SettingsManager::getItem(mCurrentIndex)->getName().equals("Led brightness"))
+            {
+                Message message = {MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, 0};
+                MessageEvent::send(message);
+            }
         }
     }
     else

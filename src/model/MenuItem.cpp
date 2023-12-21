@@ -1,5 +1,6 @@
 #include "../../include/model/MenuItem.h"
 #include "../../include/manager/PreferencesManager.h"
+#include "../../include/controller/LedController.h"
 
 MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue, bool needToReboot)
 {
@@ -70,6 +71,10 @@ String MenuItem::getStringValue()
     else if (mType == MENU_ITEM_TYPE_CLOCK_MODE)
     {
         return mValue == 0 ? "4 display" : "6 display";
+    }
+    else if (mType == MENU_ITEM_TYPE_LED_MODE)
+    {
+        return LedController::getModeName(mValue);
     }
     else if (mType == MENU_ITEM_TYPE_RESET)
     {

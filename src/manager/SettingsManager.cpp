@@ -1,5 +1,6 @@
 #include "../../include/manager/SettingsManager.h"
 #include "../../include/manager/PreferencesManager.h"
+#include "../../include/controller/LedController.h"
 
 MenuItemList *SettingsManager::mMenuItemList = nullptr;
 
@@ -17,6 +18,9 @@ void SettingsManager::init()
     mMenuItemList->add(new MenuItem("NTP service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Buzzer volume", MENU_ITEM_TYPE_INT, 8, 0, 10));
+    mMenuItemList->add(new MenuItem("Led mode", MENU_ITEM_TYPE_LED_MODE, LED_MODE_MAX, 0, LED_MODE_MAX));
+    mMenuItemList->add(new MenuItem("Led brightness", MENU_ITEM_TYPE_INT, 2, 0, 10));
+    mMenuItemList->add(new MenuItem("Led speed", MENU_ITEM_TYPE_INT, 2, 1, 10));
     mMenuItemList->add(new MenuItem("Reset settings", MENU_ITEM_TYPE_RESET));
     mMenuItemList->loadData();
 
@@ -80,4 +84,19 @@ bool SettingsManager::isRTCDebugEnabled()
 int SettingsManager::getBuzzerVolume()
 {
     return mMenuItemList ? mMenuItemList->get(4)->getValue() : 0;
+}
+
+int SettingsManager::getLedMode()
+{
+    return mMenuItemList ? mMenuItemList->get(5)->getValue() : 0;
+}
+
+int SettingsManager::getLedBrightness()
+{
+    return mMenuItemList ? mMenuItemList->get(6)->getValue() : 0;
+}
+
+int SettingsManager::getLedSpeed()
+{
+    return mMenuItemList ? mMenuItemList->get(7)->getValue() : 0;
 }

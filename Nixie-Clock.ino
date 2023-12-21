@@ -123,6 +123,10 @@ void debugHandler()
 			{
 				Helper::mTestValue = code;
 			}
+			else if (!strcmp(cmd, "LED"))
+			{
+				LedController::setMode(code);
+			}
 			else
 			{
 				LOG("Unknown command: '%s'", cmd);

@@ -48,7 +48,6 @@ class DisplayController
 {
 private:
     static TFT_eSPI *tft;
-    // static int mCsPinList[TFT_COUNT];
 
 public:
     static void init();
