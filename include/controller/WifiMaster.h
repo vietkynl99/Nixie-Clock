@@ -23,11 +23,19 @@ private:
 #ifdef USE_WIFI_MANAGER
     static WiFiManager mWiFiManager;
 #endif
+static bool mIsScanning;
 
 public:
     static void init();
     static void loop();
+    static void startScanNetworks();
+    static void stopScanNetworks();
     static void resetSettings();
+
+private:
+    static String getEncryptionTypeStr(uint8_t encType);
+    static void printScannedNetWorks();
+    static void scanNetworksHandler();
 };
 
 #endif

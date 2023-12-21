@@ -127,6 +127,10 @@ void debugHandler()
 			{
 				LedController::setMode(code);
 			}
+			else if (!strcmp(cmd, "SCAN"))
+			{
+				WifiMaster::startScanNetworks();
+			}
 			else
 			{
 				LOG("Unknown command: '%s'", cmd);

@@ -3,6 +3,7 @@
 #ifdef USE_WIFI_MANAGER
 WiFiManager WifiMaster::mWiFiManager;
 #endif
+bool WifiMaster::mIsScanning = false;
 
 static constexpr const char *const TAG = "WIFI";
 
@@ -55,6 +56,36 @@ void WifiMaster::loop()
 #ifdef USE_WIFI_MANAGER
     mWiFiManager.process();
 #endif
+    scanNetworksHandler();
+}
+
+void WifiMaster::startScanNetworks()
+{
+    if (!mIsScanning)
+    {
+        LOG("Start scan networks");
+        mIsScanning = true;
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            LOG("Disconnecting networks");
+        }
+        if (WiFi.getMode() != WIFI_STA)
+        {
+            WiFi.mode(WIFI_STA);
+        }
+        WiFi.disconnect();
+        WiFi.scanNetworks(true);
+    }
+}
+
+void WifiMaster::stopScanNetworks()
+{
+    if (mIsScanning)
+    {
+        LOG("Stop scan networks");
+        WiFi.scanDelete();
+        mIsScanning = false;
+    }
 }
 
 void WifiMaster::resetSettings()
@@ -64,4 +95,72 @@ void WifiMaster::resetSettings()
     mWiFiManager.resetSettings();
     ESP.restart();
 #endif
+}
+
+String WifiMaster::getEncryptionTypeStr(uint8_t encType)
+{
+    switch (encType)
+    {
+    case WIFI_AUTH_OPEN:
+        return "open";
+    case WIFI_AUTH_WEP:
+        return "WEP";
+    case WIFI_AUTH_WPA_PSK:
+        return "WPA";
+    case WIFI_AUTH_WPA2_PSK:
+        return "WPA2";
+    case WIFI_AUTH_WPA_WPA2_PSK:
+        return "WPA+WPA2";
+    case WIFI_AUTH_WPA2_ENTERPRISE:
+        return "WPA2-EAP";
+    case WIFI_AUTH_WPA3_PSK:
+        return "WPA3";
+    case WIFI_AUTH_WPA2_WPA3_PSK:
+        return "WPA2+WPA3";
+    case WIFI_AUTH_WAPI_PSK:
+        return "WAPI";
+    default:
+        return "unknown";
+    }
+}
+
+void WifiMaster::printScannedNetWorks()
+{
+    int i = 0;
+    String ssid;
+    uint8_t encType;
+    int32_t rssi;
+    uint8_t *bssid;
+    int32_t channel;
+
+    while (WiFi.getNetworkInfo(i, ssid, encType, rssi, bssid, channel))
+    {
+        LOG("%2d. %-24s %4d | %s", i + 1, ssid.c_str(), rssi, getEncryptionTypeStr(encType).c_str());
+        i++;
+    }
+}
+
+void WifiMaster::scanNetworksHandler()
+{
+    static uint32_t timeTick = 0;
+    if (xTaskGetTickCount() > timeTick)
+    {
+        timeTick = xTaskGetTickCount() + 500 / portTICK_PERIOD_MS;
+        int n = WiFi.scanComplete();
+        if (n == WIFI_SCAN_RUNNING)
+        {
+            LOG("WiFi scan running");
+        }
+        else if (n == 0)
+        {
+            LOG("No networks found");
+            stopScanNetworks();
+        }
+        else if (n > 0)
+        {
+            LOG("Found %d networks", n);
+            printScannedNetWorks();
+            stopScanNetworks();
+        }
+    }
 }
