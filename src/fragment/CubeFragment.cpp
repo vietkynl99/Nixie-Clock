@@ -15,6 +15,8 @@ int CubeFragment::mMaxY = 0;
 
 static constexpr const char *const TAG = "CUBE";
 
+// #define DEBUG_SHOW_FPS
+
 void CubeFragment::init()
 {
     DisplayController::init();
@@ -33,13 +35,15 @@ void CubeFragment::init()
 
 void CubeFragment::loop()
 {
-    static uint32_t updateTime = 0; // time for next update
+    static uint32_t updateTime = 0;
     static bool bounce = false;
     static int dx = 1, dy = 1;
+    static int16_t xpos = 0, ypos = (TFT_HEIGHT - IHEIGHT) / 2;
+#ifdef DEBUG_SHOW_FPS
     static uint16_t counter = 0;
     static long startMillis = millis();
     static uint16_t interval = 100;
-    static int16_t xpos = 0, ypos = (TFT_HEIGHT - IHEIGHT) / 2;
+#endif
 
     if (mIsVisible)
     {
@@ -90,14 +94,15 @@ void CubeFragment::loop()
             mTftSprSel = !mTftSprSel;
 #endif
 
+#ifdef DEBUG_SHOW_FPS
             counter++;
-            // only calculate the fps every <interval> iterations.
             if (counter % interval == 0)
             {
                 int fps = interval * 1000.0 / (millis() - startMillis);
                 LOG("%d fps", fps);
                 startMillis = millis();
             }
+#endif
             // Change coord for next loop
             xpos += dx;
             ypos += dy;
