@@ -16,7 +16,6 @@ void SettingsManager::init()
     mMenuItemList->add(new MenuItem("Clock mode", MENU_ITEM_TYPE_CLOCK_MODE, 1));
     mMenuItemList->add(new MenuItem("Web server", MENU_ITEM_TYPE_BOOL, false, 0, 1, true));
     mMenuItemList->add(new MenuItem("NTP service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
-    mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Buzzer volume", MENU_ITEM_TYPE_INT, 8, 0, 10));
     mMenuItemList->add(new MenuItem("Led mode", MENU_ITEM_TYPE_LED_MODE, LED_MODE_MAX, 0, LED_MODE_MAX,
                                     false, MESSAGE_TYPE_LED_MODE_CHANGED, MESSAGE_TYPE_LED_MODE_CHANGED));
@@ -78,27 +77,22 @@ bool SettingsManager::isNTPEnabled()
     return mMenuItemList ? mMenuItemList->get(2)->getBoolValue() : false;
 }
 
-bool SettingsManager::isRTCDebugEnabled()
-{
-    return mMenuItemList ? mMenuItemList->get(3)->getBoolValue() : false;
-}
-
 int SettingsManager::getBuzzerVolume()
 {
-    return mMenuItemList ? mMenuItemList->get(4)->getValue() : 0;
+    return mMenuItemList ? mMenuItemList->get(3)->getValue() : 0;
 }
 
 int SettingsManager::getLedMode()
 {
-    return mMenuItemList ? mMenuItemList->get(5)->getValue() : 0;
+    return mMenuItemList ? mMenuItemList->get(4)->getValue() : 0;
 }
 
 int SettingsManager::getLedBrightness()
 {
-    return mMenuItemList ? mMenuItemList->get(6)->getValue() : 0;
+    return mMenuItemList ? mMenuItemList->get(5)->getValue() : 0;
 }
 
 int SettingsManager::getLedSpeed()
 {
-    return mMenuItemList ? mMenuItemList->get(7)->getValue() : 0;
+    return mMenuItemList ? mMenuItemList->get(6)->getValue() : 0;
 }

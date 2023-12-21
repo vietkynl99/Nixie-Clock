@@ -23,7 +23,6 @@ public:
     static bool isWiFiEnabled();
     static bool isWebServerEnabled();
     static bool isNTPEnabled();
-    static bool isRTCDebugEnabled();
     static int getBuzzerVolume();
     static int getLedMode();
     static int getLedBrightness();

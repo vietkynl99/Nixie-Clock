@@ -47,11 +47,7 @@ void ClockFragment::loop()
             if (currentTime.unixtime() != now.unixtime())
             {
                 currentTime = now;
-                if (SettingsManager::isRTCDebugEnabled())
-                {
-                    LOG("%s", Helper::convertDateTimeToString(now).c_str());
-                }
-
+                // LOG("%s", Helper::convertDateTimeToString(now).c_str());
                 for (int i = 0; i < displayCount; i++)
                 {
                     int number = -1;
