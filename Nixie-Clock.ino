@@ -2,6 +2,7 @@
 #include "include/common/Log.h"
 #include "include/common/MessageEvent.h"
 #include "include/common/Helper.h"
+#include "include/common/FileSystem.h"
 #include "include/controller/HardwareController.h"
 #include "include/manager/SettingsManager.h"
 #include "include/manager/ServerManager.h"
@@ -131,6 +132,10 @@ void debugHandler()
 			{
 				WifiMaster::startScanNetworks();
 			}
+			else if (!strcmp(cmd, "FSLIST"))
+			{
+				FileSystem::listDir("/", 0);
+			}
 			else
 			{
 				LOG("Unknown command: '%s'", cmd);
@@ -214,9 +219,9 @@ void setup()
 {
 	mMutex = xSemaphoreCreateMutex();
 	Serial.begin(115200);
-
 	SerialParser::setFeedbackEnable(true);
 	SerialParser::setAllowEmptyCode(true);
+	FileSystem::init();
 	MessageEvent::init();
 	SettingsManager::init();
 	HardwareController::init();
