@@ -34,6 +34,9 @@ private:
     static void showHeader(const char *text);
     static void showMenuList();
     static void showEditPanel(MenuItem *item);
+
+    static void onDataChanged(MenuItem *item);
+    static void onDataSaved(MenuItem *item);
 };
 
 #endif

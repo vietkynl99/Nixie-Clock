@@ -2,6 +2,7 @@
 #define _MENU_ITEM_H_
 
 #include <Arduino.h>
+#include "../common/MessageEvent.h"
 
 #define PREFERENCES_NAME "MenuItem"
 
@@ -23,9 +24,12 @@ private:
     int mMinValue;
     int mMaxValue;
     bool mNeedToReboot;
+    MessageType mChangedNotifyType;
+    MessageType mSavedNotifyType;
 
 public:
-    MenuItem(const String &name, MenuItemType type, int value = 0, int minValue = 0, int maxValue = 0, bool needToReboot = false);
+    MenuItem(const String &name, MenuItemType type, int value = 0, int minValue = 0, int maxValue = 0,
+             bool needToReboot = false, MessageType changedNotifyType = MESSAGE_TYPE_NONE, MessageType savedNotifyType = MESSAGE_TYPE_NONE);
 
     bool setValue(int value);
 
@@ -35,6 +39,8 @@ public:
     String getStringValue();
     bool getBoolValue();
     bool needToReboot();
+    MessageType getChangedNotifyType();
+    MessageType getSavedNotifyType();
 
     bool isMinimum();
     bool isMaximum();

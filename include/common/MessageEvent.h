@@ -5,6 +5,7 @@
 #include "../../include/common/Log.h"
 
 enum MessageType{
+    MESSAGE_TYPE_NONE,
     MESSAGE_TYPE_BUTTON_SHORT_PRESSED,
     MESSAGE_TYPE_BUTTON_LONG_PRESSED,
     MESSAGE_TYPE_REBOOT,

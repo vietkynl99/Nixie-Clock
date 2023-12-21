@@ -100,16 +100,7 @@ void MenuFragment::up()
         if (SettingsManager::getItem(mCurrentIndex)->inc())
         {
             mNeedsRedraw = true;
-            if(SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_LED_MODE)
-            {
-                Message message = {MESSAGE_TYPE_LED_MODE_CHANGED, 0};
-                MessageEvent::send(message);
-            }
-            if(SettingsManager::getItem(mCurrentIndex)->getName().equals("Led brightness"))
-            {
-                Message message = {MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, 0};
-                MessageEvent::send(message);
-            }
+            onDataChanged(SettingsManager::getItem(mCurrentIndex));
         }
     }
     else if (mCurrentIndex > 0)
@@ -131,16 +122,7 @@ void MenuFragment::down()
         if (SettingsManager::getItem(mCurrentIndex)->dec())
         {
             mNeedsRedraw = true;
-            if(SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_LED_MODE)
-            {
-                Message message = {MESSAGE_TYPE_LED_MODE_CHANGED, 0};
-                MessageEvent::send(message);
-            }
-            if(SettingsManager::getItem(mCurrentIndex)->getName().equals("Led brightness"))
-            {
-                Message message = {MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, 0};
-                MessageEvent::send(message);
-            }
+            onDataChanged(SettingsManager::getItem(mCurrentIndex));
         }
     }
     else if (mCurrentIndex < SettingsManager::getLength() - 1)
@@ -206,16 +188,7 @@ void MenuFragment::enter()
         {
             SettingsManager::getItem(mCurrentIndex)->save();
             // notify value changed on saved
-            if(SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_LED_MODE)
-            {
-                Message message = {MESSAGE_TYPE_LED_MODE_CHANGED, 0};
-                MessageEvent::send(message);
-            }
-            if(SettingsManager::getItem(mCurrentIndex)->getName().equals("Led brightness"))
-            {
-                Message message = {MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, 0};
-                MessageEvent::send(message);
-            }
+            onDataSaved(SettingsManager::getItem(mCurrentIndex));
         }
     }
     else
@@ -375,4 +348,24 @@ void MenuFragment::showEditPanel(MenuItem *item)
     String after = item->isMaximum() ? "     " : "  >  ";
     String str = before + item->getStringValue() + after;
     DisplayController::getTft()->drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
+}
+
+void MenuFragment::onDataChanged(MenuItem *item)
+{
+    MessageType type = item->getChangedNotifyType();
+    if (type != MESSAGE_TYPE_NONE)
+    {
+        Message message = {type, 0};
+        MessageEvent::send(message);
+    }
+}
+
+void MenuFragment::onDataSaved(MenuItem *item)
+{
+    MessageType type = item->getSavedNotifyType();
+    if (type != MESSAGE_TYPE_NONE)
+    {
+        Message message = {type, 0};
+        MessageEvent::send(message);
+    }
 }

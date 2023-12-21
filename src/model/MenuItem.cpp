@@ -2,18 +2,20 @@
 #include "../../include/manager/PreferencesManager.h"
 #include "../../include/controller/LedController.h"
 
-MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue, bool needToReboot)
+MenuItem::MenuItem(const String &name, MenuItemType type, int value, int minValue, int maxValue, bool needToReboot, MessageType changedNotifyType, MessageType savedNotifyType)
 {
     mName = name;
     mValue = value;
     mType = type;
     mNeedToReboot = needToReboot;
+    mChangedNotifyType = changedNotifyType;
+    mSavedNotifyType = savedNotifyType;
     if (mType == MENU_ITEM_TYPE_BOOL || mType == MENU_ITEM_TYPE_CLOCK_MODE)
     {
         mMinValue = 0;
         mMaxValue = 1;
     }
-    else if(mType == MENU_ITEM_TYPE_RESET)
+    else if (mType == MENU_ITEM_TYPE_RESET)
     {
         mMinValue = 0;
         mMaxValue = 0;
@@ -94,6 +96,16 @@ bool MenuItem::getBoolValue()
 bool MenuItem::needToReboot()
 {
     return mNeedToReboot;
+}
+
+MessageType MenuItem::getChangedNotifyType()
+{
+    return mChangedNotifyType;
+}
+
+MessageType MenuItem::getSavedNotifyType()
+{
+    return mSavedNotifyType;
 }
 
 bool MenuItem::isMinimum()

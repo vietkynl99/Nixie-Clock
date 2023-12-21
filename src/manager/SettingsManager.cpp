@@ -18,8 +18,10 @@ void SettingsManager::init()
     mMenuItemList->add(new MenuItem("NTP service", MENU_ITEM_TYPE_BOOL, true, 0, 1, true));
     mMenuItemList->add(new MenuItem("RTC debug", MENU_ITEM_TYPE_BOOL, false));
     mMenuItemList->add(new MenuItem("Buzzer volume", MENU_ITEM_TYPE_INT, 8, 0, 10));
-    mMenuItemList->add(new MenuItem("Led mode", MENU_ITEM_TYPE_LED_MODE, LED_MODE_MAX, 0, LED_MODE_MAX));
-    mMenuItemList->add(new MenuItem("Led brightness", MENU_ITEM_TYPE_INT, 2, 0, 10));
+    mMenuItemList->add(new MenuItem("Led mode", MENU_ITEM_TYPE_LED_MODE, LED_MODE_MAX, 0, LED_MODE_MAX,
+                                    false, MESSAGE_TYPE_LED_MODE_CHANGED, MESSAGE_TYPE_LED_MODE_CHANGED));
+    mMenuItemList->add(new MenuItem("Led brightness", MENU_ITEM_TYPE_INT, 2, 0, 10,
+                                    false, MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED));
     mMenuItemList->add(new MenuItem("Led speed", MENU_ITEM_TYPE_INT, 2, 1, 10));
     mMenuItemList->add(new MenuItem("Reset settings", MENU_ITEM_TYPE_RESET));
     mMenuItemList->loadData();
