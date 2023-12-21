@@ -7,7 +7,7 @@
 SemaphoreHandle_t Log::mMutex = xSemaphoreCreateMutex();
 #endif
 
-void Log::print(const char *tag, const char *pFormat, ...)
+void Log::print(uint8_t level, const char *tag, const char *pFormat, ...)
 {
     static char mStringBuffer[256];
 
@@ -19,9 +19,13 @@ void Log::print(const char *tag, const char *pFormat, ...)
         va_start(pVlist, pFormat);
         vsnprintf(mStringBuffer, sizeof(mStringBuffer) - 1, pFormat, pVlist);
         va_end(pVlist);
-        Serial.print("[");
+        if (level == LOG_LEVEL_ERROR)
+        {
+            Serial.print(F("[ERROR]"));
+        }
+        Serial.print(F("["));
         Serial.print(tag);
-        Serial.print("] ");
+        Serial.print(F("] "));
         Serial.println(mStringBuffer);
 #ifdef USE_MUTEX
         xSemaphoreGive(mMutex);

@@ -233,12 +233,12 @@ void setup()
 	int ret;
 	if ((ret = xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0)) != pdPASS)
 	{
-		LOGF("Failed to create task1: %d", ret);
+		LOGE("Failed to create task1: %d", ret);
 		Helper::showFreeMemory();
 	}
 	if ((ret = xTaskCreatePinnedToCore(task2Handler, "task2", TASK2_STACK_SIZE, NULL, 1, &task2, 1)) != pdPASS)
 	{
-		LOGF("Failed to create task2: %d", ret);
+		LOGE("Failed to create task2: %d", ret);
 		Helper::showFreeMemory();
 	}
 }

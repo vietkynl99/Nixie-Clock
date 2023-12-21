@@ -8,7 +8,7 @@ void FileSystem::init()
 {
     if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED))
     {
-        LOG("SPIFFS Mount Failed");
+        LOGE("SPIFFS Mount Failed");
         return;
     }
     LOG("SPIFFS Mount Success");
@@ -21,12 +21,12 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
     File root = SPIFFS.open(dirname);
     if (!root)
     {
-        LOG("Error: Failed to open directory");
+        LOGE("Error: Failed to open directory");
         return;
     }
     if (!root.isDirectory())
     {
-        LOG("Error: Not a directory");
+        LOGE("Error: Not a directory");
         return;
     }
 
@@ -54,7 +54,7 @@ bool FileSystem::readFile(const char *path, String &content)
     File file = SPIFFS.open(path);
     if (!file || file.isDirectory())
     {
-        LOG("Failed to open file %s for reading", path);
+        LOGE("Failed to open file %s for reading", path);
         return false;
     }
     LOG("File Content: %s", file.readString().c_str());
