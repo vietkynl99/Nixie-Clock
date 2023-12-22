@@ -19,6 +19,7 @@ public:
     static bool isValidDate(int year, int month, int day);
 
     static void showFreeMemory();
+    static void trim(String &str);
 };
 
 #endif

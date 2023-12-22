@@ -65,4 +65,7 @@
 #error TFT_RST must be 4
 #endif
 
+// Web server
+#define MDNS_SERVER_NAME "kynlclock"
+
 #endif

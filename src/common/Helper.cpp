@@ -69,3 +69,15 @@ void Helper::showFreeMemory()
 
     LOGF("Free Heap: %d bytes (%d%% free)", freeHeap, (freeHeap * 100) / (totalHeap + 1));
 }
+
+void Helper::trim(String &str)
+{
+	while (str.length() > 0 && (str.indexOf(' ') == 0 || str.indexOf('\r') == 0 || str.indexOf('\n') == 0))
+	{
+		str = str.substring(1);
+	}
+	while (str.length() > 0 && (str.lastIndexOf(' ') == str.length() - 1 || str.lastIndexOf('\r') == str.length() - 1 || str.lastIndexOf('\n') == str.length() - 1))
+	{
+		str = str.substring(0, str.length() - 1);
+	}
+}

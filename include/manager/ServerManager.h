@@ -5,7 +5,6 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
-#include <ESPmDNS.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include "../common/Log.h"
@@ -16,8 +15,6 @@
 #include "../controller/RTCController.h"
 #include "../controller/HardwareController.h"
 #include "../manager/SettingsManager.h"
-
-#define MDNS_SERVER_NAME "kynlclock"
 
 #define SERVER_USERNAME "kynl"
 #define SERVER_PASSWORD "123456"

@@ -3,15 +3,29 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClient.h>
+#include <WiFiAP.h>
+#include <WiFiUdp.h>
+#include <WebServer.h>
+#include <ESPmDNS.h>
+#include <FS.h>
+#include "../common/PinDefines.h"
 #include "../common/Log.h"
+#include "../common/FileSystem.h"
 
 #define USE_WIFI_MANAGER
 
 #ifdef USE_WIFI_MANAGER
-#include <WiFiManager.h>
-
 #define AP_SSID "Kynl Clock"
 #define AP_PASSWORD "12345678"
+#define AP_IP_ADDR IPAddress(192, 168, 4, 1)
+
+enum WIFI_MASTER_STATE {
+    WIFI_MASTER_STATE_NONE,
+    WIFI_MASTER_STATE_STA,
+    WIFI_MASTER_STATE_CONFIG_PORTAL,
+    WIFI_MASTER_STATE_STOPPED
+};
 #else
 #define WIFI_SSID "Wifi Chua"
 #define WIFI_PASSWORD "khongcomatkhau"
@@ -21,21 +35,49 @@ class WifiMaster
 {
 private:
 #ifdef USE_WIFI_MANAGER
-    static WiFiManager mWiFiManager;
+    static String mSavedSSID;
+    static String mSavedPassword;
+    static int mState;
+    static WebServer *mServer;
+    static bool mStartedmDNS;
+    static bool mIsScanning;
 #endif
-static bool mIsScanning;
 
 public:
     static void init();
     static void loop();
-    static void startScanNetworks();
-    static void stopScanNetworks();
+#ifdef USE_WIFI_MANAGER
     static void resetSettings();
-
-private:
     static String getEncryptionTypeStr(uint8_t encType);
     static void printScannedNetWorks();
-    static void scanNetworksHandler();
+#endif
+
+private:
+#ifdef USE_WIFI_MANAGER
+    static void startScanNetworks();
+    static void stopScanNetworks();
+    static bool getScannedWifiHtmlStr(String &str);
+
+    static bool isValidWifiSettings();
+    static void readSavedSettings();
+    static void saveSettings();
+    static void startConfigPortal();
+    static void stopConfigPortal();
+    static void startServer();
+    static void stopServer();
+    static void startMDNS();
+    static void stopMDNS();
+    static void startConnectToSavedWifi();
+    static void stopConnectToSavedWifi();
+    static void stop();
+
+    static void sendNotFound();
+    static void notFoundHandler();
+    static void rootHandler();
+    static void saveDataHandler();
+
+    static void processHandler();
+#endif
 };
 
 #endif

@@ -1,64 +1,76 @@
 #include "../../include/controller/WifiMaster.h"
 
 #ifdef USE_WIFI_MANAGER
-WiFiManager WifiMaster::mWiFiManager;
-#endif
+String WifiMaster::mSavedSSID = "";
+String WifiMaster::mSavedPassword = "";
+int WifiMaster::mState = WIFI_MASTER_STATE_NONE;
+WebServer *WifiMaster::mServer = nullptr;
+bool WifiMaster::mStartedmDNS = false;
+
+const char HTML_WIFI_ITEM1[] PROGMEM = "<div><a href='#p' onclick='c(this)'>";
+const char HTML_WIFI_ITEM2[] PROGMEM = "</a><div class='q q-";
+const char HTML_WIFI_ITEM3[] PROGMEM = " l'></div></div>";
+const char HTML_WIFI_LIST[] PROGMEM = "<!-- HTML_WIFI_LIST -->";
+const char HTML_NO_NETWORKS_FOUND[] PROGMEM = "<label>No networks found</label><br>";
+
+#define SSID_FILE_PATH "/ssid.txt"
+#define PASS_FILE_PATH "/pass.txt"
+#define CONFIG_WIFI_FILE_PATH "/wifimanager/configWifi.html"
+
+#define CONNECT_WIFI_TIMEOUT 30000UL   // (ms)
+#define CONFIG_PORTAL_TIMEOUT 120000UL // (ms)
+
 bool WifiMaster::mIsScanning = false;
+#endif
 
 static constexpr const char *const TAG = "WIFI";
 
 void WifiMaster::init()
 {
-    WiFi.mode(WIFI_STA);
-
+    LOG("Init WiFi");
 #ifdef USE_WIFI_MANAGER
-    // mWiFiManager.resetSettings(); // wipe settings
-
-    mWiFiManager.setConfigPortalBlocking(false);
-
-    // custom menu via array or vector
-    // menu tokens, "wifi","wifinoscan","info","param","close","sep","erase","restart","exit" (sep is seperator) (if param is in menu, params will not show up in wifi page!)
-    std::vector<const char *> menu = {"wifi", "param", "sep", "restart", "exit"};
-    mWiFiManager.setMenu(menu);
-
-    // set dark theme
-    // mWiFiManager.setClass("invert");
-
-    // set static ip
-    //  mWiFiManager.setSTAStaticIPConfig(IPAddress(10,0,1,99), IPAddress(10,0,1,1), IPAddress(255,255,255,0)); // set static ip,gw,sn
-    //  mWiFiManager.setShowStaticFields(true); // force show static ip fields
-    //  mWiFiManager.setShowDnsFields(true);    // force show dns field always
-
-    // mWiFiManager.setConnectTimeout(20); // how long to try to connect for before continuing
-    mWiFiManager.setConfigPortalTimeout(120); // auto close configportal after n seconds
-    // mWiFiManager.setCaptivePortalEnable(false); // disable captive portal redirection
-    mWiFiManager.setAPClientCheck(true); // avoid timeout if client connected to softap
-
-    // wifi scan settings
-    // mWiFiManager.setRemoveDuplicateAPs(false); // do not remove duplicate ap names (true)
-    // mWiFiManager.setMinimumSignalQuality(20);  // set min RSSI (percentage) to show in scans, null = 8%
-    // mWiFiManager.setShowInfoErase(false);      // do not show erase button on info page
-    // mWiFiManager.setScanDispPerc(true);       // show RSSI as percentage not graph icons
-
-    // mWiFiManager.setBreakAfterConfig(true);   // always exit configportal even if wifi save fails
-
-    // res = mWiFiManager.autoConnect(); // auto generated AP name from chipid
-    // res = mWiFiManager.autoConnect("AutoConnectAP"); // anonymous ap
-    mWiFiManager.autoConnect(AP_SSID, AP_PASSWORD); // password protected ap
+    mState = WIFI_MASTER_STATE_NONE;
+    readSavedSettings();
+    if (!isValidWifiSettings())
+    {
+        startConfigPortal();
+    }
+    else
+    {
+        startConnectToSavedWifi();
+    }
 #else
+    WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     LOG("Connecting to " WIFI_SSID);
+    startMDNS();
 #endif
 }
 
 void WifiMaster::loop()
 {
 #ifdef USE_WIFI_MANAGER
-    mWiFiManager.process();
+    if (mServer)
+    {
+        mServer->handleClient();
+    }
+    processHandler();
 #endif
-    scanNetworksHandler();
 }
 
+void WifiMaster::resetSettings()
+{
+#ifdef USE_WIFI_MANAGER
+    LOG("Reset WiFi settings");
+    mSavedSSID = "";
+    mSavedPassword = "";
+    FileSystem::writeFile(SSID_FILE_PATH, mSavedSSID);
+    FileSystem::writeFile(PASS_FILE_PATH, mSavedPassword);
+    ESP.restart();
+#endif
+}
+
+#ifdef USE_WIFI_MANAGER
 void WifiMaster::startScanNetworks()
 {
     if (!mIsScanning)
@@ -68,12 +80,16 @@ void WifiMaster::startScanNetworks()
         if (WiFi.status() == WL_CONNECTED)
         {
             LOG("Disconnecting networks");
+            WiFi.disconnect();
         }
-        if (WiFi.getMode() != WIFI_STA)
+        if (WiFi.getMode() == WIFI_AP)
+        {
+            WiFi.mode(WIFI_AP_STA);
+        }
+        else
         {
             WiFi.mode(WIFI_STA);
         }
-        WiFi.disconnect();
         WiFi.scanNetworks(true);
     }
 }
@@ -86,15 +102,6 @@ void WifiMaster::stopScanNetworks()
         WiFi.scanDelete();
         mIsScanning = false;
     }
-}
-
-void WifiMaster::resetSettings()
-{
-#ifdef USE_WIFI_MANAGER
-    LOG("Reset WiFi settings");
-    mWiFiManager.resetSettings();
-    ESP.restart();
-#endif
 }
 
 String WifiMaster::getEncryptionTypeStr(uint8_t encType)
@@ -135,32 +142,379 @@ void WifiMaster::printScannedNetWorks()
 
     while (WiFi.getNetworkInfo(i, ssid, encType, rssi, bssid, channel))
     {
-        LOG("%2d. %-24s %4d | %s", i + 1, ssid.c_str(), rssi, getEncryptionTypeStr(encType).c_str());
+        LOG("%2d. %-24s %4ddBm | %s", i + 1, ssid.c_str(), rssi, getEncryptionTypeStr(encType).c_str());
         i++;
     }
 }
 
-void WifiMaster::scanNetworksHandler()
+bool WifiMaster::getScannedWifiHtmlStr(String &str)
 {
-    static uint32_t timeTick = 0;
-    if (xTaskGetTickCount() > timeTick)
+    int i = 0;
+    String ssid;
+    uint8_t encType;
+    int32_t rssi;
+    uint8_t *bssid;
+    int32_t channel;
+    bool ret = false;
+
+    while (WiFi.getNetworkInfo(i, ssid, encType, rssi, bssid, channel))
     {
-        timeTick = xTaskGetTickCount() + 500 / portTICK_PERIOD_MS;
-        int n = WiFi.scanComplete();
-        if (n == WIFI_SCAN_RUNNING)
+        int level = 0;
+        if (rssi < -90)
         {
-            LOG("WiFi scan running");
+            level = 0;
         }
-        else if (n == 0)
+        else if (rssi > -30)
         {
-            LOG("No networks found");
-            stopScanNetworks();
+            level = 4;
         }
-        else if (n > 0)
+        else
         {
-            LOG("Found %d networks", n);
-            printScannedNetWorks();
-            stopScanNetworks();
+            level = map(rssi, -90, -30, 0, 4);
+        }
+        str += FPSTR(HTML_WIFI_ITEM1);
+        str += ssid;
+        str += FPSTR(HTML_WIFI_ITEM2);
+        str += String(level);
+        str += FPSTR(HTML_WIFI_ITEM3);
+        str += "\n";
+        i++;
+        ret = true;
+    }
+    return ret;
+}
+
+bool WifiMaster::isValidWifiSettings()
+{
+    return mSavedSSID.length() > 0 && mSavedPassword.length() > 0;
+}
+
+void WifiMaster::readSavedSettings()
+{
+    if (!FileSystem::readFile(SSID_FILE_PATH, mSavedSSID) || !FileSystem::readFile(PASS_FILE_PATH, mSavedPassword))
+    {
+        LOGE("Failed to read saved network");
+        mSavedSSID = "";
+        mSavedPassword = "";
+    }
+}
+
+void WifiMaster::saveSettings()
+{
+    if (!FileSystem::writeFile(SSID_FILE_PATH, mSavedSSID) || !FileSystem::writeFile(PASS_FILE_PATH, mSavedPassword))
+    {
+        LOGE("Failed to save network");
+    }
+    LOG("Saved network: %s", mSavedSSID.c_str());
+}
+
+void WifiMaster::startConfigPortal()
+{
+    if (mState != WIFI_MASTER_STATE_NONE)
+    {
+        LOGE("Cannot start config portal");
+        return;
+    }
+    LOG("Starting config portal...");
+    mState = WIFI_MASTER_STATE_CONFIG_PORTAL;
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(AP_SSID, AP_PASSWORD);
+    WiFi.softAPConfig(AP_IP_ADDR, IPAddress(0, 0, 0, 0), IPAddress(255, 255, 255, 0));
+    startServer();
+    startMDNS();
+    startScanNetworks();
+}
+
+void WifiMaster::stopConfigPortal()
+{
+    if (mState != WIFI_MASTER_STATE_CONFIG_PORTAL)
+    {
+        return;
+    }
+    LOG("Stoping config portal...");
+    mState = WIFI_MASTER_STATE_NONE;
+    WiFi.softAPdisconnect(true);
+    WiFi.mode(WIFI_OFF);
+    stopServer();
+    // stopMDNS();
+    stopScanNetworks();
+}
+
+void WifiMaster::startServer()
+{
+    if (!mServer)
+    {
+        LOG("Start server");
+        mServer = new WebServer(80);
+        mServer->onNotFound(notFoundHandler);
+        mServer->on("/", rootHandler);
+        mServer->on("/save", saveDataHandler);
+        mServer->begin();
+    }
+}
+
+void WifiMaster::stopServer()
+{
+    if (mServer)
+    {
+        LOG("Stop server");
+        mServer->stop();
+        delete mServer;
+        mServer = nullptr;
+    }
+}
+
+void WifiMaster::startMDNS()
+{
+    if (mStartedmDNS)
+    {
+        return;
+    }
+    if (MDNS.begin(MDNS_SERVER_NAME))
+    {
+        LOG("mDNS responder started at http://" MDNS_SERVER_NAME ".local");
+        // MDNS.addService("http", "tcp", 80);
+    }
+}
+
+void WifiMaster::stopMDNS()
+{
+    if (!mStartedmDNS)
+    {
+        return;
+    }
+    LOG("Stop mDNS responder");
+    MDNS.end();
+}
+
+void WifiMaster::startConnectToSavedWifi()
+{
+    if (mState != WIFI_MASTER_STATE_NONE)
+    {
+        LOGE("Cannot connnect to saved wifi");
+        return;
+    }
+    mState = WIFI_MASTER_STATE_STA;
+    WiFi.mode(WIFI_STA);
+    WiFi.setAutoReconnect(true);
+    WiFi.begin(mSavedSSID.c_str(), mSavedPassword.c_str());
+    LOG("Connecting to %s", mSavedSSID.c_str());
+    startMDNS();
+}
+
+void WifiMaster::stopConnectToSavedWifi()
+{
+    if (mState != WIFI_MASTER_STATE_STA)
+    {
+        return;
+    }
+    LOG("Stop connect to saved Wifi");
+    mState = WIFI_MASTER_STATE_NONE;
+    WiFi.disconnect(true);
+    stopServer();
+    // stopMDNS();
+}
+
+void WifiMaster::stop()
+{
+    if (mState == WIFI_MASTER_STATE_STOPPED)
+    {
+        return;
+    }
+    mState = WIFI_MASTER_STATE_STOPPED;
+    if (!WiFi.isConnected())
+    {
+        LOG("Stop");
+        stopConnectToSavedWifi();
+    }
+    else
+    {
+        LOG("Wifi is connected");
+    }
+    stopConfigPortal();
+    stopScanNetworks();
+    stopServer();
+}
+
+void WifiMaster::sendNotFound()
+{
+    if (!mServer)
+    {
+        return;
+    }
+    mServer->send(404, "text/plain", "404 Not Found");
+}
+
+void WifiMaster::notFoundHandler()
+{
+    if (!mServer)
+    {
+        return;
+    }
+#ifdef DEBUG_HTTP_ARGUMENTS
+    String message = "URI: ";
+    message += mServer->uri();
+    message += "\nMethod: ";
+    message += (mServer->method() == HTTP_GET) ? "GET" : "POST";
+    message += "\nArguments: ";
+    message += mServer->args();
+    message += "\n";
+    for (uint8_t i = 0; i < mServer->args(); i++)
+    {
+        message += " " + mServer->argName(i) + ": " + mServer->arg(i) + "\n";
+    }
+    LOG("Http: %s", message.c_str());
+#endif
+    sendNotFound();
+}
+
+void WifiMaster::rootHandler()
+{
+    if (!mServer)
+    {
+        return;
+    }
+#ifdef DEBUG_HTTP_ARGUMENTS
+    String message = "URI: ";
+    message += mServer->uri();
+    message += "\nMethod: ";
+    message += (mServer->method() == HTTP_GET) ? "GET" : "POST";
+    message += "\nArguments: ";
+    message += mServer->args();
+    message += "\n";
+    for (uint8_t i = 0; i < mServer->args(); i++)
+    {
+        message += " " + mServer->argName(i) + ": " + mServer->arg(i) + "\n";
+    }
+    LOG("Http: %s", message.c_str());
+#endif
+
+    File file;
+    if (!FileSystem::openFile(file, CONFIG_WIFI_FILE_PATH))
+    {
+        LOGE("Cannot open file");
+        sendNotFound();
+        return;
+    }
+
+    String html = "";
+    while (file.available())
+    {
+        html += (char)file.read();
+    }
+    file.close();
+
+    String wifiList = "";
+    if (getScannedWifiHtmlStr(wifiList))
+    {
+        html.replace(FPSTR(HTML_WIFI_LIST), wifiList);
+    }
+    else
+    {
+        html.replace(FPSTR(HTML_WIFI_LIST), FPSTR(HTML_NO_NETWORKS_FOUND));
+    }
+
+    mServer->send(200, "text/html", html);
+}
+
+void WifiMaster::saveDataHandler()
+{
+    if (!mServer)
+    {
+        return;
+    }
+    if (mServer->hasArg("s"))
+    {
+        mSavedSSID = mServer->arg("s");
+    }
+    if (mServer->hasArg("p"))
+    {
+        mSavedPassword = mServer->arg("p");
+    }
+    Helper::trim(mSavedSSID);
+    Helper::trim(mSavedPassword);
+    if (isValidWifiSettings())
+    {
+        mServer->send(200, "text/plain", F("Wifi network information has been saved. The device will reboot automatically."));
+        saveSettings();
+        ESP.restart();
+    }
+    else
+    {
+        mServer->send(200, "text/plain", F("Wifi network information is invalid. Please try again."));
+    }
+}
+
+void WifiMaster::processHandler()
+{
+    static int prevState = WIFI_MASTER_STATE_NONE;
+    static int prevWifiCount = -99;
+    static int prevWifiMode = -1;
+    static uint32_t timeTick = 0, scanTimeTick = 0;
+
+    if (WiFi.getMode() != prevWifiMode)
+    {
+        prevWifiMode = WiFi.getMode();
+        LOG("WiFi mode changed to: %d", prevWifiMode);
+    }
+
+    if (mState != WIFI_MASTER_STATE_STOPPED && WiFi.isConnected())
+    {
+        stop();
+    }
+
+    if (mState != WIFI_MASTER_STATE_STOPPED && prevState != mState)
+    {
+        prevState = mState;
+        if (mState == WIFI_MASTER_STATE_CONFIG_PORTAL)
+        {
+            timeTick = xTaskGetTickCount() + CONFIG_PORTAL_TIMEOUT / portTICK_PERIOD_MS;
+        }
+        else if (mState == WIFI_MASTER_STATE_STA)
+        {
+            timeTick = xTaskGetTickCount() + CONNECT_WIFI_TIMEOUT / portTICK_PERIOD_MS;
+        }
+    }
+
+    if (mState != WIFI_MASTER_STATE_NONE && !WiFi.isConnected() && xTaskGetTickCount() > timeTick)
+    {
+        if (mState == WIFI_MASTER_STATE_CONFIG_PORTAL)
+        {
+            LOG("Config portal timeout");
+            stopConfigPortal();
+        }
+        else if (mState == WIFI_MASTER_STATE_STA)
+        {
+            LOG("Connect to saved Wifi timeout");
+            stopConnectToSavedWifi();
+            startConfigPortal();
+        }
+    }
+
+    if (mIsScanning && xTaskGetTickCount() > scanTimeTick)
+    {
+        scanTimeTick = xTaskGetTickCount() + 100 / portTICK_PERIOD_MS;
+        int wifiCount = WiFi.scanComplete();
+        if (prevWifiCount != wifiCount)
+        {
+            prevWifiCount = wifiCount;
+            if (wifiCount == 0)
+            {
+                LOG("No networks found");
+            }
+            else if (wifiCount > 0)
+            {
+                LOG("Found %d wifis", wifiCount);
+            }
+            else if (wifiCount == WIFI_SCAN_RUNNING)
+            {
+                LOG("WiFi scan running");
+            }
+            else
+            {
+                LOG("WiFi scan disabled or failed");
+            }
         }
     }
 }
+#endif

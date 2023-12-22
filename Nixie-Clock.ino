@@ -128,13 +128,13 @@ void debugHandler()
 			{
 				LedController::setMode(code);
 			}
-			else if (!strcmp(cmd, "SCAN"))
-			{
-				WifiMaster::startScanNetworks();
-			}
 			else if (!strcmp(cmd, "FSLIST"))
 			{
 				FileSystem::listDir("/", 0);
+			}
+			else if (!strcmp(cmd, "WFLIST"))
+			{
+				WifiMaster::printScannedNetWorks();
 			}
 			else
 			{

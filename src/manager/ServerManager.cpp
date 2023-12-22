@@ -49,11 +49,10 @@ String ServerManager::getNTPTime()
 void ServerManager::startServer()
 {
 	static bool started = false;
-
 	if (!started)
 	{
 		started = true;
-		LOG("Starting server")
+		LOG("Starting server");
 		mServer = new WebServer(80);
 		mServer->onNotFound(notFoundHandler);
 		mServer->on("/login", loginHandler);
@@ -65,12 +64,6 @@ void ServerManager::startServer()
 		mServer->collectHeaders(headerkeys, headerkeyssize);
 
 		mServer->begin();
-
-		if (MDNS.begin(MDNS_SERVER_NAME))
-		{
-			LOG("mDNS responder started: http://" MDNS_SERVER_NAME ".local");
-			// MDNS.addService("http", "tcp", 80);
-		}
 	}
 }
 
