@@ -9,7 +9,8 @@ bool WifiMaster::mStartedmDNS = false;
 
 const char HTML_WIFI_ITEM1[] PROGMEM = "<div><a href='#p' onclick='c(this)'>";
 const char HTML_WIFI_ITEM2[] PROGMEM = "</a><div class='q q-";
-const char HTML_WIFI_ITEM3[] PROGMEM = " l'></div></div>";
+const char HTML_WIFI_LOCK[] PROGMEM = " l";
+const char HTML_WIFI_ITEM3[] PROGMEM = "'></div></div>";
 const char HTML_WIFI_LIST[] PROGMEM = "<!-- HTML_WIFI_LIST -->";
 const char HTML_NO_NETWORKS_FOUND[] PROGMEM = "<label>No networks found</label><br>";
 
@@ -176,6 +177,10 @@ bool WifiMaster::getScannedWifiHtmlStr(String &str)
         str += ssid;
         str += FPSTR(HTML_WIFI_ITEM2);
         str += String(level);
+        if (encType != WIFI_AUTH_OPEN)
+        {
+            str += FPSTR(HTML_WIFI_LOCK);
+        }
         str += FPSTR(HTML_WIFI_ITEM3);
         str += "\n";
         i++;
