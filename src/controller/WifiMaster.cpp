@@ -30,7 +30,7 @@ void WifiMaster::init()
 {
     LOG("Init WiFi");
 #ifdef USE_WIFI_MANAGER
-    mState = WIFI_MASTER_STATE_NONE;
+    setState(WIFI_MASTER_STATE_NONE);
     readSavedSettings();
     if (!isValidWifiSettings())
     {
@@ -72,6 +72,39 @@ void WifiMaster::resetSettings()
 }
 
 #ifdef USE_WIFI_MANAGER
+int WifiMaster::getState()
+{
+    return mState;
+}
+
+String WifiMaster::getStateStr()
+{
+    switch (mState)
+    {
+    case WIFI_MASTER_STATE_NONE:
+        return "NONE";
+    case WIFI_MASTER_STATE_CONNECTING:
+        return "CONNECTING";
+    case WIFI_MASTER_STATE_CONFIG_PORTAL:
+        return "CONFIG_PORTAL";
+    case WIFI_MASTER_STATE_CONNECTED:
+        return "CONNECTED";
+    case WIFI_MASTER_STATE_DISCONNECTED:
+        return "DISCONNECTED";
+    default:
+        return "UNKNOWN";
+    }
+}
+
+void WifiMaster::setState(int state)
+{
+    if (mState != state)
+    {
+        mState = state;
+        LOG("State changed to %s", getStateStr().c_str());
+    }
+}
+
 void WifiMaster::startScanNetworks()
 {
     if (!mIsScanning)
@@ -220,8 +253,8 @@ void WifiMaster::startConfigPortal()
         LOGE("Cannot start config portal");
         return;
     }
-    LOG("Starting config portal...");
-    mState = WIFI_MASTER_STATE_CONFIG_PORTAL;
+    LOG("Start config portal");
+    setState(WIFI_MASTER_STATE_CONFIG_PORTAL);
     WiFi.mode(WIFI_AP);
     WiFi.softAP(AP_SSID, AP_PASSWORD);
     WiFi.softAPConfig(AP_IP_ADDR, IPAddress(0, 0, 0, 0), IPAddress(255, 255, 255, 0));
@@ -236,8 +269,8 @@ void WifiMaster::stopConfigPortal()
     {
         return;
     }
-    LOG("Stoping config portal...");
-    mState = WIFI_MASTER_STATE_NONE;
+    LOG("Stop config portal");
+    setState(WIFI_MASTER_STATE_DISCONNECTED);
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_OFF);
     stopServer();
@@ -299,46 +332,25 @@ void WifiMaster::startConnectToSavedWifi()
         LOGE("Cannot connnect to saved wifi");
         return;
     }
-    mState = WIFI_MASTER_STATE_STA;
+    setState(WIFI_MASTER_STATE_CONNECTING);
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
     WiFi.begin(mSavedSSID.c_str(), mSavedPassword.c_str());
-    LOG("Connecting to %s", mSavedSSID.c_str());
+    LOG("Connecting to %s %s", mSavedSSID.c_str(), mSavedPassword.c_str());
     startMDNS();
 }
 
 void WifiMaster::stopConnectToSavedWifi()
 {
-    if (mState != WIFI_MASTER_STATE_STA)
+    if (mState != WIFI_MASTER_STATE_CONNECTING)
     {
         return;
     }
     LOG("Stop connect to saved Wifi");
-    mState = WIFI_MASTER_STATE_NONE;
+    setState(WIFI_MASTER_STATE_NONE);
     WiFi.disconnect(true);
     stopServer();
     // stopMDNS();
-}
-
-void WifiMaster::stop()
-{
-    if (mState == WIFI_MASTER_STATE_STOPPED)
-    {
-        return;
-    }
-    mState = WIFI_MASTER_STATE_STOPPED;
-    if (!WiFi.isConnected())
-    {
-        LOG("Stop");
-        stopConnectToSavedWifi();
-    }
-    else
-    {
-        LOG("Wifi is connected");
-    }
-    stopConfigPortal();
-    stopScanNetworks();
-    stopServer();
 }
 
 void WifiMaster::sendNotFound()
@@ -453,42 +465,51 @@ void WifiMaster::saveDataHandler()
 void WifiMaster::processHandler()
 {
     static int prevState = WIFI_MASTER_STATE_NONE;
+    static bool prevConnectStatus = false;
     static int prevWifiCount = -99;
-    static int prevWifiMode = -1;
     static uint32_t timeTick = 0, scanTimeTick = 0;
 
-    if (WiFi.getMode() != prevWifiMode)
+    if (prevConnectStatus != WiFi.isConnected())
     {
-        prevWifiMode = WiFi.getMode();
-        LOG("WiFi mode changed to: %d", prevWifiMode);
+        prevConnectStatus = WiFi.isConnected();
+        if (mState == WIFI_MASTER_STATE_CONNECTED && !WiFi.isConnected())
+        {
+            setState(WIFI_MASTER_STATE_DISCONNECTED);
+        }
+        else if (mState == WIFI_MASTER_STATE_DISCONNECTED && WiFi.isConnected())
+        {
+            setState(WIFI_MASTER_STATE_CONNECTED);
+        }
     }
 
-    if (mState != WIFI_MASTER_STATE_STOPPED && WiFi.isConnected())
+    if (mState == WIFI_MASTER_STATE_CONNECTING && WiFi.isConnected())
     {
-        stop();
+        setState(WIFI_MASTER_STATE_CONNECTED);
+        stopScanNetworks();
+        stopServer();
     }
 
-    if (mState != WIFI_MASTER_STATE_STOPPED && prevState != mState)
+    if (prevState != mState)
     {
         prevState = mState;
         if (mState == WIFI_MASTER_STATE_CONFIG_PORTAL)
         {
             timeTick = xTaskGetTickCount() + CONFIG_PORTAL_TIMEOUT / portTICK_PERIOD_MS;
         }
-        else if (mState == WIFI_MASTER_STATE_STA)
+        else if (mState == WIFI_MASTER_STATE_CONNECTING)
         {
             timeTick = xTaskGetTickCount() + CONNECT_WIFI_TIMEOUT / portTICK_PERIOD_MS;
         }
     }
 
-    if (mState != WIFI_MASTER_STATE_NONE && !WiFi.isConnected() && xTaskGetTickCount() > timeTick)
+    if ((mState == WIFI_MASTER_STATE_CONFIG_PORTAL || mState == WIFI_MASTER_STATE_CONNECTING) && !WiFi.isConnected() && xTaskGetTickCount() > timeTick)
     {
         if (mState == WIFI_MASTER_STATE_CONFIG_PORTAL)
         {
             LOG("Config portal timeout");
             stopConfigPortal();
         }
-        else if (mState == WIFI_MASTER_STATE_STA)
+        else if (mState == WIFI_MASTER_STATE_CONNECTING)
         {
             LOG("Connect to saved Wifi timeout");
             stopConnectToSavedWifi();
@@ -509,7 +530,7 @@ void WifiMaster::processHandler()
             }
             else if (wifiCount > 0)
             {
-                LOG("Found %d wifis", wifiCount);
+                LOG("Found %d networks", wifiCount);
             }
             else if (wifiCount == WIFI_SCAN_RUNNING)
             {
