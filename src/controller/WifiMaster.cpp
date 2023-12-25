@@ -17,6 +17,7 @@ const char HTML_NO_NETWORKS_FOUND[] PROGMEM = "<label>No networks found</label><
 #define SSID_FILE_PATH "/ssid.txt"
 #define PASS_FILE_PATH "/pass.txt"
 #define CONFIG_WIFI_FILE_PATH "/wifimanager/configWifi.html"
+#define CONFIG_WIFI_SUCCESS_FILE_PATH "/wifimanager/success.html"
 
 #define CONNECT_WIFI_TIMEOUT 30000UL   // (ms)
 #define CONFIG_PORTAL_TIMEOUT 120000UL // (ms)
@@ -441,11 +442,22 @@ void WifiMaster::saveDataHandler()
     Helper::trim(mSavedPassword);
     if (isValidWifiSettings())
     {
-        mServer->send(200, "text/plain", F("Wifi network information has been saved. The device will reboot automatically."));
-        saveSettings();
-        // ESP.restart();
-        Message message = {MESSAGE_TYPE_REBOOT, 0};
-        MessageEvent::send(message);
+        fs::File file;
+        if (FileSystem::openFile(file, CONFIG_WIFI_SUCCESS_FILE_PATH))
+        {
+            mServer->streamFile(file, "text/html");
+            file.close();
+
+            saveSettings();
+            // ESP.restart();
+            Message message = {MESSAGE_TYPE_REBOOT, 0};
+            MessageEvent::send(message);
+        }
+        else
+        {
+            LOGE("Cannot open file");
+            sendNotFound();
+        }
     }
     else
     {
