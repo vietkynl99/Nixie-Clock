@@ -7,7 +7,7 @@ bool ClockFragment::mIsFirstTime = false;
 
 static constexpr const char *const TAG = "CLOCK";
 
-#define INFORMATION_SCREEN_TEXT_COLOR 0xCE79 // white
+#define INFORMATION_SCREEN_TEXT_COLOR 0x94B2 // #969696
 
 void ClockFragment::init()
 {
@@ -312,35 +312,45 @@ void ClockFragment::updateNetworkIcon(bool force)
 void ClockFragment::updateInformationScreen(bool force)
 {
     int xpos = 10;
-    int ypos = 10;
-    char buffer[32];
+    int ypos = 20;
+    char buffer[16];
+
+    TFT_eSPI *tft = DisplayController::getTft();
 
     DisplayController::selectDisplay(TFT_COUNT - 1);
-    DisplayController::setFont(FSB12, 1);
-    DisplayController::getTft()->setTextColor(INFORMATION_SCREEN_TEXT_COLOR, TFT_BLACK);
-    DisplayController::getTft()->setTextDatum(TL_DATUM);
+    DisplayController::setFont(FSB18, 1);
+    tft->setTextColor(INFORMATION_SCREEN_TEXT_COLOR, TFT_BLACK);
+    tft->setTextDatum(TL_DATUM);
 
-    DisplayController::getTft()->drawString(Helper::convertDateToString(RTCController::getCurrentDateTime()), xpos, ypos);
+    tft->drawString(Helper::convertDateToString(RTCController::getCurrentDateTime()), xpos, ypos);
 
-    ypos += DisplayController::getTft()->fontHeight() * 1.2;
+    ypos = 90;
+    DisplayController::setFont(FSB24, 1);
     if (HardwareController::isValidDhtValue(HardwareController::getTemperature()))
     {
-        snprintf(buffer, sizeof(buffer), "Temp: %.1f C", HardwareController::getTemperature());
-        DisplayController::getTft()->drawString(String(buffer), xpos, ypos);
+        snprintf(buffer, sizeof(buffer), "T: %.1f", HardwareController::getTemperature());
     }
     else
     {
-        DisplayController::getTft()->drawString("Temp: -- C", xpos, ypos);
+        strncpy(buffer, "T: --", sizeof(buffer));
     }
+    tft->drawString(buffer, xpos, ypos);
+    xpos += tft->textWidth(buffer) + 12;
+    DisplayController::setFont(FSB18, 1);
+    tft->drawString("o", xpos, ypos - 5);
+    xpos += tft->textWidth("o") + 4;
+    DisplayController::setFont(FSB24, 1);
+    tft->drawString("C", xpos, ypos);
 
-    ypos += DisplayController::getTft()->fontHeight() * 1.2;
+    xpos = 10;
+    ypos += tft->fontHeight() * 1.1;
     if (HardwareController::isValidDhtValue(HardwareController::getHumidity()))
     {
-        snprintf(buffer, sizeof(buffer), "RH: %.1f %%", HardwareController::getHumidity());
-        DisplayController::getTft()->drawString(String(buffer), xpos, ypos);
+        snprintf(buffer, sizeof(buffer), "H: %d %%", (int)HardwareController::getHumidity());
     }
     else
     {
-        DisplayController::getTft()->drawString("RH: -- %", xpos, ypos);
+        strncpy(buffer, "H: -- %", sizeof(buffer));
     }
+    tft->drawString(buffer, xpos, ypos);
 }
