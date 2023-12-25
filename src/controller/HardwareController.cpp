@@ -154,7 +154,6 @@ void HardwareController::dhtHandler()
             {
                 mTemperature = temperature;
                 mHumidity = humidity;
-                LOG("Temp: %.1fC, Hum: %.1f%%", mTemperature, mHumidity);
                 Message message = {MESSAGE_TYPE_UPDATE_TEMP_AND_RH, 0};
                 MessageEvent::send(message);
             }

@@ -74,6 +74,10 @@ void debugHandler()
 			{
 				LOG("RTC time: %s", RTCController::getCurrentDateTimeStr().c_str());
 			}
+			else if (!strcmp(cmd, "DHT"))
+			{
+				LOG("Temp: %.1fC, Hum: %.1f%%", HardwareController::getTemperature(), HardwareController::getHumidity());
+			}
 			else if (!strcmp(cmd, "TEST"))
 			{
 				Helper::mTestValue = code;
