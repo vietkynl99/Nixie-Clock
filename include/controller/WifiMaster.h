@@ -11,6 +11,7 @@
 #include "../common/PinDefines.h"
 #include "../common/Log.h"
 #include "../common/FileSystem.h"
+#include "../common/MessageEvent.h"
 
 #define USE_WIFI_MANAGER
 

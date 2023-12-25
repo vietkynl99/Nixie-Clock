@@ -151,7 +151,7 @@ void LauncherManager::handleEvent(const Message &message)
         break;
     }
     case MESSAGE_TYPE_UPDATE_TEMP_AND_RH:
-    case MESSAGE_TYPE_UPDATE_WIFI_STATUS:
+    case MESSAGE_TYPE_UPDATE_NETWORK_STATE:
     {
         if (mCurrentFragmentType == FRAGMENT_TYPE_CLOCK)
         {

@@ -5,6 +5,7 @@
 #include "../common/Log.h"
 #include "../common/Helper.h"
 #include "../common/MessageEvent.h"
+#include "../controller/WifiMaster.h"
 #include "../controller/HardwareController.h"
 #include "../controller/DisplayController.h"
 #include "../controller/RTCController.h"
@@ -27,7 +28,7 @@ public:
 
 private:
     static void showDigit(int digit);
-    static void updateWiFiIcon(bool firstTime);
+    static void updateNetworkIcon(bool firstTime);
     static void updateInformationScreen(bool firstTime);
 };
 

@@ -102,6 +102,8 @@ void WifiMaster::setState(int state)
     {
         mState = state;
         LOG("State changed to %s", getStateStr().c_str());
+        Message message = {MESSAGE_TYPE_UPDATE_NETWORK_STATE, 0};
+        MessageEvent::send(message);
     }
 }
 

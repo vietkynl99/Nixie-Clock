@@ -123,9 +123,10 @@ void DisplayController::drawWifiIcon(int x, int y, WifiIconType type, uint16_t c
     }
 
     tft->fillCircle(x, y, 3, color);
-    for (int i = 1; i < 4; i++)
+    int strength = type >= WIFI_ICON_TYPE_0_SIGNAL && type <= WIFI_ICON_TYPE_3_SIGNAL ? type : WIFI_ICON_TYPE_3_SIGNAL;
+    for (int i = 1; i <= 3; i++)
     {
-        tft->drawArc(x, y, 8 * i + 2, 8 * i, 135, 225, color, TFT_BLACK);
+        tft->drawArc(x, y, 8 * i + 2, 8 * i, 135, 225, i<=strength?color:TFT_BLACK, TFT_BLACK);
     }
 
     if (type == WIFI_ICON_TYPE_DISCONNECTED)
@@ -134,13 +135,6 @@ void DisplayController::drawWifiIcon(int x, int y, WifiIconType type, uint16_t c
         tft->setTextColor(color);
         tft->setTextDatum(CC_DATUM);
         tft->drawString("\\", x, y - 16);
-    }
-    else if (type == WIFI_ICON_TYPE_DISABLED)
-    {
-        setFont(FF7, 1);
-        tft->setTextColor(TFT_RED);
-        tft->setTextDatum(CC_DATUM);
-        tft->drawString("x", x + 8, y - 9);
     }
 }
 

@@ -217,8 +217,6 @@ void ServerManager::statusHandler()
 			{
 				LOG("WiFi disconnected");
 			}
-			Message message = {MESSAGE_TYPE_UPDATE_WIFI_STATUS, 0};
-			MessageEvent::send(message);
 			HardwareController::bip(3);
 		}
 	}
