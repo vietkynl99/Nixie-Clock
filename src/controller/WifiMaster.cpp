@@ -406,7 +406,7 @@ void WifiMaster::rootHandler()
     LOG("Http: %s", message.c_str());
 #endif
 
-    File file;
+    fs::File file;
     if (!FileSystem::openFile(file, CONFIG_WIFI_FILE_PATH))
     {
         LOGE("Cannot open file");

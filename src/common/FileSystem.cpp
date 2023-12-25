@@ -18,7 +18,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
 {
     LOG("Listing directory: %s", dirname);
 
-    File root = SPIFFS.open(dirname);
+    fs::File root = SPIFFS.open(dirname);
     if (!root)
     {
         LOGE("Error: Failed to open directory");
@@ -30,7 +30,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
         return;
     }
 
-    File file = root.openNextFile();
+    fs::File file = root.openNextFile();
     while (file)
     {
         if (file.isDirectory())
@@ -51,7 +51,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
 
 bool FileSystem::readFile(const char *path, String &content)
 {
-    File file = SPIFFS.open(path);
+    fs::File file = SPIFFS.open(path);
     if (!file || file.isDirectory())
     {
         LOGE("Failed to open file %s for reading", path);
@@ -64,7 +64,7 @@ bool FileSystem::readFile(const char *path, String &content)
 
 bool FileSystem::writeFile(const char *path, String &content)
 {
-    File file = SPIFFS.open(path, FILE_WRITE);
+    fs::File file = SPIFFS.open(path, FILE_WRITE);
     if (!file)
     {
         LOGE("Failed to open file %s for writing", path);
@@ -83,7 +83,7 @@ bool FileSystem::writeFile(const char *path, String &content)
     return ret;
 }
 
-bool FileSystem::openFile(File &file, const char *path)
+bool FileSystem::openFile(fs::File &file, const char *path)
 {
     file = SPIFFS.open(path);
     if (!file || file.isDirectory())

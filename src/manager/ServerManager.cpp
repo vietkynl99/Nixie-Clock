@@ -143,7 +143,7 @@ void ServerManager::loginHandler()
 		LOG("Log in Failed");
 	}
 
-	File file;
+	fs::File file;
 	if (FileSystem::openFile(file, "/login.html"))
 	{
 		mServer->streamFile(file, "text/html");

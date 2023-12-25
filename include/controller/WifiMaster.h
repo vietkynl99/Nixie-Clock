@@ -8,7 +8,6 @@
 #include <WiFiUdp.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include <FS.h>
 #include "../common/PinDefines.h"
 #include "../common/Log.h"
 #include "../common/FileSystem.h"
