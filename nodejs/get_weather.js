@@ -1,3 +1,5 @@
+// https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/daily/1day/%7BlocationKey%7D
+
 const fs = require('fs');
 const axios = require('axios');
 
