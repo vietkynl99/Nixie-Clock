@@ -338,7 +338,7 @@ void WifiMaster::startConnectToSavedWifi()
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
     WiFi.begin(mSavedSSID.c_str(), mSavedPassword.c_str());
-    LOG("Connecting to %s %s", mSavedSSID.c_str(), mSavedPassword.c_str());
+    LOG("Connecting to %s", mSavedSSID.c_str());
     startMDNS();
 }
 
