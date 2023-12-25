@@ -41,55 +41,9 @@ void debugHandler()
 			{
 				LauncherManager::show((FragmentType)code);
 			}
-			else if (!strcmp(cmd, "MENU"))
-			{
-				if (code)
-				{
-					MenuFragment::show();
-				}
-				else
-				{
-					MenuFragment::hide();
-				}
-			}
-			else if (!strcmp(cmd, "CLOCK"))
-			{
-				if (code)
-				{
-					ClockFragment::show();
-				}
-				else
-				{
-					ClockFragment::hide();
-				}
-			}
-			else if (!strcmp(cmd, "CLEAR"))
-			{
-				DisplayController::clear();
-			}
 			else if (!strcmp(cmd, "REFRESH"))
 			{
 				LauncherManager::refresh();
-			}
-			else if (!strcmp(cmd, "SELECT"))
-			{
-				DisplayController::selectDisplay(code);
-			}
-			else if (!strcmp(cmd, "UP"))
-			{
-				MenuFragment::up();
-			}
-			else if (!strcmp(cmd, "DOWN"))
-			{
-				MenuFragment::down();
-			}
-			else if (!strcmp(cmd, "ENTER"))
-			{
-				MenuFragment::enter();
-			}
-			else if (!strcmp(cmd, "BACK"))
-			{
-				MenuFragment::back();
 			}
 			// set time: Ex 19:25:23 -> 190523
 			else if (!strcmp(cmd, "TIME"))
@@ -123,10 +77,6 @@ void debugHandler()
 			else if (!strcmp(cmd, "TEST"))
 			{
 				Helper::mTestValue = code;
-			}
-			else if (!strcmp(cmd, "LED"))
-			{
-				LedController::setMode(code);
 			}
 			else if (!strcmp(cmd, "FSLIST"))
 			{
