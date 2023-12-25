@@ -443,7 +443,9 @@ void WifiMaster::saveDataHandler()
     {
         mServer->send(200, "text/plain", F("Wifi network information has been saved. The device will reboot automatically."));
         saveSettings();
-        ESP.restart();
+        // ESP.restart();
+        Message message = {MESSAGE_TYPE_REBOOT, 0};
+        MessageEvent::send(message);
     }
     else
     {
