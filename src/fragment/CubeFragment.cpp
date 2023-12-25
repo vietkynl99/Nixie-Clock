@@ -198,9 +198,9 @@ void CubeFragment::drawCube()
     static uint16_t palette[] = {TFT_BLUE, TFT_GREEN, TFT_YELLOW, TFT_PINK, TFT_RED, TFT_CYAN};
 
     // size / 2 of cube edge
-    static float px[] = {-15, 15, 15, -15, -15, 15, 15, -15};
-    static float py[] = {-15, -15, 15, 15, -15, -15, 15, 15};
-    static float pz[] = {-15, -15, -15, -15, 15, 15, 15, 15};
+    static int px[] = {-15, 15, 15, -15, -15, 15, 15, -15};
+    static int py[] = {-15, -15, 15, 15, -15, -15, 15, 15};
+    static int pz[] = {-15, -15, -15, -15, 15, 15, 15, 15};
 
     // mapped coordinates on screen
     static float p2x[] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -212,18 +212,18 @@ void CubeFragment::drawCube()
     // Define the triangles
     // The order of the vertices MUST be CCW or the
     // shoelace method won't work to detect visible edges
-    static int faces[12][3] = {{0, 1, 4},
-                               {1, 5, 4},
-                               {1, 2, 5},
-                               {2, 6, 5},
-                               {5, 7, 4},
-                               {6, 7, 5},
-                               {3, 4, 7},
-                               {4, 3, 0},
-                               {0, 3, 1},
-                               {1, 3, 2},
-                               {2, 3, 6},
-                               {6, 3, 7}};
+    static int8_t faces[12][3] = {{0, 1, 4},
+                                  {1, 5, 4},
+                                  {1, 2, 5},
+                                  {2, 6, 5},
+                                  {5, 7, 4},
+                                  {6, 7, 5},
+                                  {3, 4, 7},
+                                  {4, 3, 0},
+                                  {0, 3, 1},
+                                  {1, 3, 2},
+                                  {2, 3, 6},
+                                  {6, 3, 7}};
 
     double speed = 90;
     for (int i = 0; i < 3; i++)
