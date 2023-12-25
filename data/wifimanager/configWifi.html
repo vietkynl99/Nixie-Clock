@@ -7,6 +7,19 @@
     <meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=no' />
     <title>Config WiFi</title>
     <script>
+        function validateForm() {
+            var ssid = document.getElementById('s').value;
+            var password = document.getElementById('p').value;
+            if (ssid.length < 3) {
+                alert("SSID must be at least 3 characters.");
+                return false;
+            }
+            if (password.length < 8) {
+                alert("Password must be at least 8 characters.");
+                return false;
+            }
+            return true;
+        }
         function c(l) {
             document.getElementById('s').value = l.innerText || l.textContent;
             p = l.nextElementSibling.classList.contains('l');
@@ -231,7 +244,7 @@
         <!-- HTML_WIFI_LIST -->
         <!-- <div><a href='#p' onclick='c(this)'>Wifi Chua</a><div class='q q-3 l'></div></div> -->
         <br>
-        <form action='/save' method='POST'>
+        <form action='/save' method='POST' onsubmit='return validateForm();'>
             <label for='s'>SSID</label>
             <input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder=''>
             <br>
