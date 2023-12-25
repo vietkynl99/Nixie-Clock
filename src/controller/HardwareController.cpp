@@ -27,9 +27,9 @@ void HardwareController::init()
     if (!initialized)
     {
         initialized = true;
-        ledcAttachPin(BUZZER_PIN, BUZZER_PWM_CHANNEL);
         ledcSetup(BUZZER_PWM_CHANNEL, BUZZER_PWM_FREQUENCY, BUZZER_PWM_RESOLUTION);
-        ledcWrite(BUZZER_PWM_CHANNEL, 0);
+        ledcAttachPin(BUZZER_PIN, BUZZER_PWM_CHANNEL);
+        setBuzzerState(0);
         LedController::init();
     }
 }
