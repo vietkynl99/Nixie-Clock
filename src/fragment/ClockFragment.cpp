@@ -24,7 +24,7 @@ void ClockFragment::loop()
     static uint8_t transitionEffect = 0;
     static int effectNumber = 0;
     static uint8_t effectMask = 0;
-    static bool connectingEffectToggle = false;
+    static int networkEffectNumber = 0;
 
     if (mIsVisible && xTaskGetTickCount() > clockTimeTick)
     {
@@ -94,15 +94,24 @@ void ClockFragment::loop()
         {
             if (mIsFirstTime)
             {
-                connectingEffectToggle=true;
+                networkEffectNumber = 0;
                 updateInformationScreen(true);
                 updateNetworkIcon(true);
             }
             else if (WifiMaster::getState() == WIFI_MASTER_STATE_CONNECTING)
             {
-                connectingEffectToggle=!connectingEffectToggle;
-                if(connectingEffectToggle)
+                networkEffectNumber = !networkEffectNumber;
+                if (networkEffectNumber)
                 {
+                    updateNetworkIcon(true);
+                }
+            }
+            else if (WifiMaster::getState() == WIFI_MASTER_STATE_CONNECTED)
+            {
+                networkEffectNumber++;
+                if (networkEffectNumber > 30)
+                {
+                    networkEffectNumber = 0;
                     updateNetworkIcon(false);
                 }
             }
@@ -251,15 +260,19 @@ void ClockFragment::showDigit(int digit)
     }
 }
 
-void ClockFragment::updateNetworkIcon(bool firstTime)
+void ClockFragment::updateNetworkIcon(bool force)
 {
     static int state = -1;
     static int type = WIFI_ICON_TYPE_0_SIGNAL;
+    static int prevRssiLevel = -1;
 
-    if (firstTime || state != WifiMaster::getState())
+    if (force || state != WifiMaster::getState())
     {
-        state = WifiMaster::getState();
-        type = WIFI_ICON_TYPE_0_SIGNAL;
+        if (state != WifiMaster::getState())
+        {
+            state = WifiMaster::getState();
+            type = WIFI_ICON_TYPE_0_SIGNAL;
+        }
         DisplayController::selectDisplay(TFT_COUNT - 1);
         DisplayController::getTft()->fillRect(TFT_WIDTH - 45, 5, 45, 50, TFT_BLACK);
         switch (state)
@@ -268,10 +281,17 @@ void ClockFragment::updateNetworkIcon(bool firstTime)
             DisplayController::drawArrayJpeg(image_hotspot, sizeof(image_hotspot), TFT_WIDTH - 45, 5);
             break;
         case WIFI_MASTER_STATE_CONNECTING:
-            DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, WIFI_ICON_TYPE_0_SIGNAL, INFORMATION_SCREEN_TEXT_COLOR);
+            type++;
+            if (type > WIFI_ICON_TYPE_3_SIGNAL)
+            {
+                type = WIFI_ICON_TYPE_0_SIGNAL;
+            }
+            DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR, false);
             break;
         case WIFI_MASTER_STATE_CONNECTED:
-            DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, WIFI_ICON_TYPE_3_SIGNAL, INFORMATION_SCREEN_TEXT_COLOR);
+            prevRssiLevel = Helper::getRssiLevel(WiFi.RSSI()); // 0-4
+            type = prevRssiLevel > WIFI_ICON_TYPE_0_SIGNAL ? prevRssiLevel - 1 : WIFI_ICON_TYPE_0_SIGNAL;
+            DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR);
             break;
         case WIFI_MASTER_STATE_DISCONNECTED:
             DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, WIFI_ICON_TYPE_DISCONNECTED, INFORMATION_SCREEN_TEXT_COLOR);
@@ -280,19 +300,16 @@ void ClockFragment::updateNetworkIcon(bool firstTime)
             break;
         }
     }
-    else if (state == WIFI_MASTER_STATE_CONNECTING)
+    else if (state == WIFI_MASTER_STATE_CONNECTED && prevRssiLevel != Helper::getRssiLevel(WiFi.RSSI()))
     {
-        type++;
-        if (type > WIFI_ICON_TYPE_3_SIGNAL)
-        {
-            type = WIFI_ICON_TYPE_0_SIGNAL;
-        }
+        prevRssiLevel = Helper::getRssiLevel(WiFi.RSSI());
+        type = prevRssiLevel > WIFI_ICON_TYPE_0_SIGNAL ? prevRssiLevel - 1 : WIFI_ICON_TYPE_0_SIGNAL;
         DisplayController::selectDisplay(TFT_COUNT - 1);
-        DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR, false);
+        DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR);
     }
 }
 
-void ClockFragment::updateInformationScreen(bool firstTime)
+void ClockFragment::updateInformationScreen(bool force)
 {
     int xpos = 10;
     int ypos = 10;

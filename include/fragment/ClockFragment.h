@@ -28,8 +28,8 @@ public:
 
 private:
     static void showDigit(int digit);
-    static void updateNetworkIcon(bool firstTime);
-    static void updateInformationScreen(bool firstTime);
+    static void updateNetworkIcon(bool force);
+    static void updateInformationScreen(bool force);
 };
 
 #endif

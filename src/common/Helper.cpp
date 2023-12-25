@@ -72,12 +72,30 @@ void Helper::showFreeMemory()
 
 void Helper::trim(String &str)
 {
-	while (str.length() > 0 && (str.indexOf(' ') == 0 || str.indexOf('\r') == 0 || str.indexOf('\n') == 0))
-	{
-		str = str.substring(1);
-	}
-	while (str.length() > 0 && (str.lastIndexOf(' ') == str.length() - 1 || str.lastIndexOf('\r') == str.length() - 1 || str.lastIndexOf('\n') == str.length() - 1))
-	{
-		str = str.substring(0, str.length() - 1);
-	}
+    while (str.length() > 0 && (str.indexOf(' ') == 0 || str.indexOf('\r') == 0 || str.indexOf('\n') == 0))
+    {
+        str = str.substring(1);
+    }
+    while (str.length() > 0 && (str.lastIndexOf(' ') == str.length() - 1 || str.lastIndexOf('\r') == str.length() - 1 || str.lastIndexOf('\n') == str.length() - 1))
+    {
+        str = str.substring(0, str.length() - 1);
+    }
+}
+
+int Helper::getRssiLevel(int rssi)
+{
+    int level = 0;
+    if (rssi < -90)
+    {
+        level = 0;
+    }
+    else if (rssi > -30)
+    {
+        level = 4;
+    }
+    else
+    {
+        level = map(rssi, -90, -30, 0, 4);
+    }
+    return level;
 }

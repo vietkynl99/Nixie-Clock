@@ -20,6 +20,8 @@ public:
 
     static void showFreeMemory();
     static void trim(String &str);
+
+    static int getRssiLevel(int rssi);
 };
 
 #endif

@@ -195,23 +195,10 @@ bool WifiMaster::getScannedWifiHtmlStr(String &str)
 
     while (WiFi.getNetworkInfo(i, ssid, encType, rssi, bssid, channel))
     {
-        int level = 0;
-        if (rssi < -90)
-        {
-            level = 0;
-        }
-        else if (rssi > -30)
-        {
-            level = 4;
-        }
-        else
-        {
-            level = map(rssi, -90, -30, 0, 4);
-        }
         str += FPSTR(HTML_WIFI_ITEM1);
         str += ssid;
         str += FPSTR(HTML_WIFI_ITEM2);
-        str += String(level);
+        str += String(Helper::getRssiLevel(rssi));
         if (encType != WIFI_AUTH_OPEN)
         {
             str += FPSTR(HTML_WIFI_LOCK);
