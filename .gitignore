@@ -1,3 +1,4 @@
 raw_images/backup
 script/bin2hex
 .vscode/
+nodejs/node_modules/
