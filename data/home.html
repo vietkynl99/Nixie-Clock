@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elegant Dashboard | Dashboard</title>
+  <!-- jquery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <!-- Custom styles -->
+  <script>
+    const onlinePrefixUrl = "https://vietkynl99.github.io/Nixie-Clock/server/shared";
+    // const onlinePrefixUrl = "http://localhost:3000";
+
+    function loadScript(src) {
+      return new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+    loadScript(onlinePrefixUrl + '/js/loadStyles.js')
+      .then(function () {
+        console.log('Scripts loaded successfully.');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        reject(error);
+      });;
+  </script>
+</head>
+
+<body>
+  <div class="layer"></div>
+  <!-- ! Body -->
+  <div id="contentContainer"></div>
+  <!-- Custom scripts -->
+  <script>
+    loadScript(onlinePrefixUrl + '/js/loadContent.js')
+      .then(function () {
+        console.log('Scripts loaded successfully.');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        reject(error);
+      });;
+  </script>
+</body>
+
+</html>
