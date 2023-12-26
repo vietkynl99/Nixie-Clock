@@ -11,6 +11,8 @@ static constexpr const char *const TAG = "SERVER";
 #define NTP_UPDATE_INTERVAL (24 * 3600000UL) // (ms) 24 hours
 #define NTP_RTC_DIFF_TIME 60				 // (s) If the difference between NTP and RTC time is greater than this time, RTC time will be set according to NTP time
 
+#define HTML_HOME_FILE_PATH "/home.html"
+
 void ServerManager::init()
 {
 	mWifiEnabled = SettingsManager::isWiFiEnabled();
@@ -165,29 +167,17 @@ void ServerManager::rootHandler()
 		return;
 	}
 
-	char temp[400];
-	int sec = millis() / 1000;
-	int min = sec / 60;
-	int hr = min / 60;
-
-	snprintf(temp, 400,
-
-			 "<html>\
-  <head>\
-    <meta http-equiv='refresh' content='5'/>\
-    <title>ESP32 Demo</title>\
-    <style>\
-      body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
-    </style>\
-  </head>\
-  <body>\
-    <h1>Hello from ESP32!</h1>\
-    <p>Uptime: %02d:%02d:%02d</p>\
-    <img src=\"/test.svg\" />\
-  </body>\
-</html>",
-			 hr, min % 60, sec % 60);
-	mServer->send(200, "text/html", temp);
+	fs::File file;
+	if (FileSystem::openFile(file, HTML_HOME_FILE_PATH))
+	{
+		mServer->streamFile(file, "text/html");
+		file.close();
+	}
+	else
+	{
+		LOGE("Cannot open file");
+		sendNotFound();
+	}
 }
 
 void ServerManager::statusHandler()
