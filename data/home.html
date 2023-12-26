@@ -23,9 +23,6 @@
       });
     }
     loadScript(onlinePrefixUrl + '/js/loadStyles.js')
-      .then(function () {
-        console.log('Scripts loaded successfully.');
-      })
       .catch(error => {
         console.error('Error:', error);
         reject(error);
@@ -40,9 +37,6 @@
   <!-- Custom scripts -->
   <script>
     loadScript(onlinePrefixUrl + '/js/loadContent.js')
-      .then(function () {
-        console.log('Scripts loaded successfully.');
-      })
       .catch(error => {
         console.error('Error:', error);
         reject(error);
