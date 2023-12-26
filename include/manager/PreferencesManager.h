@@ -12,8 +12,12 @@ private:
 
 public:
     static void clear(const char *name);
+
     static void putInt(const char *name, const char *key, int value);
+    static void putString(const char *name, const char *key, String value);
+
     static int getInt(const char *name, const char *key, int defaultValue);
+    static String getString(const char *name, const char *key, String defaultValue = "");
 };
 
 #endif

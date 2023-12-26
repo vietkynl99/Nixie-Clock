@@ -1,4 +1,5 @@
 #include "../../include/controller/WifiMaster.h"
+#include "../../include/manager/PreferencesManager.h"
 
 #ifdef USE_WIFI_MANAGER
 String WifiMaster::mSavedSSID = "";
@@ -13,6 +14,8 @@ const char HTML_WIFI_LOCK[] PROGMEM = " l";
 const char HTML_WIFI_ITEM3[] PROGMEM = "'></div></div>";
 const char HTML_WIFI_LIST[] PROGMEM = "<!-- HTML_WIFI_LIST -->";
 const char HTML_NO_NETWORKS_FOUND[] PROGMEM = "<label>No networks found</label><br>";
+
+#define WIFI_MASTER_PREFERENCES_NAME "WifiMaster"
 
 #define SSID_FILE_PATH "/ssid.txt"
 #define PASS_FILE_PATH "/pass.txt"
@@ -66,8 +69,7 @@ void WifiMaster::resetSettings()
     LOG("Reset WiFi settings");
     mSavedSSID = "";
     mSavedPassword = "";
-    FileSystem::writeFile(SSID_FILE_PATH, mSavedSSID);
-    FileSystem::writeFile(PASS_FILE_PATH, mSavedPassword);
+    saveSettings();
     ESP.restart();
 #endif
 }
@@ -219,21 +221,18 @@ bool WifiMaster::isValidWifiSettings()
 
 void WifiMaster::readSavedSettings()
 {
-    if (!FileSystem::readFile(SSID_FILE_PATH, mSavedSSID) || !FileSystem::readFile(PASS_FILE_PATH, mSavedPassword))
-    {
-        LOGE("Failed to read saved network");
-        mSavedSSID = "";
-        mSavedPassword = "";
-    }
+    mSavedSSID = PreferencesManager::getString(WIFI_MASTER_PREFERENCES_NAME, "ssid");
+    mSavedPassword = PreferencesManager::getString(WIFI_MASTER_PREFERENCES_NAME, "password");
 }
 
 void WifiMaster::saveSettings()
 {
-    if (!FileSystem::writeFile(SSID_FILE_PATH, mSavedSSID) || !FileSystem::writeFile(PASS_FILE_PATH, mSavedPassword))
+    PreferencesManager::putString(WIFI_MASTER_PREFERENCES_NAME, "ssid", mSavedSSID);
+    PreferencesManager::putString(WIFI_MASTER_PREFERENCES_NAME, "password", mSavedPassword);
+    if (mSavedSSID.length() > 0)
     {
-        LOGE("Failed to save network");
+        LOG("Saved network: %s", mSavedSSID.c_str());
     }
-    LOG("Saved network: %s", mSavedSSID.c_str());
 }
 
 void WifiMaster::startConfigPortal()

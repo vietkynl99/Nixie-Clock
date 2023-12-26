@@ -1,6 +1,5 @@
 #include "../../include/manager/PreferencesManager.h"
 
-
 Preferences *PreferencesManager::mPreferences = new Preferences();
 
 static constexpr const char *const TAG = "PREFERENCES";
@@ -21,11 +20,28 @@ void PreferencesManager::putInt(const char *name, const char *key, int value)
     mPreferences->end();
 }
 
+void PreferencesManager::putString(const char *name, const char *key, String value)
+{
+    LOG("Saved %s", key);
+    mPreferences->begin(name, false);
+    mPreferences->putString(key, value);
+    mPreferences->end();
+}
+
 int PreferencesManager::getInt(const char *name, const char *key, int defaultValue)
 {
     int ret = 0;
     mPreferences->begin(name, false);
     ret = mPreferences->getInt(key, defaultValue);
+    mPreferences->end();
+    return ret;
+}
+
+String PreferencesManager::getString(const char *name, const char *key, String defaultValue)
+{
+    String ret = "";
+    mPreferences->begin(name, false);
+    ret = mPreferences->getString(key, defaultValue);
     mPreferences->end();
     return ret;
 }
