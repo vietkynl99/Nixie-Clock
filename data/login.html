@@ -2,112 +2,48 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kynl Clock</title>
-    <link rel="icon" href="data:,">
-    <style>
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kynl Clock | Sign in</title>
+  <script>
+    const onlinePrefixUrl = "https://vietkynl99.github.io/Nixie-Clock/server/shared";
+    // const onlinePrefixUrl = "http://localhost:3000";
 
-        form {
-            width: 300px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-        }
+    function loadCSS(url) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = url;
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="submit"] {
-            background-color: #034078;
-            color: #FEFCFB;
-            cursor: pointer;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #1282A2;
-        }
-
-        .topnav {
-            background-color: #333;
-            overflow: hidden;
-            text-align: center;
-            padding: 14px 0;
-        }
-
-        .topnav h1 {
-            margin: 0;
-            color: #fff;
-            font-size: x-large;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
-        .card-grid {
-            display: flex;
-            justify-content: center;
-        }
-
-        .card {
-            margin: 10px;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        @media screen and (max-width: 600px) {
-            form {
-                width: 80%;
-            }
-        }
-    </style>
+      document.head.appendChild(link);
+    }
+    loadCSS(onlinePrefixUrl + '/css/style.min.css');
+  </script>
 </head>
 
 <body>
-    <div class="topnav">
-        <h1>Kynl Clock</h1>
-    </div>
-    <div class="content">
-        <div class="card-grid">
-            <form action='/login' method='POST'>
-                <p>
-                    <label for="username">Username</label>
-                    <input type='text' id='username' name='USERNAME' placeholder='User Name'><br>
-                    <label for="password">Password</label>
-                    <input type='password' id='password' name='PASSWORD' placeholder='Password'><br>
-                    <input type='submit' id='submit' name='SUBMIT' value='Login'>
-                </p>
-            </form>
-        </div>
-    </div>
+  <div class="layer"></div>
+  <main class="page-center">
+    <article class="sign-up">
+      <h1 class="sign-up__title">Welcome back!</h1>
+      <form class="sign-up-form form" action='/login' method='POST'>
+        <label class="form-label-wrapper">
+          <p class="form-label">Username</p>
+          <input class="form-input" type="text" id='username' name='USERNAME' placeholder="Enter your username"
+            required>
+        </label>
+        <label class="form-label-wrapper">
+          <p class="form-label">Password</p>
+          <input class="form-input" type="password" id='password' name='PASSWORD' placeholder="Enter your password"
+            required>
+        </label>
+        <br>
+        <button class="form-btn primary-default-btn transparent-btn" type='submit' id='submit' name='SUBMIT'>Sign
+          in</button>
+      </form>
+    </article>
+  </main>
 </body>
 
 </html>
