@@ -99,7 +99,7 @@ void MenuFragment::up()
     {
         return;
     }
-    LOG("Up");
+    // LOG("Up");
     if (getEditPanelVisible())
     {
         if (SettingsManager::getItem(mCurrentIndex)->inc())
@@ -121,7 +121,7 @@ void MenuFragment::down()
     {
         return;
     }
-    LOG("Down");
+    // LOG("Down");
     if (getEditPanelVisible())
     {
         if (SettingsManager::getItem(mCurrentIndex)->dec())
@@ -280,7 +280,7 @@ void MenuFragment::showMenuList()
     static int mPrevIndex = -1;
     static int startIndex = 0;
 
-    LOG("showMenuList %d", mIsFirstTime);
+    // LOG("showMenuList %d", mIsFirstTime);
     if (SettingsManager::getLength() == 0)
     {
         LOG("Menu Item List is empty");
@@ -353,7 +353,7 @@ void MenuFragment::showMenuList()
 
 void MenuFragment::showEditPanel(MenuItem *item)
 {
-    LOG("showEditPanel %d", mIsFirstTime);
+    // LOG("showEditPanel %d", mIsFirstTime);
     if (!item)
     {
         LOG("Item is null");
