@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <DHT_Async.h>
-#include "../common/PinDefines.h"
+#include "../common/Configs.h"
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../controller/LedController.h"

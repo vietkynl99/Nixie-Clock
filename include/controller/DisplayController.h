@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include "../common/PinDefines.h"
+#include "../common/Configs.h"
 #include "../common/FreeFonts.h"
 #include "../common/Log.h"
 #include "../common/Helper.h"

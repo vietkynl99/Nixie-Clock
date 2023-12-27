@@ -1,5 +1,5 @@
-#ifndef _PIN_DEFINES_H_
-#define _PIN_DEFINES_H_
+#ifndef _CONFIGS_H_
+#define _CONFIGS_H_
 
 #include <TFT_eSPI.h>
 

@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
-#include "../common/PinDefines.h"
+#include "../common/Configs.h"
 #include "../common/Helper.h"
 #include "../manager/SettingsManager.h"
 
