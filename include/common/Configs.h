@@ -68,4 +68,7 @@
 // Web server
 #define MDNS_SERVER_NAME "kynlclock"
 
+// Render time
+// #define SHOW_RENDER_TIME
+
 #endif

@@ -2,6 +2,7 @@
 #define _MENU_FRAGMENT_H_
 
 #include <Arduino.h>
+#include "../common/Configs.h"
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../fragment/PopupFragment.h"
@@ -15,6 +16,7 @@ private:
     static int mCurrentIndex;
     static bool mEditPanelVisible;
     static int mPrevValue;
+    static int mWrapTextLength;
 
 public:
     static void init();
@@ -37,6 +39,9 @@ private:
 
     static void onDataChanged(MenuItem *item);
     static void onDataSaved(MenuItem *item);
+
+    static void caculateWrapTextLength();
+    static void wrapText(String &text, int length);
 };
 
 #endif

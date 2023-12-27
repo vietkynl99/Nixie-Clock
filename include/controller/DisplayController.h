@@ -10,8 +10,6 @@
 #include "../common/Helper.h"
 #include "../model/MenuItemList.h"
 
-// #define SHOW_RENDER_TIME
-
 #define MENU_FONT FSB18 // Serif Bold 18pt
 #define MENU_FONT_SIZE 1
 #define MENU_HEADER_COLOR 0x3C91

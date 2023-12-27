@@ -8,8 +8,11 @@ bool MenuFragment::mIsFirstTime = false;
 int MenuFragment::mCurrentIndex = 0;
 bool MenuFragment::mEditPanelVisible = false;
 int MenuFragment::mPrevValue = 0;
+int MenuFragment::mWrapTextLength = 0;
 
 static constexpr const char *const TAG = "MENU";
+
+#define WRAP_TEXT_ADDITIONAL_LENGTH 4
 
 void MenuFragment::init()
 {
@@ -18,6 +21,7 @@ void MenuFragment::init()
     {
         initialized = true;
         DisplayController::init();
+        caculateWrapTextLength();
     }
 }
 
@@ -271,7 +275,6 @@ void MenuFragment::showHeader(const char *text)
     DisplayController::getTft()->drawString(text, x, y);
 }
 
-// TODO: Fix error of text having different lengths
 void MenuFragment::showMenuList()
 {
     static int mPrevIndex = -1;
@@ -336,7 +339,8 @@ void MenuFragment::showMenuList()
         {
             DisplayController::getTft()->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
         }
-        String itemName = SettingsManager::getItem(i)->getName() + "    ";
+        String itemName = SettingsManager::getItem(i)->getName();
+        wrapText(itemName, mWrapTextLength + WRAP_TEXT_ADDITIONAL_LENGTH);
         DisplayController::getTft()->drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
         ypos += itemHeight;
     }
@@ -388,5 +392,26 @@ void MenuFragment::onDataSaved(MenuItem *item)
     {
         Message message = {type, 0};
         MessageEvent::send(message);
+    }
+}
+
+void MenuFragment::caculateWrapTextLength()
+{
+    mWrapTextLength = 0;
+    for (int i = 0; i < SettingsManager::getLength(); i++)
+    {
+        int length = SettingsManager::getItem(i)->getName().length();
+        if (length > mWrapTextLength)
+        {
+            mWrapTextLength = length;
+        }
+    }
+}
+
+void MenuFragment::wrapText(String &text, int length)
+{
+    while (text.length() < length)
+    {
+        text += " ";
     }
 }
