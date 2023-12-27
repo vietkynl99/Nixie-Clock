@@ -2,7 +2,7 @@
 
 HEXTOOL=./bin2hex
 RAW_IMAGE_FOLDER=../images
-OUTPUT_FILE=../include/common/ClockDigit.h
+OUTPUT_FILE=../include/common/Images.h
 FILE_TYPE=jpg
 TMP_FILE=./tmp
 # Make sure the original jpeg is less than 32Kbyes as there is an array size limit imposed by the Arduino IDE

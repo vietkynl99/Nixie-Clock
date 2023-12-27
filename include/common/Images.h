@@ -1,5 +1,5 @@
-#ifndef _IMAGE_CLOCK_DIGIT_H_
-#define _IMAGE_CLOCK_DIGIT_H_
+#ifndef _IMAGES_H_
+#define _IMAGES_H_
 
 #include <Arduino.h>
 
