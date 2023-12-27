@@ -120,6 +120,7 @@ void ClockFragment::loop()
     }
 
     // Transition effect
+    // TODO: Fix the error of time changing while the effect is running
     if (mIsVisible && transitionEffect && xTaskGetTickCount() > digitTimeTick)
     {
         digitTimeTick = xTaskGetTickCount() + 100 / portTICK_PERIOD_MS;

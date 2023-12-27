@@ -271,6 +271,7 @@ void MenuFragment::showHeader(const char *text)
     DisplayController::getTft()->drawString(text, x, y);
 }
 
+// TODO: Fix error of text having different lengths
 void MenuFragment::showMenuList()
 {
     static int mPrevIndex = -1;
