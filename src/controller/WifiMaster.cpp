@@ -64,13 +64,20 @@ void WifiMaster::loop()
 #endif
 }
 
+void WifiMaster::setWifiInformation(String ssid, String password)
+{
+#ifdef USE_WIFI_MANAGER
+    mSavedSSID = ssid;
+    mSavedPassword = password;
+    saveSettings();
+    #endif
+}
+
 void WifiMaster::resetSettings()
 {
 #ifdef USE_WIFI_MANAGER
     LOG("Reset WiFi settings");
-    mSavedSSID = "";
-    mSavedPassword = "";
-    saveSettings();
+    setWifiInformation("", "");
     // ESP.restart();
 #endif
 }

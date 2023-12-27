@@ -22,40 +22,41 @@ static constexpr const char *const TAG = "SYSTEM";
 
 void debugHandler()
 {
-	static char cmd[20];
-	static long code;
+	static String cmd;
+	static long value;
+	static String valueStr;
 
-	if (SerialParser::run(cmd, code))
+	if (SerialParser::run(&cmd, &value, &valueStr))
 	{
 		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
-			if (!strcmp(cmd, "RESTART"))
+			if (cmd.equals("RESTART"))
 			{
 				ESP.restart();
 			}
-			else if (!strcmp(cmd, "RSWIFI"))
+			else if (cmd.equals("RSWIFI"))
 			{
 				WifiMaster::resetSettings();
 			}
-			else if (!strcmp(cmd, "LAUNCHER"))
+			else if (cmd.equals("LAUNCHER"))
 			{
-				LauncherManager::show((FragmentType)code);
+				LauncherManager::show((FragmentType)value);
 			}
-			else if (!strcmp(cmd, "REFRESH"))
+			else if (cmd.equals("REFRESH"))
 			{
 				LauncherManager::refresh();
 			}
 			// set time: Ex 19:25:23 -> 190523
-			else if (!strcmp(cmd, "TIME"))
+			else if (cmd.equals("TIME"))
 			{
-				RTCController::setTime(code / 10000, code % 10000 / 100, code % 100);
+				RTCController::setTime(value / 10000, value % 10000 / 100, value % 100);
 			}
 			// set date: Ex 2023/01/08 -> 20230108 (year: 2000 -> 2099)
-			else if (!strcmp(cmd, "DATE"))
+			else if (cmd.equals("DATE"))
 			{
-				RTCController::setDate(code / 10000, code % 10000 / 100, code % 100);
+				RTCController::setDate(value / 10000, value % 10000 / 100, value % 100);
 			}
-			else if (!strcmp(cmd, "NTP"))
+			else if (cmd.equals("NTP"))
 			{
 				if (!SettingsManager::isWiFiEnabled())
 				{
@@ -70,25 +71,41 @@ void debugHandler()
 					LOG("NTP time: %s", ServerManager::getNTPTime().c_str());
 				}
 			}
-			else if (!strcmp(cmd, "RTC"))
+			else if (cmd.equals("RTC"))
 			{
 				LOG("RTC time: %s", RTCController::getCurrentDateTimeStr().c_str());
 			}
-			else if (!strcmp(cmd, "DHT"))
+			else if (cmd.equals("DHT"))
 			{
 				LOG("Temp: %.1fC, Hum: %.1f%%", HardwareController::getTemperature(), HardwareController::getHumidity());
 			}
-			else if (!strcmp(cmd, "TEST"))
+			else if (cmd.equals("TEST"))
 			{
-				Helper::mTestValue = code;
+				Helper::mTestValue = value;
 			}
-			else if (!strcmp(cmd, "FSLIST"))
+			else if (cmd.equals("FSLIST"))
 			{
 				FileSystem::listDir("/", 0);
 			}
-			else if (!strcmp(cmd, "WFLIST"))
+			else if (cmd.equals("WFLIST"))
 			{
 				WifiMaster::printScannedNetWorks();
+			}
+			// WF <ssid>,<password>
+			else if (cmd.equals("WF"))
+			{
+				if (valueStr.length() > 0)
+				{
+					int index = valueStr.indexOf(',');
+					if (index > 0)
+					{
+						String ssid = valueStr.substring(0, index);
+						String password = valueStr.substring(index + 1);
+						LOG("Set wifi information: ssid: '%s', password: '%s'", ssid.c_str(), password.c_str());
+						WifiMaster::setWifiInformation(ssid, password);
+						ESP.restart();
+					}
+				}
 			}
 			else
 			{

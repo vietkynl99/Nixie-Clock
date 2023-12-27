@@ -50,6 +50,7 @@ public:
     static void init();
     static void loop();
 #ifdef USE_WIFI_MANAGER
+    static void setWifiInformation(String ssid, String password);
     static void resetSettings();
     static void setAutoConfigPortalEnable(bool enabled);
     static String getEncryptionTypeStr(uint8_t encType);
