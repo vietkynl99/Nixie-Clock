@@ -4,9 +4,13 @@ DS3231 *RTCController::mRTC = new DS3231();
 
 static constexpr const char *const TAG = "RTC";
 
+#define DS3231_I2C_ADDRESS 0x68
+
 void RTCController::init()
 {
     Wire.begin();
+
+    checkDeviceIsActive();
 
     mRTC->setClockMode(false); // set to 24h
     // setClockMode(true); // set to 12h
@@ -78,5 +82,14 @@ void RTCController::setDate(int year, int month, int day)
     else
     {
         LOG("Invalid date: %d/%d/%d", year, month, day);
+    }
+}
+
+void RTCController::checkDeviceIsActive()
+{
+    Wire.beginTransmission(DS3231_I2C_ADDRESS);
+    if (Wire.endTransmission() != 0)
+    {
+        LOGE("Cannot find DS3231 at address 0x%X", DS3231_I2C_ADDRESS);
     }
 }

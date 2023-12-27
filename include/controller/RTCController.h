@@ -23,6 +23,9 @@ public:
     static void setDateTime(const DateTime &dateTime);
     static void setTime(int hour, int minute, int second);
     static void setDate(int year, int month, int day);
+
+private:
+    static void checkDeviceIsActive();
 };
 
 #endif
