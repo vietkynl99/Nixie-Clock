@@ -22,6 +22,7 @@ void SettingsManager::init()
     mMenuItemList->add(new MenuItem("Led brightness", MENU_ITEM_TYPE_INT, 2, 0, 10,
                                     false, MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED, MESSAGE_TYPE_LED_BRIGHTNESS_CHANGED));
     mMenuItemList->add(new MenuItem("Led speed", MENU_ITEM_TYPE_INT, 2, 1, 10));
+    mMenuItemList->add(new MenuItem("Reset WiFi", MENU_ITEM_TYPE_RESET));
     mMenuItemList->add(new MenuItem("Reset settings", MENU_ITEM_TYPE_RESET));
     mMenuItemList->loadData();
 
@@ -35,6 +36,7 @@ void SettingsManager::init()
 
 void SettingsManager::reset()
 {
+    LOG("Reset");
     PreferencesManager::clear(PREFERENCES_NAME);
     delete mMenuItemList;
     mMenuItemList = nullptr;

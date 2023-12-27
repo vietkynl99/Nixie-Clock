@@ -1,5 +1,6 @@
 #include "../../include/fragment/MenuFragment.h"
 #include "../../include/controller/DisplayController.h"
+#include "../../include/controller/WifiMaster.h"
 
 bool MenuFragment::mIsVisible = false;
 bool MenuFragment::mNeedsRedraw = false;
@@ -142,8 +143,26 @@ void MenuFragment::enter()
     // Check if enter to MENU_ITEM_TYPE_RESET
     if (!getEditPanelVisible() && SettingsManager::getItem(mCurrentIndex)->getType() == MENU_ITEM_TYPE_RESET)
     {
-        PopupFragment::setCallback([](bool selection)
-                                   {
+        if (SettingsManager::getItem(mCurrentIndex)->getName().equals("Reset WiFi"))
+        {
+            PopupFragment::setCallback([](bool selection)
+                                       {
+                if (selection)
+                {
+                    WifiMaster::resetSettings();
+                    Message message = {MESSAGE_TYPE_REBOOT, 0};
+                    MessageEvent::send(message);
+                }
+                else
+                {
+                    Message message = {MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT, 0};
+                    MessageEvent::send(message);
+                } });
+        }
+        else
+        {
+            PopupFragment::setCallback([](bool selection)
+                                       {
                 if (selection)
                 {
                     SettingsManager::reset();
@@ -155,6 +174,7 @@ void MenuFragment::enter()
                     Message message = {MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT, 0};
                     MessageEvent::send(message);
                 } });
+        }
         Message message = {MESSAGE_TYPE_SHOW_POPUP, POPUP_TYPE_CONFIRM_REBOOT};
         MessageEvent::send(message);
         return;

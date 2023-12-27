@@ -71,7 +71,7 @@ void WifiMaster::resetSettings()
     mSavedSSID = "";
     mSavedPassword = "";
     saveSettings();
-    ESP.restart();
+    // ESP.restart();
 #endif
 }
 
