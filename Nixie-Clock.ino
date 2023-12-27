@@ -12,10 +12,10 @@
 // #define DEBUG_TASK_FPS
 // #define DEBUG_SHOW_EVENT_INFORMATION
 
-#define TASK1_STACK_SIZE 10000
-#define TASK2_STACK_SIZE 10000
+#define UI_TASK_STACK_SIZE 10000
+#define BG_TASK_STACK_SIZE 10000
 
-TaskHandle_t task1, task2;
+TaskHandle_t uiTask, bgTask;
 SemaphoreHandle_t mMutex;
 
 static constexpr const char *const TAG = "SYSTEM";
@@ -99,13 +99,13 @@ void debugHandler()
 	}
 }
 
-void task1Handler(void *data)
+void uiTaskHandler(void *data)
 {
 	uint32_t timeTick = 0;
 	int fps = 0;
 	Message message;
 
-	LOGF("Start task 1");
+	LOGF("Start UI task");
 	Helper::showFreeMemory();
 
 	while (true)
@@ -139,12 +139,12 @@ void task1Handler(void *data)
 	}
 }
 
-void task2Handler(void *data)
+void backgroundTaskHandler(void *data)
 {
 	uint32_t timeTick = 0;
 	int fps = 0;
 
-	LOGF("Start task 2");
+	LOGF("Start background task");
 	ServerManager::init();
 	Helper::showFreeMemory();
 
@@ -185,14 +185,14 @@ void setup()
 	Helper::showFreeMemory();
 
 	int ret;
-	if ((ret = xTaskCreatePinnedToCore(task1Handler, "task1", TASK1_STACK_SIZE, NULL, 2, &task1, 0)) != pdPASS)
+	if ((ret = xTaskCreatePinnedToCore(uiTaskHandler, "ui_task", UI_TASK_STACK_SIZE, NULL, 2, &uiTask, 0)) != pdPASS)
 	{
-		LOGE("Failed to create task1: %d", ret);
+		LOGE("Failed to create UI task: %d", ret);
 		Helper::showFreeMemory();
 	}
-	if ((ret = xTaskCreatePinnedToCore(task2Handler, "task2", TASK2_STACK_SIZE, NULL, 1, &task2, 1)) != pdPASS)
+	if ((ret = xTaskCreatePinnedToCore(backgroundTaskHandler, "bg_task", BG_TASK_STACK_SIZE, NULL, 1, &bgTask, 1)) != pdPASS)
 	{
-		LOGE("Failed to create task2: %d", ret);
+		LOGE("Failed to create background task: %d", ret);
 		Helper::showFreeMemory();
 	}
 }
