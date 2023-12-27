@@ -43,6 +43,7 @@ private:
     static WebServer *mServer;
     static bool mStartedmDNS;
     static bool mIsScanning;
+    static bool mIsAutoConfigPortalEnable;
 #endif
 
 public:
@@ -50,6 +51,7 @@ public:
     static void loop();
 #ifdef USE_WIFI_MANAGER
     static void resetSettings();
+    static void setAutoConfigPortalEnable(bool enabled);
     static String getEncryptionTypeStr(uint8_t encType);
     static void printScannedNetWorks();
     static int getState();

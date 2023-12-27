@@ -7,6 +7,7 @@ String WifiMaster::mSavedPassword = "";
 int WifiMaster::mState = WIFI_MASTER_STATE_NONE;
 WebServer *WifiMaster::mServer = nullptr;
 bool WifiMaster::mStartedmDNS = false;
+bool WifiMaster::mIsAutoConfigPortalEnable = false;
 
 const char HTML_WIFI_ITEM1[] PROGMEM = "<div><a href='#p' onclick='c(this)'>";
 const char HTML_WIFI_ITEM2[] PROGMEM = "</a><div class='q q-";
@@ -72,6 +73,12 @@ void WifiMaster::resetSettings()
     saveSettings();
     ESP.restart();
 #endif
+}
+
+// Automatically switch to config portal mode when unable to connect to saved WiFi (default: false)
+void WifiMaster::setAutoConfigPortalEnable(bool enabled)
+{
+    mIsAutoConfigPortalEnable = enabled;
 }
 
 #ifdef USE_WIFI_MANAGER
@@ -469,7 +476,7 @@ void WifiMaster::processHandler()
     static int prevState = WIFI_MASTER_STATE_NONE;
     static bool prevConnectStatus = false;
     static int prevWifiCount = -99;
-    static uint32_t timeTick = 0, scanTimeTick = 0;
+    static uint32_t timeoutTimeTick = 0, scanTimeTick = 0;
 
     if (prevConnectStatus != WiFi.isConnected())
     {
@@ -496,16 +503,17 @@ void WifiMaster::processHandler()
         prevState = mState;
         if (mState == WIFI_MASTER_STATE_CONFIG_PORTAL)
         {
-            timeTick = xTaskGetTickCount() + CONFIG_PORTAL_TIMEOUT / portTICK_PERIOD_MS;
+            timeoutTimeTick = xTaskGetTickCount() + CONFIG_PORTAL_TIMEOUT / portTICK_PERIOD_MS;
         }
-        else if (mState == WIFI_MASTER_STATE_CONNECTING)
+        else if (mState == WIFI_MASTER_STATE_CONNECTING && mIsAutoConfigPortalEnable)
         {
-            timeTick = xTaskGetTickCount() + CONNECT_WIFI_TIMEOUT / portTICK_PERIOD_MS;
+            timeoutTimeTick = xTaskGetTickCount() + CONNECT_WIFI_TIMEOUT / portTICK_PERIOD_MS;
         }
     }
 
-    if ((mState == WIFI_MASTER_STATE_CONFIG_PORTAL || mState == WIFI_MASTER_STATE_CONNECTING) && !WiFi.isConnected() && xTaskGetTickCount() > timeTick)
+    if (timeoutTimeTick && !WiFi.isConnected() && xTaskGetTickCount() > timeoutTimeTick)
     {
+        timeoutTimeTick = 0;
         if (mState == WIFI_MASTER_STATE_CONFIG_PORTAL)
         {
             LOG("Config portal timeout");
