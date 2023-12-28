@@ -2,6 +2,7 @@
 #define _MENU_FRAGMENT_H_
 
 #include <Arduino.h>
+#include <AsyncWiFiManager.h>
 #include "../common/Configs.h"
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"

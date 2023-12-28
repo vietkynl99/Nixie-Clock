@@ -2,10 +2,10 @@
 #define _CLOCK_FRAGMENT_H_
 
 #include <WiFi.h>
+#include <AsyncWiFiManager.h>
 #include "../common/Log.h"
 #include "../common/Helper.h"
 #include "../common/MessageEvent.h"
-#include "../controller/WifiMaster.h"
 #include "../controller/HardwareController.h"
 #include "../controller/DisplayController.h"
 #include "../controller/RTCController.h"

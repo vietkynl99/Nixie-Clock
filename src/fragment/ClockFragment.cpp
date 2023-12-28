@@ -98,7 +98,7 @@ void ClockFragment::loop()
                 updateInformationScreen(true);
                 updateNetworkIcon(true);
             }
-            else if (WifiMaster::getState() == WIFI_MASTER_STATE_CONNECTING)
+            else if (AsyncWiFiManager::getState() == ASYNC_WIFI_STATE_CONNECTING)
             {
                 networkEffectNumber = !networkEffectNumber;
                 if (networkEffectNumber)
@@ -106,7 +106,7 @@ void ClockFragment::loop()
                     updateNetworkIcon(true);
                 }
             }
-            else if (WifiMaster::getState() == WIFI_MASTER_STATE_CONNECTED)
+            else if (AsyncWiFiManager::getState() == ASYNC_WIFI_STATE_CONNECTED)
             {
                 networkEffectNumber++;
                 if (networkEffectNumber > 30)
@@ -267,21 +267,21 @@ void ClockFragment::updateNetworkIcon(bool force)
     static int type = WIFI_ICON_TYPE_0_SIGNAL;
     static int prevRssiLevel = -1;
 
-    if (force || state != WifiMaster::getState())
+    if (force || state != AsyncWiFiManager::getState())
     {
-        if (state != WifiMaster::getState())
+        if (state != AsyncWiFiManager::getState())
         {
-            state = WifiMaster::getState();
+            state = AsyncWiFiManager::getState();
             type = WIFI_ICON_TYPE_0_SIGNAL;
         }
         DisplayController::selectDisplay(TFT_COUNT - 1);
         DisplayController::getTft()->fillRect(TFT_WIDTH - 45, 5, 45, 50, TFT_BLACK);
         switch (state)
         {
-        case WIFI_MASTER_STATE_CONFIG_PORTAL:
+        case ASYNC_WIFI_STATE_CONFIG_PORTAL:
             DisplayController::drawArrayJpeg(image_hotspot, sizeof(image_hotspot), TFT_WIDTH - 45, 5);
             break;
-        case WIFI_MASTER_STATE_CONNECTING:
+        case ASYNC_WIFI_STATE_CONNECTING:
             type++;
             if (type > WIFI_ICON_TYPE_3_SIGNAL)
             {
@@ -289,19 +289,19 @@ void ClockFragment::updateNetworkIcon(bool force)
             }
             DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR, false);
             break;
-        case WIFI_MASTER_STATE_CONNECTED:
+        case ASYNC_WIFI_STATE_CONNECTED:
             prevRssiLevel = Helper::getRssiLevel(WiFi.RSSI()); // 0-4
             type = prevRssiLevel > WIFI_ICON_TYPE_0_SIGNAL ? prevRssiLevel - 1 : WIFI_ICON_TYPE_0_SIGNAL;
             DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, (WifiIconType)type, INFORMATION_SCREEN_TEXT_COLOR);
             break;
-        case WIFI_MASTER_STATE_DISCONNECTED:
+        case ASYNC_WIFI_STATE_DISCONNECTED:
             DisplayController::drawWifiIcon(TFT_WIDTH - 45, 0, WIFI_ICON_TYPE_DISCONNECTED, INFORMATION_SCREEN_TEXT_COLOR);
             break;
         default:
             break;
         }
     }
-    else if (state == WIFI_MASTER_STATE_CONNECTED && prevRssiLevel != Helper::getRssiLevel(WiFi.RSSI()))
+    else if (state == ASYNC_WIFI_STATE_CONNECTED && prevRssiLevel != Helper::getRssiLevel(WiFi.RSSI()))
     {
         prevRssiLevel = Helper::getRssiLevel(WiFi.RSSI());
         type = prevRssiLevel > WIFI_ICON_TYPE_0_SIGNAL ? prevRssiLevel - 1 : WIFI_ICON_TYPE_0_SIGNAL;

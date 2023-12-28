@@ -20,7 +20,22 @@ void ServerManager::init()
 	{
 		return;
 	}
-	WifiMaster::init();
+
+	AsyncWiFiManager::setAPInformation("Kynl Clock", "12345678");
+	AsyncWiFiManager::setMDnsServerName(MDNS_SERVER_NAME);
+	AsyncWiFiManager::setAutoConfigPortalEnable(false);
+
+	AsyncWiFiManager::setOnStateChanged([](AsyncWiFiState state) {
+		Message message = {MESSAGE_TYPE_UPDATE_NETWORK_STATE, (int)state};
+		MessageEvent::send(message); 
+	});
+
+	AsyncWiFiManager::setOnWiFiInformationChanged([]() {
+		Message message = {MESSAGE_TYPE_REBOOT, 0};
+		MessageEvent::send(message); 
+	});
+
+	AsyncWiFiManager::begin();
 }
 
 void ServerManager::loop()
@@ -29,7 +44,7 @@ void ServerManager::loop()
 	{
 		return;
 	}
-	WifiMaster::loop();
+	AsyncWiFiManager::loop();
 	statusHandler();
 	ntpHandler();
 	if (mServer)

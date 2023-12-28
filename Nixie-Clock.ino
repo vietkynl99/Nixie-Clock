@@ -36,7 +36,7 @@ void debugHandler()
 			}
 			else if (cmd.equals("RSWIFI"))
 			{
-				WifiMaster::resetSettings();
+				AsyncWiFiManager::resetSettings();
 			}
 			else if (cmd.equals("LAUNCHER"))
 			{
@@ -89,7 +89,7 @@ void debugHandler()
 			}
 			else if (cmd.equals("WFLIST"))
 			{
-				WifiMaster::printScannedNetWorks();
+				AsyncWiFiManager::printScannedNetWorks();
 			}
 			// WF <ssid>,<password>
 			else if (cmd.equals("WF"))
@@ -102,7 +102,7 @@ void debugHandler()
 						String ssid = valueStr.substring(0, index);
 						String password = valueStr.substring(index + 1);
 						LOG("Set wifi information: ssid: '%s', password: '%s'", ssid.c_str(), password.c_str());
-						WifiMaster::setWifiInformation(ssid, password);
+						AsyncWiFiManager::setWifiInformation(ssid, password);
 						ESP.restart();
 					}
 				}

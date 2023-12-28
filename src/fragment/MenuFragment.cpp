@@ -1,6 +1,5 @@
 #include "../../include/fragment/MenuFragment.h"
 #include "../../include/controller/DisplayController.h"
-#include "../../include/controller/WifiMaster.h"
 
 bool MenuFragment::mIsVisible = false;
 bool MenuFragment::mNeedsRedraw = false;
@@ -153,7 +152,7 @@ void MenuFragment::enter()
                                        {
                 if (selection)
                 {
-                    WifiMaster::resetSettings();
+                    AsyncWiFiManager::resetSettings();
                     Message message = {MESSAGE_TYPE_REBOOT, 0};
                     MessageEvent::send(message);
                 }

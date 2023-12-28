@@ -7,11 +7,11 @@
 #include <WebServer.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+#include <AsyncWiFiManager.h>
 #include "../common/Log.h"
 #include "../common/MessageEvent.h"
 #include "../common/Helper.h"
 #include "../common/FileSystem.h"
-#include "../controller/WifiMaster.h"
 #include "../controller/RTCController.h"
 #include "../controller/HardwareController.h"
 #include "../manager/SettingsManager.h"
