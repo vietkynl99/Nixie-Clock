@@ -115,7 +115,6 @@ void ServerManager::notFoundHandler()
 
 void ServerManager::loginHandler()
 {
-	String msg;
 	if (mServer->hasHeader("Cookie"))
 	{
 		String cookie = mServer->header("Cookie");
@@ -141,7 +140,6 @@ void ServerManager::loginHandler()
 			LOG("Log in Successful");
 			return;
 		}
-		msg = "Wrong username/password! try again.";
 		LOG("Log in Failed");
 	}
 
