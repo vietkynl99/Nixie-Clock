@@ -6,7 +6,7 @@
 #include "../common/Log.h"
 #include "../common/Helper.h"
 #include "../common/MessageEvent.h"
-#include "../controller/HardwareController.h"
+#include "../controller/SensorController.h"
 #include "../controller/DisplayController.h"
 #include "../controller/RTCController.h"
 #include "../manager/SettingsManager.h"

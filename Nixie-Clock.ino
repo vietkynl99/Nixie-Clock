@@ -4,6 +4,7 @@
 #include "include/common/Helper.h"
 #include "include/common/FileSystem.h"
 #include "include/controller/HardwareController.h"
+#include "include/controller/SensorController.h"
 #include "include/manager/SettingsManager.h"
 #include "include/manager/ServerManager.h"
 #include "include/manager/LauncherManager.h"
@@ -12,10 +13,9 @@
 // #define DEBUG_TASK_FPS
 // #define DEBUG_SHOW_EVENT_INFORMATION
 
-#define UI_TASK_STACK_SIZE 10000
-#define BG_TASK_STACK_SIZE 10000
+#define TASK_STACK_SIZE 10000
 
-TaskHandle_t uiTask, bgTask;
+TaskHandle_t uiTask, hwTask, nwTask, ssTask;
 SemaphoreHandle_t mMutex;
 
 static constexpr const char *const TAG = "SYSTEM";
@@ -77,7 +77,7 @@ void debugHandler()
 			}
 			else if (cmd.equals("DHT"))
 			{
-				LOG("Temp: %.1fC, Hum: %.1f%%", HardwareController::getTemperature(), HardwareController::getHumidity());
+				LOG("Temp: %.1fC, Hum: %.1f%%", SensorController::getTemperature(), SensorController::getHumidity());
 			}
 			else if (cmd.equals("TEST"))
 			{
@@ -122,11 +122,12 @@ void uiTaskHandler(void *data)
 	int fps = 0;
 	Message message;
 
-	LOGF("Start UI task");
+	LauncherManager::init();
 	Helper::showFreeMemory();
 
 	while (true)
 	{
+#if defined(DEBUG_TASK_FPS) || defined(DEBUG_FREE_MEMORY)
 		fps++;
 		if (xTaskGetTickCount() > timeTick)
 		{
@@ -139,6 +140,7 @@ void uiTaskHandler(void *data)
 #endif
 			fps = 0;
 		}
+#endif
 		if (mMutex && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
 			if (MessageEvent::get(message))
@@ -156,33 +158,48 @@ void uiTaskHandler(void *data)
 	}
 }
 
-void backgroundTaskHandler(void *data)
+void hwTaskHandler(void *data)
 {
-	uint32_t timeTick = 0;
-	int fps = 0;
+	HardwareController::init();
 
-	LOGF("Start background task");
+	while (true)
+	{
+		debugHandler();
+		HardwareController::loop();
+		vTaskDelay(10 / portTICK_PERIOD_MS);
+	}
+}
+
+void ssTaskHandler(void *data)
+{
+	SensorController::init();
+
+	while (true)
+	{
+		SensorController::loop();
+		vTaskDelay(1 / portTICK_PERIOD_MS);
+	}
+}
+
+void nwTaskHandler(void *data)
+{
 	ServerManager::init();
 	Helper::showFreeMemory();
 
 	while (true)
 	{
-		fps++;
-		if (xTaskGetTickCount() > timeTick)
-		{
-			timeTick = xTaskGetTickCount() + 1000 / portTICK_PERIOD_MS;
-#ifdef DEBUG_TASK_FPS
-			LOG("Task 2: %d fps", fps);
-#endif
-#ifdef DEBUG_FREE_MEMORY
-			Helper::showFreeMemory();
-#endif
-			fps = 0;
-		}
-		debugHandler();
-		HardwareController::loop();
 		ServerManager::loop();
 		vTaskDelay(5 / portTICK_PERIOD_MS);
+	}
+}
+
+void createTask(TaskFunction_t pvTaskCode, const char *const pcName, UBaseType_t uxPriority, TaskHandle_t *const pvCreatedTask, const BaseType_t xCoreID)
+{
+	int ret;
+	if ((ret = xTaskCreatePinnedToCore(pvTaskCode, pcName, TASK_STACK_SIZE, NULL, uxPriority, pvCreatedTask, xCoreID)) != pdPASS)
+	{
+		LOGE("Failed to create %s. Error %d", pcName, ret);
+		Helper::showFreeMemory();
 	}
 }
 
@@ -195,22 +212,23 @@ void setup()
 	FileSystem::init();
 	MessageEvent::init();
 	SettingsManager::init();
-	HardwareController::init();
-	LauncherManager::init();
 	delay(500);
 
 	Helper::showFreeMemory();
 
-	int ret;
-	if ((ret = xTaskCreatePinnedToCore(uiTaskHandler, "ui_task", UI_TASK_STACK_SIZE, NULL, 2, &uiTask, 0)) != pdPASS)
+	// Core 0
+	createTask(uiTaskHandler, "uiTask", 2, &uiTask, 0);
+	createTask(hwTaskHandler, "hwTask", 1, &hwTask, 0);
+
+	// Core 1
+	createTask(ssTaskHandler, "ssTask", 2, &ssTask, 1);
+	if (SettingsManager::isWiFiEnabled())
 	{
-		LOGE("Failed to create UI task: %d", ret);
-		Helper::showFreeMemory();
+		createTask(nwTaskHandler, "nwTask", 1, &nwTask, 1);
 	}
-	if ((ret = xTaskCreatePinnedToCore(backgroundTaskHandler, "bg_task", BG_TASK_STACK_SIZE, NULL, 1, &bgTask, 1)) != pdPASS)
+	else
 	{
-		LOGE("Failed to create background task: %d", ret);
-		Helper::showFreeMemory();
+		LOG("WiFi is disabled");
 	}
 }
 

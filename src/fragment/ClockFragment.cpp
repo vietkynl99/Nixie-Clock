@@ -327,9 +327,9 @@ void ClockFragment::updateInformationScreen(bool force)
 
     ypos = 90;
     DisplayController::setFont(FSB24, 1);
-    if (HardwareController::isValidDhtValue(HardwareController::getTemperature()))
+    if (SensorController::isValidDhtValue(SensorController::getTemperature()))
     {
-        snprintf(buffer, sizeof(buffer), "T: %.1f", HardwareController::getTemperature());
+        snprintf(buffer, sizeof(buffer), "T: %.1f", SensorController::getTemperature());
     }
     else
     {
@@ -345,9 +345,9 @@ void ClockFragment::updateInformationScreen(bool force)
 
     xpos = 10;
     ypos += tft->fontHeight() * 1.1;
-    if (HardwareController::isValidDhtValue(HardwareController::getHumidity()))
+    if (SensorController::isValidDhtValue(SensorController::getHumidity()))
     {
-        snprintf(buffer, sizeof(buffer), "H: %d %%", (int)HardwareController::getHumidity());
+        snprintf(buffer, sizeof(buffer), "H: %d %%", (int)SensorController::getHumidity());
     }
     else
     {

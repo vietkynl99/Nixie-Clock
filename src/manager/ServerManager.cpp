@@ -3,7 +3,6 @@
 WebServer *ServerManager::mServer = nullptr;
 WiFiUDP ServerManager::mNtpUDP;
 NTPClient *ServerManager::mTimeClient = nullptr;
-bool ServerManager::mWifiEnabled = false;
 
 static constexpr const char *const TAG = "SERVER";
 
@@ -15,12 +14,6 @@ static constexpr const char *const TAG = "SERVER";
 
 void ServerManager::init()
 {
-	mWifiEnabled = SettingsManager::isWiFiEnabled();
-	if (!mWifiEnabled)
-	{
-		return;
-	}
-
 	AsyncWiFiManager::setAPInformation("Kynl Clock", "12345678");
 	AsyncWiFiManager::setMDnsServerName(MDNS_SERVER_NAME);
 	AsyncWiFiManager::setAutoConfigPortalEnable(false);
@@ -40,10 +33,6 @@ void ServerManager::init()
 
 void ServerManager::loop()
 {
-	if (!mWifiEnabled)
-	{
-		return;
-	}
 	AsyncWiFiManager::loop();
 	statusHandler();
 	ntpHandler();

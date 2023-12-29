@@ -25,7 +25,6 @@ private:
     static WebServer *mServer;
     static WiFiUDP mNtpUDP;
     static NTPClient *mTimeClient;
-    static bool mWifiEnabled;
 
 public:
     static void init();
