@@ -11,7 +11,6 @@ void FileSystem::init()
         LOGE("SPIFFS Mount Failed");
         return;
     }
-    LOG("SPIFFS Mount Success");
 }
 
 void FileSystem::listDir(const char *dirname, uint8_t levels)
