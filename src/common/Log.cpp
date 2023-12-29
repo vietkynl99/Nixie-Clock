@@ -21,7 +21,7 @@ void Log::print(uint8_t level, const char *tag, const char *pFormat, ...)
         va_end(pVlist);
         if (level == LOG_LEVEL_ERROR)
         {
-            Serial.print(F("[ERROR]"));
+            Serial.print(F("[E]"));
         }
         Serial.print(F("["));
         Serial.print(tag);
