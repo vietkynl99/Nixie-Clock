@@ -2,13 +2,13 @@
 
 static constexpr const char *const TAG = "FS";
 
-#define FORMAT_SPIFFS_IF_FAILED true
+#define FORMAT_IF_FAILED true
 
 void FileSystem::init()
 {
-    if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED))
+    if (!FS.begin(FORMAT_IF_FAILED))
     {
-        LOGE("SPIFFS Mount Failed");
+        LOGE("FS Mount Failed");
         return;
     }
 }
@@ -17,7 +17,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
 {
     LOG("Listing directory: %s", dirname);
 
-    fs::File root = SPIFFS.open(dirname);
+    fs::File root = FS.open(dirname);
     if (!root)
     {
         LOGE("Error: Failed to open directory");
@@ -50,7 +50,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
 
 bool FileSystem::readFile(const char *path, String &content)
 {
-    fs::File file = SPIFFS.open(path);
+    fs::File file = FS.open(path);
     if (!file || file.isDirectory())
     {
         LOGE("Failed to open file %s for reading", path);
@@ -63,7 +63,7 @@ bool FileSystem::readFile(const char *path, String &content)
 
 bool FileSystem::writeFile(const char *path, String &content)
 {
-    fs::File file = SPIFFS.open(path, FILE_WRITE);
+    fs::File file = FS.open(path, FILE_WRITE);
     if (!file)
     {
         LOGE("Failed to open file %s for writing", path);
@@ -84,7 +84,7 @@ bool FileSystem::writeFile(const char *path, String &content)
 
 bool FileSystem::openFile(fs::File &file, const char *path)
 {
-    file = SPIFFS.open(path);
+    file = FS.open(path);
     if (!file || file.isDirectory())
     {
         LOGE("Failed to open file %s for reading", path);

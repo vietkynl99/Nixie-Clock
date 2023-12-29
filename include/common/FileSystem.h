@@ -2,9 +2,11 @@
 #define _FILE_SYSTEM_H_
 
 #include <Arduino.h>
-#include <SPIFFS.h>
+#include <LittleFS.h>
 #include "../common/Log.h"
 #include "../common/Helper.h"
+
+#define FS LittleFS
 
 class FileSystem
 {
