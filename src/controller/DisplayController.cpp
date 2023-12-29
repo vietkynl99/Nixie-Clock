@@ -10,7 +10,6 @@ void DisplayController::init()
     static bool initialized = false;
     if (!initialized)
     {
-        LOG("init");
         initialized = true;
 
         pinMode(HC595_SHCP, OUTPUT);

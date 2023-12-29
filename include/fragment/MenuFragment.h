@@ -42,7 +42,6 @@ private:
     static void onDataSaved(MenuItem *item);
 
     static void caculateWrapTextLength();
-    static void wrapText(String &text, int length);
 };
 
 #endif

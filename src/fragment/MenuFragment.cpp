@@ -339,7 +339,7 @@ void MenuFragment::showMenuList()
             DisplayController::getTft()->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
         }
         String itemName = SettingsManager::getItem(i)->getName();
-        wrapText(itemName, mWrapTextLength + WRAP_TEXT_ADDITIONAL_LENGTH);
+        Helper::wrapText(itemName, mWrapTextLength + WRAP_TEXT_ADDITIONAL_LENGTH);
         DisplayController::getTft()->drawString(itemName.c_str(), MENU_ITEM_LEFT_MARGIN, ypos + itemHeight / 2);
         ypos += itemHeight;
     }
@@ -368,9 +368,10 @@ void MenuFragment::showEditPanel(MenuItem *item)
     uint16_t headerHeight = DisplayController::getTft()->fontHeight();
     DisplayController::getTft()->setTextColor(TFT_WHITE, MENU_BACKGROUND_COLOR);
     DisplayController::getTft()->setTextDatum(CC_DATUM);
-    String before = item->isMinimum() ? "     " : "  <  ";
-    String after = item->isMaximum() ? "     " : "  >  ";
+    String before = item->isMinimum() ? "   " : "<  ";
+    String after = item->isMaximum() ? "   " : "  >";
     String str = before + item->getStringValue() + after;
+    Helper::wrapText(str, 20, true);
     DisplayController::getTft()->drawString(str.c_str(), TFT_WIDTH / 2, (TFT_HEIGHT + headerHeight) / 2);
 }
 
@@ -404,13 +405,5 @@ void MenuFragment::caculateWrapTextLength()
         {
             mWrapTextLength = length;
         }
-    }
-}
-
-void MenuFragment::wrapText(String &text, int length)
-{
-    while (text.length() < length)
-    {
-        text += " ";
     }
 }

@@ -82,6 +82,21 @@ void Helper::trim(String &str)
     }
 }
 
+void Helper::wrapText(String &text, int length, bool bothStartAndEnd)
+{
+    while (text.length() < length)
+    {
+        if (bothStartAndEnd)
+        {
+            text = " " + text + " ";
+        }
+        else
+        {
+            text += " ";
+        }
+    }
+}
+
 int Helper::getRssiLevel(int rssi)
 {
     int level = 0;

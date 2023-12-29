@@ -20,6 +20,7 @@ public:
 
     static void showFreeMemory();
     static void trim(String &str);
+    static void wrapText(String &text, int length, bool bothStartAndEnd = false);
 
     static int getRssiLevel(int rssi);
 };
