@@ -2,13 +2,14 @@
 
 static constexpr const char *const TAG = "FS";
 
+#define FSYSTEM LittleFS
 #define FORMAT_IF_FAILED true
 
 void FileSystem::init()
 {
-    if (!FS.begin(FORMAT_IF_FAILED))
+    if (!FSYSTEM.begin(FORMAT_IF_FAILED))
     {
-        LOGE("FS Mount Failed");
+        LOGE("Mount Failed");
         return;
     }
 }
@@ -17,7 +18,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
 {
     LOG("Listing directory: %s", dirname);
 
-    fs::File root = FS.open(dirname);
+    fs::File root = FSYSTEM.open(dirname);
     if (!root)
     {
         LOGE("Error: Failed to open directory");
@@ -50,7 +51,7 @@ void FileSystem::listDir(const char *dirname, uint8_t levels)
 
 bool FileSystem::readFile(const char *path, String &content)
 {
-    fs::File file = FS.open(path);
+    fs::File file = FSYSTEM.open(path);
     if (!file || file.isDirectory())
     {
         LOGE("Failed to open file %s for reading", path);
@@ -63,7 +64,7 @@ bool FileSystem::readFile(const char *path, String &content)
 
 bool FileSystem::writeFile(const char *path, String &content)
 {
-    fs::File file = FS.open(path, FILE_WRITE);
+    fs::File file = FSYSTEM.open(path, FILE_WRITE);
     if (!file)
     {
         LOGE("Failed to open file %s for writing", path);
@@ -84,7 +85,7 @@ bool FileSystem::writeFile(const char *path, String &content)
 
 bool FileSystem::openFile(fs::File &file, const char *path)
 {
-    file = FS.open(path);
+    file = FSYSTEM.open(path);
     if (!file || file.isDirectory())
     {
         LOGE("Failed to open file %s for reading", path);

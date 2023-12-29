@@ -6,8 +6,6 @@
 #include "../common/Log.h"
 #include "../common/Helper.h"
 
-#define FS LittleFS
-
 class FileSystem
 {
 public:
