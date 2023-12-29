@@ -37,6 +37,7 @@ void debugHandler()
 			else if (cmd.equals("RSWIFI"))
 			{
 				AsyncWiFiManager::resetSettings();
+				ESP.restart();
 			}
 			else if (cmd.equals("LAUNCHER"))
 			{
