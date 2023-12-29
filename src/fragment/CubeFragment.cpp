@@ -140,24 +140,56 @@ bool CubeFragment::isVisible()
     return mIsVisible;
 }
 
+void CubeFragment::forceStop()
+{
+    if (mIsVisible)
+    {
+        LOG("Force stop");
+        hide();
+        destroyInstance();
+        Message message = {MESSAGE_TYPE_CHANGE_TO_NEXT_FRAGMENT, 0};
+        MessageEvent::send(message);
+    }
+}
+
 void CubeFragment::createInstance()
 {
     if (!mTftSpr[0])
     {
-        mTftSpr[0] = new TFT_eSprite(DisplayController::getTft());
+        if ((mTftSpr[0] = new TFT_eSprite(DisplayController::getTft())) == nullptr)
+        {
+            LOGE("Don't have enough memory");
+            forceStop();
+            return;
+        }
         mTftSpr[0]->setColorDepth(COLOR_DEPTH);
         mTftSpr[0]->setTextColor(TFT_BLACK);
         mTftSpr[0]->setTextDatum(MC_DATUM);
-        mTftSprPtr[0] = (uint16_t *)mTftSpr[0]->createSprite(IWIDTH, IHEIGHT);
+        if ((mTftSprPtr[0] = (uint16_t *)mTftSpr[0]->createSprite(IWIDTH, IHEIGHT)) == nullptr)
+        {
+            LOGE("Don't have enough memory");
+            forceStop();
+            return;
+        }
     }
 
     if (!mTftSpr[1])
     {
-        mTftSpr[1] = new TFT_eSprite(DisplayController::getTft());
+        if ((mTftSpr[1] = new TFT_eSprite(DisplayController::getTft())) == nullptr)
+        {
+            LOGE("Don't have enough memory");
+            forceStop();
+            return;
+        }
         mTftSpr[1]->setColorDepth(COLOR_DEPTH);
         mTftSpr[1]->setTextColor(TFT_BLACK);
         mTftSpr[1]->setTextDatum(MC_DATUM);
-        mTftSprPtr[1] = (uint16_t *)mTftSpr[1]->createSprite(IWIDTH, IHEIGHT);
+        if ((mTftSprPtr[1] = (uint16_t *)mTftSpr[1]->createSprite(IWIDTH, IHEIGHT)) == nullptr)
+        {
+            LOGE("Don't have enough memory");
+            forceStop();
+            return;
+        }
     }
 }
 

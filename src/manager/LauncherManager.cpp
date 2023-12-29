@@ -78,6 +78,7 @@ void LauncherManager::refresh(bool clearDisplay)
     default:
         break;
     }
+    Helper::showFreeMemory();
 }
 
 void LauncherManager::show(int type, bool clearDisplay)
@@ -148,6 +149,11 @@ void LauncherManager::handleEvent(const Message &message)
     case MESSAGE_TYPE_CHANGE_TO_PREVIOUS_FRAGMENT:
     {
         show(mPrevFragmentType);
+        break;
+    }
+    case MESSAGE_TYPE_CHANGE_TO_NEXT_FRAGMENT:
+    {
+        changeToNextFragment();
         break;
     }
     case MESSAGE_TYPE_UPDATE_TEMP_AND_RH:

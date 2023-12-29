@@ -42,6 +42,7 @@ public:
     static bool isVisible();
 
 private:
+    static void forceStop();
     static void createInstance();
     static void destroyInstance();
     static int shoelace(int x1, int y1, int x2, int y2, int x3, int y3);
