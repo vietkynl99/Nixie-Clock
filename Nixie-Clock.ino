@@ -20,6 +20,27 @@ SemaphoreHandle_t mMutex;
 
 static constexpr const char *const TAG = "SYSTEM";
 
+void showHelp()
+{
+	LOG("Available commands:");
+	LOG("1. HELP: Show help");
+	LOG("2. RESTART: Restart");
+	LOG("3. RSWIFI: Reset WiFi Settings");
+	LOG("4. LAUNCHER <type>: Show fragment with launcher");
+	LOG("5. REFRESH: Refresh current fragment");
+	LOG("6. TIME: Set RTC time");
+	LOG("\tEx: TIME 190523 (Set time to 19:05:23)");
+	LOG("7. DATE: Set RTC date");
+	LOG("\tEx: DATE 20230108 (Set date to 2023/01/08)");
+	LOG("8. NTP: Get current NTP time");
+	LOG("9. RTC: Get current RTC time");
+	LOG("10. DHT: Get data from DHT sensor (temperature and humidity)");
+	LOG("11. FSLIST: List files in filesystem");
+	LOG("12. WFLIST: List scanned WiFis");
+	LOG("13. WF <SSID> <PASSWORD>: Set WiFi");
+	LOG("14. TEST <value>: Set test value");
+}
+
 void debugHandler()
 {
 	static String cmd;
@@ -30,7 +51,11 @@ void debugHandler()
 	{
 		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
 		{
-			if (cmd.equals("RESTART"))
+			if (cmd.equals("HELP"))
+			{
+				showHelp();
+			}
+			else if (cmd.equals("RESTART"))
 			{
 				ESP.restart();
 			}
@@ -80,10 +105,6 @@ void debugHandler()
 			{
 				LOG("Temp: %.1fC, Hum: %.1f%%", SensorController::getTemperature(), SensorController::getHumidity());
 			}
-			else if (cmd.equals("TEST"))
-			{
-				Helper::mTestValue = value;
-			}
 			else if (cmd.equals("FSLIST"))
 			{
 				FileSystem::listDir("/", 0);
@@ -107,6 +128,10 @@ void debugHandler()
 						ESP.restart();
 					}
 				}
+			}
+			else if (cmd.equals("TEST"))
+			{
+				Helper::mTestValue = value;
 			}
 			else
 			{
