@@ -16,9 +16,6 @@
 #include "../controller/HardwareController.h"
 #include "../manager/SettingsManager.h"
 
-#define SERVER_USERNAME "kynl"
-#define SERVER_PASSWORD "123456"
-
 class ServerManager
 {
 private:

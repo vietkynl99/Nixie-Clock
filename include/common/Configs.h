@@ -3,6 +3,14 @@
 
 #include <TFT_eSPI.h>
 
+// Name
+#define DEVICE_NAME "Kynl Clock"
+#define DEVICE_USERNAME "kynl"
+#define DEVICE_PASSWORD "12345678"
+
+// Web server
+#define MDNS_SERVER_NAME "kynlclock"
+
 // Hardware Controller
 #define TOUCH_PIN_COUNT 3
 #define BUZZER_PIN 27
@@ -64,9 +72,6 @@
 #if TFT_RST != 4
 #error TFT_RST must be 4
 #endif
-
-// Web server
-#define MDNS_SERVER_NAME "kynlclock"
 
 // Render time
 // #define SHOW_RENDER_TIME

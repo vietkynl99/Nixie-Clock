@@ -14,7 +14,7 @@ static constexpr const char *const TAG = "SERVER";
 
 void ServerManager::init()
 {
-	AsyncWiFiManager::setAPInformation("Kynl Clock", "12345678");
+	AsyncWiFiManager::setAPInformation(DEVICE_NAME, DEVICE_PASSWORD);
 	AsyncWiFiManager::setMDnsServerName(MDNS_SERVER_NAME);
 	AsyncWiFiManager::setAutoConfigPortalEnable(false);
 
@@ -135,7 +135,7 @@ void ServerManager::loginHandler()
 	}
 	if (mServer->hasArg("USERNAME") && mServer->hasArg("PASSWORD"))
 	{
-		if (mServer->arg("USERNAME") == SERVER_USERNAME && mServer->arg("PASSWORD") == SERVER_PASSWORD)
+		if (mServer->arg("USERNAME") == DEVICE_USERNAME && mServer->arg("PASSWORD") == DEVICE_PASSWORD)
 		{
 			mServer->sendHeader("Location", "/");
 			mServer->sendHeader("Cache-Control", "no-cache");
