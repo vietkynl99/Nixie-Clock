@@ -1,4 +1,4 @@
-#include <SerialParser.h>
+#include <CommandLineParser.h>
 #include "include/common/Log.h"
 #include "include/common/MessageEvent.h"
 #include "include/common/Helper.h"
@@ -20,126 +20,98 @@ SemaphoreHandle_t mMutex;
 
 static constexpr const char *const TAG = "SYSTEM";
 
-void showHelp()
+bool onCommandReboot(String params)
 {
-	LOG("Available commands:");
-	LOG("1. HELP: Show help");
-	LOG("2. RESTART: Restart");
-	LOG("3. RSWIFI: Reset WiFi Settings");
-	LOG("4. LAUNCHER <type>: Show fragment with launcher");
-	LOG("5. REFRESH: Refresh current fragment");
-	LOG("6. TIME: Set RTC time");
-	LOG("\tEx: TIME 190523 (Set time to 19:05:23)");
-	LOG("7. DATE: Set RTC date");
-	LOG("\tEx: DATE 20230108 (Set date to 2023/01/08)");
-	LOG("8. NTP: Get current NTP time");
-	LOG("9. RTC: Get current RTC time");
-	LOG("10. DHT: Get data from DHT sensor (temperature and humidity)");
-	LOG("11. FSLIST: List files in filesystem");
-	LOG("12. WFLIST: List scanned WiFis");
-	LOG("13. WF <SSID> <PASSWORD>: Set WiFi");
-	LOG("14. TEST <value>: Set test value");
+	ESP.restart();
+	return true;
 }
 
-void debugHandler()
+bool onCommandRsWifi(String params)
 {
-	static String cmd;
-	static long value;
-	static String valueStr;
+	AsyncWiFiManager::resetSettings();
+	ESP.restart();
+	return true;
+}
 
-	if (SerialParser::run(&cmd, &value, &valueStr))
+bool onCommandRefresh(String params)
+{
+	LauncherManager::refresh();
+	return true;
+}
+
+bool onCommandTime(String params)
+{
+	int hour, minute, second = 0;
+	if (sscanf(params.c_str(), "%d:%d:%d", &hour, &minute, &second) == 3)
 	{
-		if (mMutex != NULL && xSemaphoreTake(mMutex, portMAX_DELAY) == pdTRUE)
+		RTCController::setTime(hour, minute, second);
+		return true;
+	}
+	return false;
+}
+
+bool onCommandDate(String params)
+{
+	int year, month, day = 0;
+	if (sscanf(params.c_str(), "%d/%d/%d", &day, &month, &year) == 3)
+	{
+		RTCController::setDate(year, month, day);
+		return true;
+	}
+	return false;
+}
+
+bool onCommandNTP(String params)
+{
+	if (!SettingsManager::isWiFiEnabled())
+	{
+		LOG("WiFi is not enabled");
+	}
+	else if (!SettingsManager::isNTPEnabled())
+	{
+		LOG("NTP is not enabled");
+	}
+	else
+	{
+		LOG("NTP time: %s", ServerManager::getNTPTime().c_str());
+	}
+	return true;
+}
+
+bool onCommandRTC(String params)
+{
+	LOG("RTC time: %s", RTCController::getCurrentDateTimeStr().c_str());
+	return true;
+}
+
+bool onCommandDHT(String params)
+{
+	LOG("Temp: %.1fC, Hum: %.1f%%", SensorController::getTemperature(), SensorController::getHumidity());
+	return true;
+}
+
+bool onCommandWfList(String params)
+{
+	AsyncWiFiManager::printScannedNetWorks();
+	return true;
+}
+
+bool onCommandWifi(String params)
+{
+	if (params.length() > 0)
+	{
+		int index = params.indexOf(',');
+		if (index > 0)
 		{
-			if (cmd.equals("HELP"))
-			{
-				showHelp();
-			}
-			else if (cmd.equals("RESTART"))
-			{
-				ESP.restart();
-			}
-			else if (cmd.equals("RSWIFI"))
-			{
-				AsyncWiFiManager::resetSettings();
-				ESP.restart();
-			}
-			else if (cmd.equals("LAUNCHER"))
-			{
-				LauncherManager::show((FragmentType)value);
-			}
-			else if (cmd.equals("REFRESH"))
-			{
-				LauncherManager::refresh();
-			}
-			// set time: Ex 19:25:23 -> 190523
-			else if (cmd.equals("TIME"))
-			{
-				RTCController::setTime(value / 10000, value % 10000 / 100, value % 100);
-			}
-			// set date: Ex 2023/01/08 -> 20230108 (year: 2000 -> 2099)
-			else if (cmd.equals("DATE"))
-			{
-				RTCController::setDate(value / 10000, value % 10000 / 100, value % 100);
-			}
-			else if (cmd.equals("NTP"))
-			{
-				if (!SettingsManager::isWiFiEnabled())
-				{
-					LOG("WiFi is not enabled");
-				}
-				else if (!SettingsManager::isNTPEnabled())
-				{
-					LOG("NTP is not enabled");
-				}
-				else
-				{
-					LOG("NTP time: %s", ServerManager::getNTPTime().c_str());
-				}
-			}
-			else if (cmd.equals("RTC"))
-			{
-				LOG("RTC time: %s", RTCController::getCurrentDateTimeStr().c_str());
-			}
-			else if (cmd.equals("DHT"))
-			{
-				LOG("Temp: %.1fC, Hum: %.1f%%", SensorController::getTemperature(), SensorController::getHumidity());
-			}
-			else if (cmd.equals("FSLIST"))
-			{
-				FileSystem::listDir("/", 0);
-			}
-			else if (cmd.equals("WFLIST"))
-			{
-				AsyncWiFiManager::printScannedNetWorks();
-			}
-			// WF <ssid>,<password>
-			else if (cmd.equals("WF"))
-			{
-				if (valueStr.length() > 0)
-				{
-					int index = valueStr.indexOf(',');
-					if (index > 0)
-					{
-						String ssid = valueStr.substring(0, index);
-						String password = valueStr.substring(index + 1);
-						LOG("Set wifi information: ssid: '%s', password: '%s'", ssid.c_str(), password.c_str());
-						AsyncWiFiManager::setWifiInformation(ssid, password);
-						ESP.restart();
-					}
-				}
-			}
-			else if (cmd.equals("TEST"))
-			{
-				Helper::mTestValue = value;
-			}
-			else
-			{
-				LOG("Unknown command: '%s'", cmd);
-			}
-			xSemaphoreGive(mMutex);
+			String ssid = params.substring(0, index);
+			String password = params.substring(index + 1);
+			LOG("Set wifi information: ssid: '%s', password: '%s'", ssid.c_str(), password.c_str());
+			AsyncWiFiManager::setWifiInformation(ssid, password);
+			ESP.restart();
+			return true;
 		}
 	}
+	return false;
 }
 
 void uiTaskHandler(void *data)
@@ -188,9 +160,21 @@ void hwTaskHandler(void *data)
 {
 	HardwareController::init();
 
+	CommandLineParser::init();
+	CommandLineParser::install("reboot", onCommandReboot, "reboot");
+	CommandLineParser::install("reset-wifi", onCommandRsWifi, "reset wifi");
+	CommandLineParser::install("refresh", onCommandRefresh, "refresh UI");
+	CommandLineParser::install("time", onCommandTime, "time hh:mm:ss\t: set time");
+	CommandLineParser::install("date", onCommandDate, "date dd/MM/yyyy\t: set date");
+	CommandLineParser::install("ntp", onCommandNTP, "get NTP time");
+	CommandLineParser::install("rtc", onCommandRTC, "get RTC time");
+	CommandLineParser::install("dht", onCommandDHT, "get DHT sensor values");
+	CommandLineParser::install("wifi-list", onCommandWfList, "get scanned Wifi list");
+	CommandLineParser::install("wifi", onCommandWifi, "set Wifi");
+
 	while (true)
 	{
-		debugHandler();
+		CommandLineParser::run();
 		HardwareController::loop();
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
@@ -233,8 +217,6 @@ void setup()
 {
 	mMutex = xSemaphoreCreateMutex();
 	Serial.begin(115200);
-	SerialParser::setFeedbackEnable(true);
-	SerialParser::setAllowEmptyCode(true);
 	FileSystem::init();
 	MessageEvent::init();
 	SettingsManager::init();
